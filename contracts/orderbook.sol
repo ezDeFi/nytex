@@ -53,78 +53,184 @@ contract ERC20Interface {
 	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 
+// TODO: implement SafeMath
+// TODO: support non-AON order
 contract OrderBook is SafeMath {
+
+	struct Order {
+		uint256 eth; // in wei
+		uint256 tkn;
+		address payable maker;
+
+		// linked list
+		bytes32 prev;
+		bytes32 next;
+	}
+
+	struct OrderList {
+		mapping (bytes32 => Order) orders;
+		bytes32 top;	// the smallest eth/tkn rate 
+		bytes32 bottom;	// the largest eth/tkn rate
+	}
+
+	ERC20Interface public token;
+	OrderList public sells;
+	OrderList public buys;
+
+	function insert(bool buying, uint256 _eth, uint256 _tkn, address payable _maker, bytes32 index) private
+	returns (bytes32) {
+		OrderList storage book = buying ? buys : sells;
+		if (index[0] == 0) {
+			index = book.top;
+		}
+
+		// search down
+		for (; index[0] != 0; index = book.orders[index].next) {
+			Order storage order = book.orders[index];
+			// TODO: SafeMath
+			uint256 a = order.eth * _tkn;
+			uint256 b = _eth * order.tkn;
+			if (a > b || (a == b && buying)) {
+				index = order.prev;
+				break;
+			}
+		}
+
+		// search up
+		for (; index[0] != 0; index = book.orders[index].prev) {
+			Order storage order = book.orders[index];
+			// TODO: SafeMath
+			uint256 a = order.eth * _tkn;
+			uint256 b = _eth * order.tkn;
+			if (a < b || (a == b && !buying)) {
+				break;
+			}
+		}
+
+		// insert
+		bytes32 prev = index;
+		bytes32 next = index[0] == 0 ? book.top : book.orders[index].next;
+
+		bytes32 id = sha256(abi.encodePacked(_eth, _tkn, _maker));
+		book.orders[id] = Order(_eth, _tkn, _maker, prev, next);
+
+		if (prev[0] == 0) {
+			book.top = id;
+		} else {
+			book.orders[prev].next = id;
+		}
+
+		if (next[0] == 0) {
+			book.bottom = id;
+		} else {
+			book.orders[next].prev = id;
+		}
+
+		return id;
+	}
+
+	function sell(uint256 tokenWei, address payable maker, bytes32 index) public payable
+	returns (bytes32 orderHash) {
+		uint256 etherWei = msg.value;
+		require(tokenWei > 0);
+		require(etherWei > 0);
+
+		orderHash = insert(false, etherWei, tokenWei, maker, index);
+		emit Sell(orderHash, etherWei, tokenWei, maker);
+		return orderHash;
+	}
+
+	function buy(uint256 etherWei, address payable maker, bytes32 index) public
+	returns (bytes32 orderHash) {
+		// Check allowance.
+		uint256 tokenWei = token.allowance(msg.sender, address(this));
+		require(tokenWei > 0);
+		require(etherWei > 0);
+
+		// Grab the token.
+		if (!token.transferFrom(msg.sender, address(this), tokenWei)) {
+			revert();
+		}
+
+		orderHash = insert(true, etherWei, tokenWei, maker, index);
+		emit Buy(orderHash, etherWei, tokenWei, maker);
+		return orderHash;
+	}
+
+	event Sell(bytes32 orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
+
 	mapping (bytes32 => uint256) public sellOrderBalances;	//a hash of available order balances holds a number of tokens
 	mapping (bytes32 => uint256) public buyOrderBalances;	//a hash of available order balances. holds a number of eth
 
-	event MakeBuyOrder(bytes32 orderHash, address indexed token, uint256 tokenAmount, uint256 weiAmount, address indexed buyer);
+	event MakeBuyOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, address indexed buyer);
 
-	event MakeSellOrder(bytes32 orderHash, address indexed token, uint256 tokenAmount, uint256 weiAmount, address indexed seller);
+	event MakeSellOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, address indexed seller);
 
-	event CancelBuyOrder(bytes32 orderHash, address indexed token, uint256 tokenAmount, uint256 weiAmount, address indexed buyer);
+	event CancelBuyOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, address indexed buyer);
 
-	event CancelSellOrder(bytes32 orderHash, address indexed token, uint256 tokenAmount, uint256 weiAmount, address indexed seller);
+	event CancelSellOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, address indexed seller);
 
-	event TakeBuyOrder(bytes32 orderHash, address indexed token, uint256 tokenAmount, uint256 weiAmount, uint256 totalTransactionTokens, address indexed buyer, address indexed seller);
+	event TakeBuyOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, uint256 totalTransactionTokens, address indexed buyer, address indexed seller);
 
-	event TakeSellOrder(bytes32 orderHash, address indexed token, uint256 tokenAmount, uint256 weiAmount, uint256 totalTransactionWei, address indexed buyer, address indexed seller);
-
-	constructor() public {
+	event TakeSellOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, uint256 totalTransactionWei, address indexed buyer, address indexed seller);
+	
+	constructor(address _token) public {
+		token = ERC20Interface(_token);
 	}
 
 	function() external {
 		revert();
 	}
 
-	// Makes an offer to trade tokenAmount of ERC20 token, token, for weiAmount of wei.
-	function makeSellOrder(address token, uint256 tokenAmount, uint256 weiAmount) public {
-		require(tokenAmount != 0);
+	// Makes an offer to trade tokenWei of ERC20 token, token, for weiAmount of wei.
+	function makeSellOrder(address token, uint256 tokenWei, uint256 weiAmount) public {
+		require(tokenWei != 0);
 		require(weiAmount != 0);
 
-		bytes32 h = sha256(abi.encodePacked(token, tokenAmount, weiAmount, msg.sender));
+		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, msg.sender));
 
 		// Update balance.
-		sellOrderBalances[h] = safeAdd(sellOrderBalances[h], tokenAmount);
+		sellOrderBalances[h] = safeAdd(sellOrderBalances[h], tokenWei);
 
 		// Check allowance.  -- Done after updating balance bc it makes a call to an untrusted contract.
-		require(tokenAmount <= ERC20Interface(token).allowance(msg.sender, address(this)));
+		require(tokenWei <= ERC20Interface(token).allowance(msg.sender, address(this)));
 
 		// Grab the token.
-		if (!ERC20Interface(token).transferFrom(msg.sender, address(this), tokenAmount)) {
+		if (!ERC20Interface(token).transferFrom(msg.sender, address(this), tokenWei)) {
 			revert();
 		}
 
-		emit MakeSellOrder(h, token, tokenAmount, weiAmount, msg.sender);
+		emit MakeSellOrder(h, token, tokenWei, weiAmount, msg.sender);
 	}
 
-	// Makes an offer to trade msg.value wei for tokenAmount of token (an ERC20 token).
-	function makeBuyOrder(address token, uint256 tokenAmount) public payable {
-		require(tokenAmount != 0);
+	// Makes an offer to trade msg.value wei for tokenWei of token (an ERC20 token).
+	function makeBuyOrder(address token, uint256 tokenWei) public payable {
+		require(tokenWei != 0);
 		require(msg.value != 0);
 
-		bytes32 h = sha256(abi.encodePacked(token, tokenAmount, msg.value, msg.sender));
+		bytes32 h = sha256(abi.encodePacked(token, tokenWei, msg.value, msg.sender));
 
 		//put ether in the buyOrderBalances map
 		buyOrderBalances[h] = safeAdd(buyOrderBalances[h], msg.value);
 
 		// Notify all clients.
-		emit MakeBuyOrder(h, token, tokenAmount, msg.value, msg.sender);
+		emit MakeBuyOrder(h, token, tokenWei, msg.value, msg.sender);
 	}
 
-	// Cancels all previous offers by msg.sender to trade tokenAmount of tokens for weiAmount of wei.
-	function cancelAllSellOrders(address token, uint256 tokenAmount, uint256 weiAmount) public {
-		bytes32 h = sha256(abi.encodePacked(token, tokenAmount, weiAmount, msg.sender));
+	// Cancels all previous offers by msg.sender to trade tokenWei of tokens for weiAmount of wei.
+	function cancelAllsells(address token, uint256 tokenWei, uint256 weiAmount) public {
+		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, msg.sender));
 		uint256 remain = sellOrderBalances[h];
 		delete sellOrderBalances[h];
 
 		ERC20Interface(token).transfer(msg.sender, remain);
 
-		emit CancelSellOrder(h, token, tokenAmount, weiAmount, msg.sender);
+		emit CancelSellOrder(h, token, tokenWei, weiAmount, msg.sender);
 	}
 
-	// Cancels any previous offers to trade weiAmount of wei for tokenAmount of tokens. Refunds the wei to sender.
-	function cancelAllBuyOrders(address token, uint256 tokenAmount, uint256 weiAmount) public {
-		bytes32 h = sha256(abi.encodePacked(token, tokenAmount, weiAmount, msg.sender));
+	// Cancels any previous offers to trade weiAmount of wei for tokenWei of tokens. Refunds the wei to sender.
+	function cancelAllbuys(address token, uint256 tokenWei, uint256 weiAmount) public {
+		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, msg.sender));
 		uint256 remain = buyOrderBalances[h];
 		delete buyOrderBalances[h];
 
@@ -132,19 +238,19 @@ contract OrderBook is SafeMath {
 			revert();
 		}
 
-		emit CancelBuyOrder(h, token, tokenAmount, weiAmount, msg.sender);
+		emit CancelBuyOrder(h, token, tokenWei, weiAmount, msg.sender);
 	}
 
 	// Take some (or all) of the ether (minus fees) in the buyOrderBalances hash in exchange for totalTokens tokens.
-	function takeBuyOrder(address token, uint256 tokenAmount, uint256 weiAmount, uint256 totalTokens, address payable buyer) public {
-		require(tokenAmount != 0);
+	function takeBuyOrder(address token, uint256 tokenWei, uint256 weiAmount, uint256 totalTokens, address payable buyer) public {
+		require(tokenWei != 0);
 		require(weiAmount != 0);
 		require(totalTokens != 0);
 
-		bytes32 h = sha256(abi.encodePacked(token, tokenAmount, weiAmount, buyer));
+		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, buyer));
 
 		// How many wei for the amount of tokens being sold?
-		uint256 totalTransactionWeiAmount = safeMul(totalTokens, weiAmount) / tokenAmount;
+		uint256 totalTransactionWeiAmount = safeMul(totalTokens, weiAmount) / tokenWei;
 
 		require(buyOrderBalances[h] >= totalTransactionWeiAmount);
 
@@ -165,17 +271,17 @@ contract OrderBook is SafeMath {
 			revert();
 		}
 
-		emit TakeBuyOrder(h, token, tokenAmount, weiAmount, totalTokens, buyer, msg.sender);
+		emit TakeBuyOrder(h, token, tokenWei, weiAmount, totalTokens, buyer, msg.sender);
 	}
 
-	function takeSellOrder(address token, uint256 tokenAmount, uint256 weiAmount, address payable seller) public payable {
-		require(tokenAmount != 0);
+	function takeSellOrder(address token, uint256 tokenWei, uint256 weiAmount, address payable seller) public payable {
+		require(tokenWei != 0);
 		require(weiAmount != 0);
 
-		bytes32 h = sha256(abi.encodePacked(token, tokenAmount, weiAmount, seller));
+		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, seller));
 
 		// Check that the contract has enough token to satisfy this order.
-		uint256 totalTokens = safeMul(msg.value, tokenAmount) / weiAmount;
+		uint256 totalTokens = safeMul(msg.value, tokenWei) / weiAmount;
 		require(sellOrderBalances[h] >= totalTokens);
 
 		// Transfer.
@@ -193,6 +299,6 @@ contract OrderBook is SafeMath {
 			revert();
 		}
 
-		emit TakeSellOrder(h, token, tokenAmount, weiAmount, weiAmount, msg.sender, seller);
+		emit TakeSellOrder(h, token, tokenWei, weiAmount, weiAmount, msg.sender, seller);
 	}
 }
