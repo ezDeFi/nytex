@@ -44,6 +44,8 @@ contract OrderBook is Stablio {
 		} else {
 			book.orders[order.next].prev = order.prev;
 		}
+
+		delete book.orders[orderHash];
 	}
 
 	function insert(bool orderType, uint256 _eth, uint256 _tkn, address payable _maker, bytes32 index) private
