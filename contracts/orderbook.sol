@@ -1,10 +1,10 @@
 pragma solidity ^0.5.0;
 
+import "./Stablio.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 // TODO: support non-AON order
-contract OrderBook {
+contract OrderBook is Stablio {
 
 	using SafeMath for uint256;
 
@@ -24,9 +24,9 @@ contract OrderBook {
 		bytes32 bottom;	// the largest eth/tkn rate
 	}
 
-	IERC20 public token;
-	OrderList public sells;
-	OrderList public buys;
+	OrderList private sells;
+	OrderList private buys;
+	address payable blackhole;
 
 	function insert(bool buying, uint256 _eth, uint256 _tkn, address payable _maker, bytes32 index) private
 	returns (bytes32) {
@@ -89,17 +89,13 @@ contract OrderBook {
 		return orderHash;
 	}
 
-	function buy(uint256 etherWei, address payable maker, bytes32 index) public
+	function buy(uint256 etherWei, uint256 tokenWei, address payable maker, bytes32 index) public
 	returns (bytes32 orderHash) {
-		// Check allowance.
-		uint256 tokenWei = token.allowance(msg.sender, address(this));
 		require(tokenWei > 0);
 		require(etherWei > 0);
 
 		// Grab the token.
-		if (!token.transferFrom(msg.sender, address(this), tokenWei)) {
-			revert();
-		}
+		_transfer(msg.sender, address(this), tokenWei);
 
 		orderHash = insert(true, etherWei, tokenWei, maker, index);
 		emit Buy(orderHash, etherWei, tokenWei, maker);
@@ -111,9 +107,14 @@ contract OrderBook {
 		Order storage order = book.orders[orderHash];
 	}
 
-	function fillSell(bytes32 orderHash) private {
+	function fillSell(bytes32 orderHash) private returns (uint256 ethWei, uint256 tokenWei) {
 		OrderList storage book = sells;
 		Order storage order = book.orders[orderHash];
+
+		// balance -= order.eth
+		_mint(order.maker, order.tkn);
+
+		return (order.eth, order.tkn);
 	}
 
 	event Sell(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
@@ -134,8 +135,7 @@ contract OrderBook {
 
 	event TakeSellOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, uint256 totalTransactionWei, address indexed buyer, address indexed seller);
 	
-	constructor(address _token) public {
-		token = IERC20(_token);
+	constructor() public {
 	}
 
 	function() external {
