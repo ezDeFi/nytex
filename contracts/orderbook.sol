@@ -24,12 +24,13 @@ contract OrderBook is Stablio {
 		bytes32 bottom;	// the largest eth/tkn rate
 	}
 
-	OrderList private sells;
-	OrderList private buys;
-	address payable blackhole;
+	bool constant SellType = false;
+	bool constant BuyType = true;
 
-	function remove(bool buying, bytes32 orderHash) private {
-		OrderList storage book = buying ? buys : sells;
+	mapping(bool => OrderList) books;
+
+	function remove(bool orderType, bytes32 orderHash) private {
+		OrderList storage book = books[orderType];
 		Order storage order = book.orders[orderHash];
 
 		if (order.prev[0] == 0) {
@@ -45,9 +46,9 @@ contract OrderBook is Stablio {
 		}
 	}
 
-	function insert(bool buying, uint256 _eth, uint256 _tkn, address payable _maker, bytes32 index) private
+	function insert(bool orderType, uint256 _eth, uint256 _tkn, address payable _maker, bytes32 index) private
 	returns (bytes32) {
-		OrderList storage book = buying ? buys : sells;
+		OrderList storage book = books[orderType];
 		if (index[0] == 0) {
 			index = book.top;
 		}
@@ -57,7 +58,7 @@ contract OrderBook is Stablio {
 			Order storage order = book.orders[index];
 			uint256 a = order.eth.mul(_tkn);
 			uint256 b = _eth.mul(order.tkn);
-			if (a > b || (a == b && buying)) {
+			if (a > b || (a == b && orderType == BuyType)) {
 				index = order.prev;
 				break;
 			}
@@ -68,7 +69,7 @@ contract OrderBook is Stablio {
 			Order storage order = book.orders[index];
 			uint256 a = order.eth.mul(_tkn);
 			uint256 b = _eth.mul(order.tkn);
-			if (a < b || (a == b && !buying)) {
+			if (a < b || (a == b && orderType == SellType)) {
 				break;
 			}
 		}
@@ -119,17 +120,18 @@ contract OrderBook is Stablio {
 		return orderHash;
 	}
 
-	function fill(bytes32 orderHash, bool buying) private {
-		OrderList storage book = buying ? buys : sells;
+	function fill(bytes32 orderHash, bool orderType) private {
+		OrderList storage book = books[orderType];
 		Order storage order = book.orders[orderHash];
 	}
 
 	function fillSell(bytes32 orderHash) private returns (uint256 burntEth, uint256 mintedToken) {
-		OrderList storage book = sells;
+		bool bookType = SellType;
+		OrderList storage book = books[bookType];
 		Order storage order = book.orders[orderHash];
 		require(order.maker != address(0));
 
-		remove(false, orderHash);
+		remove(bookType, orderHash);
 
 		// Consensus: balance -= order.eth
 		_mint(order.maker, order.tkn);
