@@ -116,8 +116,8 @@ contract OrderBook {
 		Order storage order = book.orders[orderHash];
 	}
 
-	event Sell(bytes32 orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
-	event Buy(bytes32 orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
+	event Sell(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
+	event Buy(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
 
 	mapping (bytes32 => uint256) public sellOrderBalances;	//a hash of available order balances holds a number of tokens
 	mapping (bytes32 => uint256) public buyOrderBalances;	//a hash of available order balances. holds a number of eth
