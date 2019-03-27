@@ -122,12 +122,7 @@ contract OrderBook is Stablio {
 		return orderHash;
 	}
 
-	function fill(bytes32 orderHash, bool orderType) private {
-		OrderList storage book = books[orderType];
-		Order storage order = book.orders[orderHash];
-	}
-
-	function fillSell(bytes32 orderHash) private returns (uint256 burntEth, uint256 mintedToken) {
+	function fillSell(bytes32 orderHash) private {
 		bool bookType = SellType;
 		OrderList storage book = books[bookType];
 		Order storage order = book.orders[orderHash];
@@ -138,14 +133,38 @@ contract OrderBook is Stablio {
 		// Consensus: balance -= order.eth
 		_mint(order.maker, order.tkn);
 
-		return (order.eth, order.tkn);
+		emit FillSell(orderHash, order.eth, order.tkn, order.maker);
 	}
 
-	function fillSell(uint256 tokenAmount) private returns (uint256 ethWei, uint256 tokenWei) {
+	function expand(uint256 tokenAmount) private returns (uint256 filledWei, uint256 filledToken) {
+		require(tokenAmount > 0);
+		bool bookType = SellType;
+		OrderList storage book = books[bookType];
+
+		uint256 remainToken = tokenAmount;
+
+		for (bytes32 index = book.top; index[0] != 0; ) {
+			Order storage order = book.orders[index];
+			if (order.tkn > remainToken) {
+				break;
+			}
+			remainToken = remainToken.sub(order.eth);
+			filledWei = filledWei.add(order.tkn);
+			fillSell(index);
+		}
+
+		filledToken = tokenAmount.sub(remainToken);
+
+		emit Expand(filledWei, filledToken);
+		return (filledWei, filledToken);
 	}
 
 	event Sell(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
 	event Buy(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
+	event FillSell(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
+	event FillBuy(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
+	event Expand(uint256 ethAmount, uint256 tokenAmount);
+	event Contract(uint256 ethAmount, uint256 tokenAmount);
 
 	mapping (bytes32 => uint256) public sellOrderBalances;	//a hash of available order balances holds a number of tokens
 	mapping (bytes32 => uint256) public buyOrderBalances;	//a hash of available order balances. holds a number of eth
