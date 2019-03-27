@@ -3,9 +3,10 @@ pragma solidity ^0.5.0;
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
-// TODO: implement SafeMath
 // TODO: support non-AON order
 contract OrderBook {
+
+	using SafeMath for uint256;
 
 	struct Order {
 		uint256 eth; // in wei
@@ -37,9 +38,8 @@ contract OrderBook {
 		// search down
 		for (; index[0] != 0; index = book.orders[index].next) {
 			Order storage order = book.orders[index];
-			// TODO: SafeMath
-			uint256 a = order.eth * _tkn;
-			uint256 b = _eth * order.tkn;
+			uint256 a = order.eth.mul(_tkn);
+			uint256 b = _eth.mul(order.tkn);
 			if (a > b || (a == b && buying)) {
 				index = order.prev;
 				break;
@@ -49,9 +49,8 @@ contract OrderBook {
 		// search up
 		for (; index[0] != 0; index = book.orders[index].prev) {
 			Order storage order = book.orders[index];
-			// TODO: SafeMath
-			uint256 a = order.eth * _tkn;
-			uint256 b = _eth * order.tkn;
+			uint256 a = order.eth.mul(_tkn);
+			uint256 b = _eth.mul(order.tkn);
 			if (a < b || (a == b && !buying)) {
 				break;
 			}
@@ -115,7 +114,6 @@ contract OrderBook {
 	function fillSell(bytes32 orderHash) private {
 		OrderList storage book = sells;
 		Order storage order = book.orders[orderHash];
-
 	}
 
 	event Sell(bytes32 orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
@@ -152,7 +150,7 @@ contract OrderBook {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, msg.sender));
 
 		// Update balance.
-		sellOrderBalances[h] = SafeMath.add(sellOrderBalances[h], tokenWei);
+		sellOrderBalances[h] = sellOrderBalances[h].add(tokenWei);
 
 		// Check allowance.  -- Done after updating balance bc it makes a call to an untrusted contract.
 		require(tokenWei <= IERC20(token).allowance(msg.sender, address(this)));
@@ -173,7 +171,7 @@ contract OrderBook {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, msg.value, msg.sender));
 
 		//put ether in the buyOrderBalances map
-		buyOrderBalances[h] = SafeMath.add(buyOrderBalances[h], msg.value);
+		buyOrderBalances[h] = buyOrderBalances[h].add(msg.value);
 
 		// Notify all clients.
 		emit MakeBuyOrder(h, token, tokenWei, msg.value, msg.sender);
@@ -212,14 +210,14 @@ contract OrderBook {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, buyer));
 
 		// How many wei for the amount of tokens being sold?
-		uint256 totalTransactionWeiAmount = SafeMath.mul(totalTokens, weiAmount) / tokenWei;
+		uint256 totalTransactionWeiAmount = totalTokens.add(weiAmount) / tokenWei;
 
 		require(buyOrderBalances[h] >= totalTransactionWeiAmount);
 
 		// Proceed with transferring balances.
 
 		// Update our internal accounting.
-		buyOrderBalances[h] = SafeMath.sub(buyOrderBalances[h], totalTransactionWeiAmount);
+		buyOrderBalances[h] = buyOrderBalances[h].add(totalTransactionWeiAmount);
 
 		// Did the seller send enough tokens?  -- This check is here bc it calls to an untrusted contract.
 		require(IERC20(token).allowance(msg.sender, address(this)) >= totalTokens);
@@ -243,13 +241,13 @@ contract OrderBook {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, seller));
 
 		// Check that the contract has enough token to satisfy this order.
-		uint256 totalTokens = SafeMath.mul(msg.value, tokenWei) / weiAmount;
+		uint256 totalTokens = msg.value.mul(tokenWei).div(weiAmount);
 		require(sellOrderBalances[h] >= totalTokens);
 
 		// Transfer.
 
 		// Update internal accounting.
-		sellOrderBalances[h] = SafeMath.sub(sellOrderBalances[h], totalTokens);
+		sellOrderBalances[h] = sellOrderBalances[h].sub(totalTokens);
 
 		// Send buyer the tokens.
 		if (!IERC20(token).transfer(msg.sender, totalTokens)) {
