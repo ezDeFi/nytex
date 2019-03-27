@@ -1,0 +1,13 @@
+{
+    "name": "nytex",
+    "version": "1.0.0",
+    "description": "Nexty Token Exchange",
+    "scripts": {
+      "compile": "truffle compile contracts/orderbook.sol"
+    },
+    "author": "nexty.io",
+    "dependencies": {
+      "openzeppelin-solidity": "^2.1.2"
+    }
+  }
+  

@@ -1,61 +1,11 @@
 pragma solidity ^0.5.0;
 
-contract SafeMath {
-	function safeMul(uint256 a, uint256 b) internal pure returns (uint256) {
-		uint c = a * b;
-		assert(a == 0 || c / a == b);
-		return c;
-	}
-
-	function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
-		assert(b <= a);
-		return a - b;
-	}
-
-	function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
-		uint c = a + b;
-		assert(c >= a && c >= b);
-		return c;
-	}
-
-	//  function assert(bool assertion) internal {
-	//    if (!assertion) throw;
-	//  }
-}
-
-// ERC Token Standard #20 Interface
-// https://github.com/ethereum/EIPs/issues/20
-contract ERC20Interface {
-	// Get the total token supply
-	function totalSupply() public view returns (uint256 supply);
-
-	// Get the account balance of another account with address _owner
-	function balanceOf(address _owner) public view returns (uint256 balance);
-
-	// Send _value amount of tokens to address _to
-	function transfer(address _to, uint256 _value) public returns (bool success);
-
-	// Send _value amount of tokens from address _from to address _to
-	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
-
-	// Allow _spender to withdraw from your account, multiple times, up to the _value amount.
-	// If this function is called again it overwrites the current allowance with _value.
-	// this function is required for some DEX functionality
-	function approve(address _spender, uint256 _value) public returns (bool success);
-
-	// Returns the amount which _spender is still allowed to withdraw from _owner
-	function allowance(address _owner, address _spender) public view returns (uint256 remaining);
-
-	// Triggered when tokens are transferred.
-	event Transfer(address indexed _from, address indexed _to, uint256 _value);
-
-	// Triggered whenever approve(address _spender, uint256 _value) is called.
-	event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-}
+import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 // TODO: implement SafeMath
 // TODO: support non-AON order
-contract OrderBook is SafeMath {
+contract OrderBook {
 
 	struct Order {
 		uint256 eth; // in wei
@@ -73,7 +23,7 @@ contract OrderBook is SafeMath {
 		bytes32 bottom;	// the largest eth/tkn rate
 	}
 
-	ERC20Interface public token;
+	IERC20 public token;
 	OrderList public sells;
 	OrderList public buys;
 
@@ -157,6 +107,17 @@ contract OrderBook is SafeMath {
 		return orderHash;
 	}
 
+	function fill(bytes32 orderHash, bool buying) private {
+		OrderList storage book = buying ? buys : sells;
+		Order storage order = book.orders[orderHash];
+	}
+
+	function fillSell(bytes32 orderHash) private {
+		OrderList storage book = sells;
+		Order storage order = book.orders[orderHash];
+
+	}
+
 	event Sell(bytes32 orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
 	event Buy(bytes32 orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
 
@@ -176,7 +137,7 @@ contract OrderBook is SafeMath {
 	event TakeSellOrder(bytes32 orderHash, address indexed token, uint256 tokenWei, uint256 weiAmount, uint256 totalTransactionWei, address indexed buyer, address indexed seller);
 	
 	constructor(address _token) public {
-		token = ERC20Interface(_token);
+		token = IERC20(_token);
 	}
 
 	function() external {
@@ -191,13 +152,13 @@ contract OrderBook is SafeMath {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, msg.sender));
 
 		// Update balance.
-		sellOrderBalances[h] = safeAdd(sellOrderBalances[h], tokenWei);
+		sellOrderBalances[h] = SafeMath.add(sellOrderBalances[h], tokenWei);
 
 		// Check allowance.  -- Done after updating balance bc it makes a call to an untrusted contract.
-		require(tokenWei <= ERC20Interface(token).allowance(msg.sender, address(this)));
+		require(tokenWei <= IERC20(token).allowance(msg.sender, address(this)));
 
 		// Grab the token.
-		if (!ERC20Interface(token).transferFrom(msg.sender, address(this), tokenWei)) {
+		if (!IERC20(token).transferFrom(msg.sender, address(this), tokenWei)) {
 			revert();
 		}
 
@@ -212,7 +173,7 @@ contract OrderBook is SafeMath {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, msg.value, msg.sender));
 
 		//put ether in the buyOrderBalances map
-		buyOrderBalances[h] = safeAdd(buyOrderBalances[h], msg.value);
+		buyOrderBalances[h] = SafeMath.add(buyOrderBalances[h], msg.value);
 
 		// Notify all clients.
 		emit MakeBuyOrder(h, token, tokenWei, msg.value, msg.sender);
@@ -224,7 +185,7 @@ contract OrderBook is SafeMath {
 		uint256 remain = sellOrderBalances[h];
 		delete sellOrderBalances[h];
 
-		ERC20Interface(token).transfer(msg.sender, remain);
+		IERC20(token).transfer(msg.sender, remain);
 
 		emit CancelSellOrder(h, token, tokenWei, weiAmount, msg.sender);
 	}
@@ -251,19 +212,19 @@ contract OrderBook is SafeMath {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, buyer));
 
 		// How many wei for the amount of tokens being sold?
-		uint256 totalTransactionWeiAmount = safeMul(totalTokens, weiAmount) / tokenWei;
+		uint256 totalTransactionWeiAmount = SafeMath.mul(totalTokens, weiAmount) / tokenWei;
 
 		require(buyOrderBalances[h] >= totalTransactionWeiAmount);
 
 		// Proceed with transferring balances.
 
 		// Update our internal accounting.
-		buyOrderBalances[h] = safeSub(buyOrderBalances[h], totalTransactionWeiAmount);
+		buyOrderBalances[h] = SafeMath.sub(buyOrderBalances[h], totalTransactionWeiAmount);
 
 		// Did the seller send enough tokens?  -- This check is here bc it calls to an untrusted contract.
-		require(ERC20Interface(token).allowance(msg.sender, address(this)) >= totalTokens);
+		require(IERC20(token).allowance(msg.sender, address(this)) >= totalTokens);
 
-		if (!ERC20Interface(token).transferFrom(msg.sender, buyer, totalTokens)) {
+		if (!IERC20(token).transferFrom(msg.sender, buyer, totalTokens)) {
 			revert();
 		}
 
@@ -282,16 +243,16 @@ contract OrderBook is SafeMath {
 		bytes32 h = sha256(abi.encodePacked(token, tokenWei, weiAmount, seller));
 
 		// Check that the contract has enough token to satisfy this order.
-		uint256 totalTokens = safeMul(msg.value, tokenWei) / weiAmount;
+		uint256 totalTokens = SafeMath.mul(msg.value, tokenWei) / weiAmount;
 		require(sellOrderBalances[h] >= totalTokens);
 
 		// Transfer.
 
 		// Update internal accounting.
-		sellOrderBalances[h] = safeSub(sellOrderBalances[h], totalTokens);
+		sellOrderBalances[h] = SafeMath.sub(sellOrderBalances[h], totalTokens);
 
 		// Send buyer the tokens.
-		if (!ERC20Interface(token).transfer(msg.sender, totalTokens)) {
+		if (!IERC20(token).transfer(msg.sender, totalTokens)) {
 			revert();
 		}
 
