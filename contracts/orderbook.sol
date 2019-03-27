@@ -28,6 +28,23 @@ contract OrderBook is Stablio {
 	OrderList private buys;
 	address payable blackhole;
 
+	function remove(bool buying, bytes32 orderHash) private {
+		OrderList storage book = buying ? buys : sells;
+		Order storage order = book.orders[orderHash];
+
+		if (order.prev[0] == 0) {
+			book.top = order.next;
+		} else {
+			book.orders[order.prev].next = order.next;
+		}
+
+		if (order.next[0] == 0) {
+			book.bottom = order.prev;
+		} else {
+			book.orders[order.next].prev = order.prev;
+		}
+	}
+
 	function insert(bool buying, uint256 _eth, uint256 _tkn, address payable _maker, bytes32 index) private
 	returns (bytes32) {
 		OrderList storage book = buying ? buys : sells;
@@ -107,14 +124,20 @@ contract OrderBook is Stablio {
 		Order storage order = book.orders[orderHash];
 	}
 
-	function fillSell(bytes32 orderHash) private returns (uint256 ethWei, uint256 tokenWei) {
+	function fillSell(bytes32 orderHash) private returns (uint256 burntEth, uint256 mintedToken) {
 		OrderList storage book = sells;
 		Order storage order = book.orders[orderHash];
+		require(order.maker != address(0));
 
-		// balance -= order.eth
+		remove(false, orderHash);
+
+		// Consensus: balance -= order.eth
 		_mint(order.maker, order.tkn);
 
 		return (order.eth, order.tkn);
+	}
+
+	function fillSell(uint256 tokenAmount) private returns (uint256 ethWei, uint256 tokenWei) {
 	}
 
 	event Sell(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
