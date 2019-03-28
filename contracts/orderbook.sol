@@ -130,8 +130,11 @@ contract OrderBook is Stablio {
 
 		remove(bookType, orderHash);
 
-		// Consensus: balance -= order.eth
-		_mint(order.maker, order.tkn);
+		// burn ETH to 0x0
+		address(0).transfer(order.eth);
+		// mint TOKEN from this contract to maker
+		// consensus need to pre-fund this and make sure the contract balance is unchanged after this
+		_transfer(address(this), order.maker, order.tkn);
 
 		emit FillSell(orderHash, order.eth, order.tkn, order.maker);
 	}
