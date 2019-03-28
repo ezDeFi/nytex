@@ -61,6 +61,7 @@ contract OrderBook is Stablio {
 			uint256 a = order.eth.mul(_tkn); // existing order price
 			uint256 b = _eth.mul(order.tkn); // inserting order price
 
+			// For geeks: ((orderType == BuyType) != (a > b)) && a != b
 			if (orderType == SellType) {
 				// stop on the first higher sell order
 				if (a > b) {
