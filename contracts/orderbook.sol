@@ -139,7 +139,7 @@ contract OrderBook is Stablio {
 		emit FillSell(orderHash, order.eth, order.tkn, order.maker);
 	}
 
-	function expand(uint256 tokenAmount) private returns (uint256 filledWei, uint256 filledToken) {
+	function inflate(uint256 tokenAmount) private returns (uint256 filledWei, uint256 filledToken) {
 		require(tokenAmount > 0);
 		bool bookType = SellType;
 		OrderList storage book = books[bookType];
@@ -158,7 +158,47 @@ contract OrderBook is Stablio {
 
 		filledToken = tokenAmount.sub(remainToken);
 
-		emit Expand(filledWei, filledToken);
+		emit Inflate(filledWei, filledToken);
+		return (filledWei, filledToken);
+	}
+
+	function fillBuy(bytes32 orderHash) private {
+		bool bookType = BuyType;
+		OrderList storage book = books[bookType];
+		Order storage order = book.orders[orderHash];
+		require(order.maker != address(0));
+
+		remove(bookType, orderHash);
+
+		// burn TOKEN to 0x0
+		_burn(address(this), order.tkn);
+		// mint ETH from this contract to maker
+		// consensus need to pre-fund this and make sure the contract balance is unchanged after this
+		order.maker.transfer(order.eth);
+
+		emit FillBuy(orderHash, order.eth, order.tkn, order.maker);
+	}
+
+	function deflate(uint256 tokenAmount) private returns (uint256 filledWei, uint256 filledToken) {
+		require(tokenAmount > 0);
+		bool bookType = BuyType;
+		OrderList storage book = books[bookType];
+
+		uint256 remainToken = tokenAmount;
+
+		for (bytes32 index = book.top; index[0] != 0; ) {
+			Order storage order = book.orders[index];
+			if (order.tkn > remainToken) {
+				break;
+			}
+			remainToken = remainToken.sub(order.eth);
+			filledWei = filledWei.add(order.tkn);
+			fillBuy(index);
+		}
+
+		filledToken = tokenAmount.sub(remainToken);
+
+		emit Deflate(filledWei, filledToken);
 		return (filledWei, filledToken);
 	}
 
@@ -166,6 +206,6 @@ contract OrderBook is Stablio {
 	event Buy(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
 	event FillSell(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
 	event FillBuy(bytes32 indexed orderHash, uint256 etherWei, uint256 tokenWei, address indexed maker);
-	event Expand(uint256 ethAmount, uint256 tokenAmount);
-	event Contract(uint256 ethAmount, uint256 tokenAmount);
+	event Inflate(uint256 ethAmount, uint256 tokenAmount);
+	event Deflate(uint256 ethAmount, uint256 tokenAmount);
 }
