@@ -20,8 +20,8 @@ contract OrderBook is Stablio {
 
 	struct OrderList {
 		mapping (bytes32 => Order) orders;
-		bytes32 top;	// the smallest eth/tkn rate 
-		bytes32 bottom;	// the largest eth/tkn rate
+		bytes32 top;	// the highest priority (lowest sell or highest buy)
+		bytes32 bottom;	// the lowest priority (highest sell or lowest buy)
 	}
 
 	bool constant SellType = false;
@@ -58,21 +58,42 @@ contract OrderBook is Stablio {
 		// search down
 		for (; index[0] != 0; index = book.orders[index].next) {
 			Order storage order = book.orders[index];
-			uint256 a = order.eth.mul(_tkn);
-			uint256 b = _eth.mul(order.tkn);
-			if (a > b || (a == b && orderType == BuyType)) {
-				index = order.prev;
-				break;
+			uint256 a = order.eth.mul(_tkn); // existing order price
+			uint256 b = _eth.mul(order.tkn); // inserting order price
+
+			if (orderType == SellType) {
+				// stop on the first higher sell order
+				if (a > b) {
+					index = order.prev;
+					break;
+				}
+			} else {
+				// stop on the first lower buy order
+				if (a < b) {
+					index = order.prev;
+					break;
+				}
 			}
 		}
 
 		// search up
 		for (; index[0] != 0; index = book.orders[index].prev) {
 			Order storage order = book.orders[index];
-			uint256 a = order.eth.mul(_tkn);
-			uint256 b = _eth.mul(order.tkn);
-			if (a < b || (a == b && orderType == SellType)) {
-				break;
+			uint256 a = order.eth.mul(_tkn); // existing order price
+			uint256 b = _eth.mul(order.tkn); // inserting order price
+
+			if (orderType == SellType) {
+				// stop on the first not-lower sell order
+				if (a <= b) {
+					index = order.prev;
+					break;
+				}
+			} else {
+				// stop on the first not-higher buy order
+				if (a >= b) {
+					index = order.prev;
+					break;
+				}
 			}
 		}
 
