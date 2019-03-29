@@ -1,13 +1,14 @@
 {
-    "name": "nytex",
-    "version": "1.0.0",
-    "description": "Nexty Token Exchange",
-    "scripts": {
-      "compile": "truffle compile contracts/orderbook.sol"
-    },
-    "author": "nexty.io",
-    "dependencies": {
-      "openzeppelin-solidity": "^2.1.2"
-    }
+  "name": "nytex",
+  "version": "1.0.0",
+  "description": "Nexty Token Exchange",
+  "scripts": {
+    "compile": "truffle compile contracts/orderbook.sol"
+  },
+  "author": "nexty.io",
+  "dependencies": {
+    "openzeppelin-solidity": "^2.2.0",
+    "truffle": "^5.0.10",
+    "truffle-hdwallet-provider": "^1.0.6"
   }
-  
+}
