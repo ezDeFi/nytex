@@ -1,18 +1,38 @@
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./../interfaces/OrderbookInterface.sol";
+import "openzeppelin-eth/contracts/ownership/Ownable.sol";
 
 interface ContractReceiver {
     function tokenFallback(address _from, uint _value, bytes calldata _data) external;
 }
  
-contract ERC223 is ERC20 {
+/*
+    Ownable ERC223 Token plus ownerMint() for oderbook contract
+*/
 
-    OrderbookInterface internal orderbook;
-    
+contract ERC223 is ERC20, Ownable {
+
     event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
+
+    function opMint(
+        uint256 _amount
+    )
+        public
+        onlyOwner()
+    {
+        _mint(owner(), _amount);
+    }
+
+    function opBurn(
+        uint256 _amount
+    )
+        public
+        onlyOwner()
+    {
+        _burn(owner(), _amount);
+    }
 
     // Function that is called when a user or another contract wants to transfer funds .
     function transfer(address _to, uint _value, bytes memory _data) public

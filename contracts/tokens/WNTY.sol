@@ -1,44 +1,28 @@
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
-import "./BytesType.sol";
+import "./../lib/BytesConvert.sol";
+import "./../interfaces/IOrderbook.sol";
 
 /*
-    . Exchanged with NTY with rate 1 WNTY = 10000 NTY
+    . Exchanged with NTY with rate 1 WNTY = 1 NTY
     . Mint. / burn. able(free) by owner = orderbook contract
 */
 
-contract Constants {
-    uint256 RATE = 10000;
+contract WNTY is ERC223 {
+    using BytesConvert for *;
 
-}
-
-contract WNTY is ERC223, Constants, BytesType {
-
-    modifier onlyOwner() {
-        require(
-            msg.sender == address(orderbook),
-            "only access for owner"
-        );
-        _;
-    }
+    IOrderbook internal orderbook;
 
     constructor (address _orderbook)
         public
     {
-        orderbook = OrderbookInterface(_orderbook);
+        initialize(_orderbook);
+        orderbook = IOrderbook(_orderbook);
         orderbook.wntyRegister();
     }
 
-    function ownerMint(
-        uint256 _amount
-    )
-        public
-        onlyOwner()
-    {
-        _mint(address(orderbook), _amount);
-    }
 
     function buy()
         public
@@ -49,20 +33,25 @@ contract WNTY is ERC223, Constants, BytesType {
     }
 
     // alias = cashout
-    function sell()
+    function sell(uint256 _amount)
         public
         returns(bool)
     {
-        address payable _sender = msg.sender;
-        uint256 _amount = balanceOf(_sender);
-        uint256 _value = _amount * RATE;
+        sellTo(_amount, msg.sender);
+    }
+
+    function sellTo(uint256 _amount, address payable _to)
+        public
+        returns(bool)
+    {
+        address _sender = msg.sender;
         _burn(_sender, _amount);
 
         /************************************************************************/
         /* concensus garantures, this contract always got enough NTY to cashout */
         /************************************************************************/
 
-        _sender.transfer(_value);
+        _to.transfer(_amount);
     }
 
     function buyFor(
@@ -72,21 +61,16 @@ contract WNTY is ERC223, Constants, BytesType {
         payable
         returns(bool)
     {
-        uint256 _value = msg.value;
-        uint256 _amount = _value / RATE;
+        uint256 _amount = msg.value;
         _mint(_to, _amount);
         return true;
     }
 
-    // transfer's callback = sell() in orderbook
-    function placeOrder(
-        uint256 _wntyAmount,
-        uint256 _nusdAmount
-    )
-        public
-        payable
+    function buy(uint _value, bytes memory _data) 
+        public 
+        payable 
     {
-        if (msg.value != 0) buy();
-        transfer(address(orderbook), _wntyAmount, uint256ToBytes(_nusdAmount));
+        buy();
+        transfer(owner(), _value, _data);
     }
 }

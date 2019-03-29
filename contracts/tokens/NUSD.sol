@@ -1,48 +1,24 @@
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
-import "./BytesType.sol";
+import "./../lib/BytesConvert.sol";
+import "./../interfaces/IOrderbook.sol";
 
 /*
-    . Exchanged with NTY with rate 1 WNTY = 10000 NTY
-    . Mint. / burn. able(free) by owner = orderbook contract
+    ...
 */
 
-contract NUSD is ERC223, BytesType {
+contract NUSD is ERC223{
+    using BytesConvert for *;
 
-    modifier onlyOwner() {
-        require(
-            msg.sender == address(orderbook),
-            "only access for owner"
-        );
-        _;
-    }
+    IOrderbook internal orderbook;
 
     constructor (address _orderbook)
         public
     {
-        orderbook = OrderbookInterface(_orderbook);
+        initialize(_orderbook);
+        orderbook = IOrderbook(_orderbook);
         orderbook.nusdRegister();
-    }
-
-    function ownerMint(
-        uint256 _amount
-    )
-        public
-        onlyOwner()
-    {
-        _mint(address(orderbook), _amount);
-    }
-
-    // transfer's callback = buy() in orderbook
-    function placeOrder(
-        uint256 _nusdAmount,
-        uint256 _wntyAmount
-    )
-        public
-        payable
-    {
-        transfer(address(orderbook), _nusdAmount, uint256ToBytes(_wntyAmount));
     }
 }
