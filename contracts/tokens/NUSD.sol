@@ -17,8 +17,8 @@ contract NUSD is ERC223{
     constructor (address _orderbook)
         public
     {
-        initialize(_orderbook);
         orderbook = IOrderbook(_orderbook);
         orderbook.nusdRegister();
+        initialize(address(_orderbook));
     }
 }

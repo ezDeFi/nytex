@@ -14,7 +14,7 @@ contract Install {
     }
 
     function wntyRegister()
-        internal
+        public
     {
         // SellType false
         require(address(token[false]) == address(0), "already set");
@@ -22,7 +22,7 @@ contract Install {
     }
 
     function nusdRegister()
-        internal
+        public
     {
         // BuyType true
         require(address(token[true]) == address(0), "already set");
