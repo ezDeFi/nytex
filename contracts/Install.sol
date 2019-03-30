@@ -3,8 +3,9 @@ pragma solidity ^0.5.2;
 import "./interfaces/IOwnableERC223.sol";
 
 contract Install {
-    IOwnableERC223 internal wnty;
-    IOwnableERC223 internal nusd;
+    mapping(bool => IOwnableERC223) token;
+    // IOwnableERC223 internal wnty;
+    // IOwnableERC223 internal nusd;
 
     constructor ()
         public
@@ -15,14 +16,16 @@ contract Install {
     function wntyRegister()
         internal
     {
-        require(address(wnty) == address(0), "already set");
-        wnty = IOwnableERC223(msg.sender);
+        // SellType false
+        require(address(token[false]) == address(0), "already set");
+        token[false] = IOwnableERC223(msg.sender);
     }
 
     function nusdRegister()
         internal
     {
-        require(address(nusd) == address(0), "already set");
-        nusd = IOwnableERC223(msg.sender);
+        // BuyType true
+        require(address(token[true]) == address(0), "already set");
+        token[true] = IOwnableERC223(msg.sender);
     }
 }
