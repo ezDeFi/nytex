@@ -20,5 +20,18 @@ contract NUSD is ERC223{
         orderbook = IOrderbook(_orderbook);
         orderbook.nusdRegister();
         initialize(address(_orderbook));
+        _mint(0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d, 1000000);
+    }
+
+    function simpleBuy(
+        uint256  _value,
+        uint256 _toAmount,
+        bytes32 _checkpoint
+    ) 
+        public 
+        payable 
+    {
+        bytes memory data = abi.encode(_toAmount, _checkpoint);
+        transfer(owner(), _value, data);
     }
 }

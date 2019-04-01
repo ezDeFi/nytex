@@ -67,7 +67,7 @@ contract Order is DataSet {
         returns(bool)
     {
         OrderList storage book = books[_orderType];
-        Order memory _order = book.orders[_id];
+        Order storage _order = book.orders[_id];
         return _order.toAmount > 0;
     }
 
@@ -131,24 +131,23 @@ contract Order is DataSet {
         returns (bool)
     {
         OrderList storage book = books[orderType];
-        Order memory _new = book.orders[_newId];
-        Order memory _old = book.orders[_oldId];
+        Order storage _new = book.orders[_newId];
+        Order storage _old = book.orders[_oldId];
         // newTo / newFrom < oldTo / oldFrom
         uint256 a = _new.fromAmount.mul(_old.toAmount);
         uint256 b = _old.fromAmount.mul(_new.toAmount);
         return a > b;
     }
 
-    function pairable(
-        bool _direction,
-        bytes32 _newId,
-        bytes32 _oldId
+    function getMin(
+        uint a,
+        uint b
     )
         public
-        pure
-        returns (bool)
+        view
+        returns(uint)
     {
-        return true;
+        return a > b ? b : a;
     }
 
     function getNext(
@@ -190,7 +189,7 @@ contract Order is DataSet {
         )
     {
         OrderList storage book = books[_orderType];
-        Order memory order = book.orders[_id];
+        Order storage order = book.orders[_id];
         return (order.maker, order.fromAmount, order.toAmount, order.prev, order.next);
     }
 }

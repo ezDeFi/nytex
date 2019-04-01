@@ -47,13 +47,51 @@ contract Orderbook is Install, Order {
         uint256 toAmount;
         bytes32 checkpoint;
         (toAmount, checkpoint) = abi.decode(_data, (uint256, bytes32));
-        insert(
+        bytes32 _newId = insert(
             orderType,
             fromAmount,
             toAmount,
             maker,
             checkpoint
         );
+        pairing(orderType, _newId);
+    }
+
+    function pairing(
+        bool _orderType,
+        bytes32 _newId
+    )
+        private
+    {
+        OrderList storage book = books[_orderType];
+        Order storage _newOrder = book.orders[_newId];
+        OrderList storage oppoBook = books[!_orderType];
+        bytes32 _oppoTopId = top(!_orderType);
+        while (_oppoTopId[0] != 0) {
+            Order storage _oppoOrder = oppoBook.orders[_oppoTopId];
+            // if not pairable, return
+            if (_newOrder.fromAmount.mul(_oppoOrder.fromAmount) < _newOrder.toAmount.mul(_oppoOrder.toAmount)) return;
+            // token type = newOrder have
+            uint256 comfirmAmount_new = getMin(_newOrder.fromAmount, _oppoOrder.toAmount);
+            // token type = oppoOrder have
+            uint256 comfirmAmount_oppo = _oppoOrder.fromAmount * comfirmAmount_new / _oppoOrder.toAmount;
+            // comfirm price = _oppoOrder.fromAmount / _oppoOrder.toAmount
+            _newOrder.toAmount = _newOrder.toAmount * (_newOrder.fromAmount - comfirmAmount_new) / _newOrder.fromAmount;
+            _newOrder.fromAmount = _newOrder.fromAmount.sub(comfirmAmount_new);
+
+            _oppoOrder.toAmount = _oppoOrder.toAmount * (_oppoOrder.fromAmount - comfirmAmount_oppo) / _oppoOrder.fromAmount;
+            _oppoOrder.fromAmount = _oppoOrder.fromAmount.sub(comfirmAmount_oppo);
+
+            token[!_orderType].transfer(_newOrder.maker, comfirmAmount_oppo);
+            token[_orderType].transfer(_oppoOrder.maker, comfirmAmount_new);
+            if (_oppoOrder.fromAmount == 0) remove(!_orderType, _oppoTopId);
+            _oppoTopId = top(!_orderType);
+            if (_newOrder.fromAmount == 0) {
+                remove(_orderType, _newId);
+                return;
+            }
+        }
+        return;
     }
 
 }
