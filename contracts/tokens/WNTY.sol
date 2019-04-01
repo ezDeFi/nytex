@@ -3,6 +3,7 @@ pragma solidity ^0.5.2;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
 import "./../lib/BytesConvert.sol";
+import "./../lib/ABI.sol";
 import "./../interfaces/IOrderbook.sol";
 
 /*
@@ -12,6 +13,7 @@ import "./../interfaces/IOrderbook.sol";
 
 contract WNTY is ERC223 {
     using BytesConvert for *;
+    using ABI for *;
 
     IOrderbook internal orderbook;
 
@@ -72,5 +74,18 @@ contract WNTY is ERC223 {
     {
         buy();
         transfer(owner(), _value, _data);
+    }
+
+    // TESTING
+    function simpleBuy(
+        uint256  _value,
+        uint256 _toAmount,
+        bytes32 _checkpoint
+    ) 
+        public 
+        payable 
+    {
+        bytes memory data = abi.encode(_toAmount, _checkpoint);
+        buy(_value, data);
     }
 }

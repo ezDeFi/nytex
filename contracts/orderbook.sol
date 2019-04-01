@@ -4,12 +4,22 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./Install.sol";
 import "./Order.sol";
 import "./lib/BytesConvert.sol";
+import "./lib/ABI.sol";
 
 contract Orderbook is Install, Order {
     using BytesConvert for *;
+    using ABI for *;
+    // uint256 constant MAX = 2**127;
+
     constructor () 
         public
     {
+        Order memory order;
+        order.toAmount = 1;
+        OrderList storage book = books[false];
+        book.orders[bytes32(0)] = order;  
+        book = books[true]; 
+        book.orders[bytes32(0)] = order;       
     }
 
     function getOrderType() 
@@ -22,21 +32,9 @@ contract Orderbook is Install, Order {
         return _sender == address(token[true]);
     }
 
-    function getData(
-        uint256 _toAmount,
-        bytes32 _checkpoint)
-        public
-        view
-        returns (bytes memory)
-    {
-        return msg.data;
-    }
-
-    
-
-
     // Token transfer's fallback
     // bytes _data = uint256[2] = (toAmount, checkpoint)
+    // RULE : delegateCall never used
     function tokenFallback(
         address _from,
         uint _value,
@@ -48,28 +46,14 @@ contract Orderbook is Install, Order {
         uint256 fromAmount = _value;
         uint256 toAmount;
         bytes32 checkpoint;
-        (toAmount, checkpoint) = decode(_data);
+        (toAmount, checkpoint) = abi.decode(_data, (uint256, bytes32));
+        insert(
+            orderType,
+            fromAmount,
+            toAmount,
+            maker,
+            checkpoint
+        );
     }
 
-    function decode(
-        bytes memory _data
-    )
-        public
-        pure
-        returns(uint256, bytes32)
-    {
-        require(_data.length == 64, "invalid data");
-        return abi.decode(_data, (uint256, bytes32));
-    }
-
-    function encode(
-        uint256 toAmount,
-        bytes32 checkpoint
-    )
-        public
-        pure
-        returns(bytes memory)
-    {
-        return abi.encode(toAmount, checkpoint);
-    }
 }

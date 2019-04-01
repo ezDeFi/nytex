@@ -13,12 +13,12 @@ contract DataSet {
 
     struct OrderList {
         mapping (bytes32 => Order) orders;
-        // bytes32 top;	// the highest priority (lowest sell or highest buy)
-        // bytes32 bottom;	// the lowest priority (highest sell or lowest buy)
+        bytes32 top;	// the highest priority (lowest sell or highest buy)
+        bytes32 bottom;	// the lowest priority (highest sell or lowest buy)
     }
 
     bool constant internal SellType = false;
-    bool constant BuyType = true;
+    bool constant internal BuyType = true;
 
     mapping(bool => OrderList) internal books;
 }
