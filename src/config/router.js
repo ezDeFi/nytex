@@ -40,7 +40,7 @@ import NotFound from '@/module/page/error/NotFound'
 export default [
     {
         path: '/',
-        page: HomePage
+        page: DappOrderbookPage
     },
     {
         path: '/leaderboard',
