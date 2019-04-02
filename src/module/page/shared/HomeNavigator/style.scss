@@ -1,0 +1,46 @@
+@import "../../../../style/variable";
+@import "../../../../style/color";
+
+.navigator {
+  @media only screen and (max-width: $mobile-width) {
+    margin-bottom: $gap_1;
+    .ant-menu {
+      display: flex;
+      overflow-x: auto;
+    }
+  }
+
+  .no-padding-items {
+    background: transparent;
+  }
+  .ant-menu-item-selected {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  .ant-menu-item {
+    color: #fff;
+  }
+  .ant-menu-horizontal {
+    background: transparent !important;
+  }
+
+  .menu-mobile {
+    overflow-y: hidden;
+  }
+
+  .user {
+    margin-top: 20px;
+
+    text-align: center;
+    .avatar {
+      img {
+        width: 100px;
+      }
+    }
+    .username {
+      font-size: 26px;
+      color: #D32373;
+    }
+  }
+}

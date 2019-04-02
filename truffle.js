@@ -14,7 +14,7 @@ module.exports = {
     networks: {
         localhost: {
             provider: () => new HDWalletProvider(localPKey, localEndPoint),
-            network_id: 5777
+            network_id: 111111
         },
         development: {
             provider: () => new HDWalletProvider(devPKey, devEndPoint),

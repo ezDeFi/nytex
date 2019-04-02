@@ -1,12 +1,11 @@
 pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./Install.sol";
 import "./Order.sol";
 import "./lib/BytesConvert.sol";
 import "./lib/ABI.sol";
 
-contract Orderbook is Install, Order {
+contract Orderbook is Order {
     using BytesConvert for *;
     using ABI for *;
     // uint256 constant MAX = 2**127;
@@ -84,10 +83,10 @@ contract Orderbook is Install, Order {
 
             token[!_orderType].transfer(_newOrder.maker, comfirmAmount_oppo);
             token[_orderType].transfer(_oppoOrder.maker, comfirmAmount_new);
-            if (_oppoOrder.fromAmount == 0) remove(!_orderType, _oppoTopId);
+            if (_oppoOrder.fromAmount == 0 || _oppoOrder.toAmount == 0) _remove(!_orderType, _oppoTopId);
             _oppoTopId = top(!_orderType);
-            if (_newOrder.fromAmount == 0) {
-                remove(_orderType, _newId);
+            if (_newOrder.fromAmount == 0 || _newOrder.toAmount == 0) {
+                _remove(_orderType, _newId);
                 return;
             }
         }

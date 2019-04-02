@@ -2,8 +2,9 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./DataSet.sol";
+import "./Install.sol";
 
-contract Order is DataSet {
+contract Order is Install, DataSet {
     using SafeMath for uint256;
     bytes32 public debug ;
     function insert(
@@ -81,20 +82,34 @@ contract Order is DataSet {
         returns (bytes32)
     {
         require(_fromAmount > 0 && _toAmount > 0, "save your time");
+        pNonce[_maker]++;
         OrderList storage book = books[_orderType];
-        bytes32 id = sha256(abi.encodePacked(_maker, _fromAmount, _toAmount));
+        bytes32 id = sha256(abi.encodePacked(_maker, pNonce[_maker], _fromAmount, _toAmount));
         book.orders[id] = Order(_maker, _fromAmount, _toAmount, 0, 0);
         debug = id;
         return id;
     }
 
-    function remove(bool _orderType, bytes32 _id) public {
+    function _remove(bool _orderType, bytes32 _id) internal {
         OrderList storage book = books[_orderType];
         Order storage order = book.orders[_id];
         // before: prev => order =>next
         // after: prev => next
         book.orders[order.prev].next = order.next;
         book.orders[order.next].prev = order.prev;
+        token[_orderType].transfer(order.maker, order.fromAmount);
+        delete book.orders[_id];
+    }
+
+    function remove(bool _orderType, bytes32 _id) public {
+        OrderList storage book = books[_orderType];
+        Order storage order = book.orders[_id];
+        require(msg.sender == order.maker, "only order owner");
+        // before: prev => order =>next
+        // after: prev => next
+        book.orders[order.prev].next = order.next;
+        book.orders[order.next].prev = order.prev;
+        token[_orderType].transfer(order.maker, order.fromAmount);
         delete book.orders[_id];
     }
 

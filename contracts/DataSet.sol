@@ -21,4 +21,6 @@ contract DataSet {
     bool constant internal BuyType = true;
 
     mapping(bool => OrderList) internal books;
+    // contract private nonce ot generate unique ids
+    mapping(address => uint256) internal pNonce;
 }
