@@ -1,9 +1,9 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
-import "./../lib/BytesConvert.sol";
-import "./../interfaces/IOrderbook.sol";
+import "../lib/BytesConvert.sol";
+import "../interfaces/IOrderbook.sol";
 
 /*
     ...
