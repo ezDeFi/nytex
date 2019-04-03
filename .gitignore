@@ -2,6 +2,5 @@ node_modules/
 .idea/
 coverage/
 
-# disable dist due to the aws server performance is too low to build dist.
-
 dev_dist/
+dist/
