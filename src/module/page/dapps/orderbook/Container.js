@@ -7,8 +7,8 @@ import _ from 'lodash'
 
 import {TASK_CATEGORY, TASK_TYPE} from '@/constant'
 import UserService from '@/service/UserService';
-import WntyService from '@/service/contracts/WntyService';
-import NusdService from '@/service/contracts/NusdService';
+import WntyService from '@/service/contracts/wntyService';
+import NusdService from '@/service/contracts/nusdService';
 import BookService from '@/service/contracts/BookService';
 
 var curWallet
