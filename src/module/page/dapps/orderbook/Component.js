@@ -96,11 +96,11 @@ export default class extends StandardPage {
                 idWnty: falseOrder.id,
                 addressWnty: cutString(falseOrder.maker),
                 amountWnty: falseOrder.fromAmount,
-                priceWnty: falseOrder.toAmount ? falseOrder.toAmount / falseOrder.fromAmount : '',
+                priceWnty: falseOrder.fromAmount ? falseOrder.toAmount / falseOrder.fromAmount : '',
                 idNusd: trueOrder.id,
                 addressNusd: cutString(trueOrder.maker),
-                amountNusd: trueOrder.fromAmount,
-                priceNusd: trueOrder.toAmount ? trueOrder.fromAmount / trueOrder.toAmount : ''
+                amountNusd: trueOrder.toAmount,
+                priceNusd: trueOrder.fromAmount ? trueOrder.fromAmount / trueOrder.toAmount : ''
             })
         }
         this.setState({data: data})
@@ -198,14 +198,14 @@ export default class extends StandardPage {
 
     sellWNTY() {
         let fromAmount = this.state.amount
-        let toAmount = fromAmount * this.state.price
-        this.props.sellWNTY(fromAmount, Math.floor(toAmount))
+        let toAmount = Math.floor(fromAmount * this.state.price)
+        this.props.sellWNTY(fromAmount, toAmount)
     }
 
     buyWNTY() {
-        let fromAmount = this.state.amount
-        let toAmount = fromAmount / this.state.price
-        this.props.sellNUSD(fromAmount, Math.floor(toAmount))
+        let toAmount = this.state.amount
+        let fromAmount = Math.floor(toAmount * this.state.price)
+        this.props.sellNUSD(fromAmount, toAmount)
     }
 
     idChange(e) {
