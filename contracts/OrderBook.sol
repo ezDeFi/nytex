@@ -12,21 +12,21 @@ contract OrderBook is Initializer, DataSet {
         uint256 _haveAmount,
         uint256 _wantAmount,
         address _maker,
-        bytes32 _checkpoint
+        bytes32 _assistingID
         ) 
         public
  	    returns (bytes32) 
     {
-        require(validOrder(_orderType, _checkpoint), "save your gas");
+        require(validOrder(_orderType, _assistingID), "save your gas");
         OrderList storage book = books[_orderType];
         bytes32 id = initOrder(_maker, _orderType, _haveAmount, _wantAmount);
 
         // direction to bottom, search first order, that new order better than
-        bytes32 cursor = _checkpoint;
-        if (!betterBid(_orderType, id, cursor)) {
+        bytes32 cursor = _assistingID;
+        if (!betterOrder(_orderType, id, cursor)) {
             // order[id] always better than oder[0] with price = 0
             // if price of order[id] = 0 => throw cause infinite loop
-            while (!betterBid(_orderType, id, cursor)) {
+            while (!betterOrder(_orderType, id, cursor)) {
                 cursor = book.orders[cursor].next;
             }
             prevInsert(_orderType, id, cursor);
@@ -34,8 +34,8 @@ contract OrderBook is Initializer, DataSet {
         }
         cursor = book.orders[cursor].prev;
         // direction to top, search first order that new order not better than
-        // this part triggered only if new order not better than checkpoint order
-        while (cursor[0] != 0 && betterBid(_orderType, id, cursor)) {
+        // this part triggered only if new order not better than assistingID order
+        while (cursor[0] != 0 && betterOrder(_orderType, id, cursor)) {
             cursor = book.orders[cursor].prev;
         }
         prevInsert(_orderType, id, book.orders[cursor].next);
@@ -136,7 +136,7 @@ contract OrderBook is Initializer, DataSet {
         return book.orders[bytes32(0)].prev;
     }
 
-    function betterBid(
+    function betterOrder(
         bool orderType,
         bytes32 _newId,
         bytes32 _oldId

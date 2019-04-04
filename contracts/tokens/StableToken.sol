@@ -26,12 +26,12 @@ contract StableToken is ERC223{
     function simpleBuy(
         uint256  _value,
         uint256 _wantAmount,
-        bytes32 _checkpoint
+        bytes32 _assistingID
     ) 
         public 
         payable 
     {
-        bytes memory data = abi.encode(_wantAmount, _checkpoint);
+        bytes memory data = abi.encode(_wantAmount, _assistingID);
         transfer(owner(), _value, data);
     }
 }

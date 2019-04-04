@@ -30,7 +30,7 @@ contract PairEx is OrderBook {
     }
 
     // Token transfer's fallback
-    // bytes _data = uint256[2] = (wantAmount, checkpoint)
+    // bytes _data = uint256[2] = (wantAmount, assistingID)
     // RULE : delegateCall never used
     function tokenFallback(
         address _from,
@@ -42,14 +42,14 @@ contract PairEx is OrderBook {
         bool orderType = getOrderType();
         uint256 haveAmount = _value;
         uint256 wantAmount;
-        bytes32 checkpoint;
-        (wantAmount, checkpoint) = abi.decode(_data, (uint256, bytes32));
+        bytes32 assistingID;
+        (wantAmount, assistingID) = abi.decode(_data, (uint256, bytes32));
         bytes32 _orderID = insert(
             orderType,
             haveAmount,
             wantAmount,
             maker,
-            checkpoint
+            assistingID
         );
         pairing(orderType, _orderID);
     }
