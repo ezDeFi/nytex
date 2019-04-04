@@ -2,12 +2,12 @@ import BaseRedux from '@/model/BaseRedux';
 
 class NusdRedux extends BaseRedux {
     defineTypes() {
-        return ['nusd'];
+        return ['stableToken'];
     }
 
     defineDefaultState() {
         return {
-            nusdBalance: 0
+            stableTokenBalance: 0
         };
     }
 }

@@ -2,12 +2,12 @@ import BaseRedux from '@/model/BaseRedux';
 
 class WntyRedux extends BaseRedux {
     defineTypes() {
-        return ['wnty'];
+        return ['volatileToken'];
     }
 
     defineDefaultState() {
         return {
-            wntyBalance: 0,
+            volatileTokenBalance: 0,
             address: 0x0,
         };
     }

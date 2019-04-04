@@ -16,7 +16,7 @@ export default class extends BaseService {
             'toAmount': res[2],
             'prev': res[3],
             'next': res[4]}
-        //await this.dispatch(userRedux.actions.nusdBalance_update(_nusdBalance))
+        //await this.dispatch(userRedux.actions.stableTokenBalance_update(_stableTokenBalance))
         return await order
     }
 

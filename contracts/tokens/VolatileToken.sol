@@ -21,7 +21,7 @@ contract VolatileToken is ERC223 {
         public
     {
         orderbook = IPairEx(_orderbook);
-        orderbook.wntyRegister();
+        orderbook.volatileTokenRegister();
         initialize(address(_orderbook));
         _mint(msg.sender, 1000000);
     }

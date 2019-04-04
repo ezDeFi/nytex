@@ -4,8 +4,8 @@ import "./interfaces/IOwnableERC223.sol";
 
 contract Install {
     mapping(bool => IOwnableERC223) token;
-    // IOwnableERC223 internal wnty;
-    // IOwnableERC223 internal nusd;
+    // IOwnableERC223 internal volatileToken;
+    // IOwnableERC223 internal stableToken;
 
     constructor ()
         public
@@ -13,7 +13,7 @@ contract Install {
 
     }
 
-    function wntyRegister()
+    function volatileTokenRegister()
         public
     {
         // SellType false
@@ -21,7 +21,7 @@ contract Install {
         token[false] = IOwnableERC223(msg.sender);
     }
 
-    function nusdRegister()
+    function stableTokenRegister()
         public
     {
         // BuyType true
