@@ -15,10 +15,8 @@ contract PairEx is OrderBook {
     {
         Order memory order;
         order.wantAmount = 1;
-        OrderList storage orderBook = books[false];
-        orderBook.orders[bytes32(0)] = order;  
-        orderBook = books[true]; 
-        orderBook.orders[bytes32(0)] = order;       
+        books[false].orders[bytes32(0)] = order;  
+        books[true].orders[bytes32(0)] = order;       
     }
 
     function getOrderType() 
