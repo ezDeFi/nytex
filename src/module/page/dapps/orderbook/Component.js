@@ -32,7 +32,7 @@ export default class extends StandardPage {
                 <MediaQuery minWidth={MIN_WIDTH_PC}>
                     <div className="game-container white-text">
                         <p>Wallet = {this.props.wallet}</p>
-                        WNTY Balances : {this.props.wntyBalance} WNTY {this.props.nusdBalance} NUSD
+                        VolatileToken Balances : {this.props.wntyBalance} VolatileToken {this.props.nusdBalance} StableToken
                         <p>TRANSFER</p>
                         <Input size="medium"
                             onChange={this.toWalletChange.bind(this)}
@@ -44,7 +44,7 @@ export default class extends StandardPage {
                             value={this.state.transferAmount}
                             defaultValue={0}
                         />
-                            <Button size="large" onClick={() => this.transferWNTY()} className="item">transfer WNTY</Button>
+                            <Button size="large" onClick={() => this.transferWNTY()} className="item">transfer VolatileToken</Button>
                             <Button size="large" onClick={() => this.transferNUSD()} className="item">transfer</Button>
                         <p></p>
                         amount
@@ -60,8 +60,8 @@ export default class extends StandardPage {
                             defaultValue={0}
                         />
                         <p></p>
-                        <Button size="large" onClick={() => this.sellWNTY()} className="item">Sell WNTY</Button>
-                        <Button size="large" onClick={() => this.buyWNTY()} className="item">Buy WNTY</Button>
+                        <Button size="large" onClick={() => this.sellWNTY()} className="item">Sell VolatileToken</Button>
+                        <Button size="large" onClick={() => this.buyWNTY()} className="item">Buy VolatileToken</Button>
                         <Input size="large"
                             onChange={this.idChange.bind(this)}
                             value={this.state.id}
@@ -115,7 +115,7 @@ export default class extends StandardPage {
         //const data = [{'fromAmountWnty' : 0, 'toAmountWnty' : 1, 'fromAmountNusd' : 2, 'toAmountNusd' : 3}];
         const columns = [
             {
-                title: 'WNTY => NUSD',
+                title: 'VolatileToken => StableToken',
                 children: [
                     {
                         title: 'id',
@@ -149,7 +149,7 @@ export default class extends StandardPage {
                 ]
             },
             {
-                title: 'NUSD => WNTY',
+                title: 'StableToken => VolatileToken',
                 children: [
                     {
                         title: 'id',

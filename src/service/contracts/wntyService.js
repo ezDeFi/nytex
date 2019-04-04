@@ -9,7 +9,7 @@ export default class extends BaseService {
         console.log('methods', methods)
         let wallet = store.user.walletAddress
         let _wntyBalance = await methods.balanceOf(wallet).call()
-        console.log('WNTY', await _wntyBalance)
+        console.log('VolatileToken', await _wntyBalance)
         await this.dispatch(userRedux.actions.wntyBalance_update(_wntyBalance))
         return await _wntyBalance
     }

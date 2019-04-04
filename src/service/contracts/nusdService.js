@@ -8,7 +8,7 @@ export default class extends BaseService {
         let methods = store.contract.nusd.methods
         let wallet = store.user.walletAddress
         let _nusdBalance = await methods.balanceOf(wallet).call()
-        await console.log('NUSD balance', await _nusdBalance)
+        await console.log('StableToken balance', await _nusdBalance)
         await this.dispatch(userRedux.actions.nusdBalance_update(_nusdBalance))
         return await _nusdBalance
     }

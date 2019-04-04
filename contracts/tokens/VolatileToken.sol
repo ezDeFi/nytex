@@ -7,11 +7,11 @@ import "../lib/ABI.sol";
 import "../interfaces/IOrderbook.sol";
 
 /*
-    . Exchanged with NTY with rate 1 WNTY = 1 NTY
+    . Exchanged with NTY with rate 1 VolatileToken = 1 NTY
     . Mint. / burn. able(free) by owner = orderbook contract
 */
 
-contract WNTY is ERC223 {
+contract VolatileToken is ERC223 {
     using BytesConvert for *;
     using ABI for *;
 

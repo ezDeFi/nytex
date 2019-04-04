@@ -10,8 +10,8 @@ import {WEB3, TOKEN_ADDRESS, ABI_TOKEN_ERC20, WS_PROVIDER, HTTP_PROVIDER, ETHERS
 import { Notification, Message } from 'antd'
 import {isMobile} from "../util"
 
-import wntyContractData from '../../build/contracts/WNTY.json'
-import nusdContractData from '../../build/contracts/NUSD.json';
+import wntyContractData from '../../build/contracts/VolatileToken.json'
+import nusdContractData from '../../build/contracts/StableToken.json';
 import bookContractData from '../../build/contracts/Orderbook.json';
 
 Notification.config({

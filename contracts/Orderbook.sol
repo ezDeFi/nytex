@@ -27,7 +27,7 @@ contract Orderbook is Order {
         returns(bool)
     {
         address _sender = msg.sender;
-        require(_sender == address(token[true]) || _sender == address(token[false]), "only WNTY and NUSD accepted");
+        require(_sender == address(token[true]) || _sender == address(token[false]), "only VolatileToken and StableToken accepted");
         return _sender == address(token[true]);
     }
 

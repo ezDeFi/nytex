@@ -9,7 +9,7 @@ import "../interfaces/IOrderbook.sol";
     ...
 */
 
-contract NUSD is ERC223{
+contract StableToken is ERC223{
     using BytesConvert for *;
 
     IOrderbook internal orderbook;
