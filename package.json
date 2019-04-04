@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "gtm-frontend",
   "scripts": {
+    "compile": "rimraf build && truffle build",
+    "migrate": "truffle migrate --network=development",
     "start": "rimraf dev_dist && webpack-dev-server --mode development --config ./webpack/webpack.dev.js",
     "starts": "rimraf dev_dist && GOOGLE_MAPS_API_KEY=abc webpack-dev-server --mode development --config ./webpack/webpack.dev.js",
     "build:production": "rimraf dist && ROOM_ID=5c6a6c356aa04c73e8de7e8a NODE_ENV=production webpack --mode production --config ./webpack/webpack.prod.js --colors --progress",
