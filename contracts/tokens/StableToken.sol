@@ -3,7 +3,7 @@ pragma solidity ^0.5.2;
 import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
 import "../lib/BytesConvert.sol";
-import "../interfaces/IOrderbook.sol";
+import "../interfaces/IPairEx.sol";
 
 /*
     ...
@@ -12,12 +12,12 @@ import "../interfaces/IOrderbook.sol";
 contract StableToken is ERC223{
     using BytesConvert for *;
 
-    IOrderbook internal orderbook;
+    IPairEx internal orderbook;
 
     constructor (address _orderbook)
         public
     {
-        orderbook = IOrderbook(_orderbook);
+        orderbook = IPairEx(_orderbook);
         orderbook.nusdRegister();
         initialize(address(_orderbook));
         _mint(msg.sender, 1000000);

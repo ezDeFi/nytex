@@ -4,7 +4,7 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./DataSet.sol";
 import "./Install.sol";
 
-contract Order is Install, DataSet {
+contract OrderBook is Install, DataSet {
     using SafeMath for uint256;
     bytes32 public debug ;
     function insert(

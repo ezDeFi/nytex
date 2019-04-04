@@ -4,7 +4,7 @@ import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
 import "../lib/BytesConvert.sol";
 import "../lib/ABI.sol";
-import "../interfaces/IOrderbook.sol";
+import "../interfaces/IPairEx.sol";
 
 /*
     . Exchanged with NTY with rate 1 VolatileToken = 1 NTY
@@ -15,12 +15,12 @@ contract VolatileToken is ERC223 {
     using BytesConvert for *;
     using ABI for *;
 
-    IOrderbook internal orderbook;
+    IPairEx internal orderbook;
 
     constructor (address _orderbook)
         public
     {
-        orderbook = IOrderbook(_orderbook);
+        orderbook = IPairEx(_orderbook);
         orderbook.wntyRegister();
         initialize(address(_orderbook));
         _mint(msg.sender, 1000000);

@@ -12,7 +12,7 @@ import {isMobile} from "../util"
 
 import wntyContractData from '../../build/contracts/VolatileToken.json'
 import nusdContractData from '../../build/contracts/StableToken.json';
-import bookContractData from '../../build/contracts/Orderbook.json';
+import bookContractData from '../../build/contracts/PairEx.json';
 
 Notification.config({
     placement: 'bottomRight',

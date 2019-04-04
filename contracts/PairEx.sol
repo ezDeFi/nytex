@@ -1,11 +1,11 @@
 pragma solidity ^0.5.2;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./Order.sol";
+import "./OrderBook.sol";
 import "./lib/BytesConvert.sol";
 import "./lib/ABI.sol";
 
-contract Orderbook is Order {
+contract PairEx is OrderBook {
     using BytesConvert for *;
     using ABI for *;
     // uint256 constant MAX = 2**127;
