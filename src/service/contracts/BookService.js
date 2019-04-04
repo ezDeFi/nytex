@@ -12,8 +12,8 @@ export default class extends BaseService {
         let order = {
             'id': _id,
             'maker': res[0],
-            'fromAmount': res[1],
-            'toAmount': res[2],
+            'haveAmount': res[1],
+            'wantAmount': res[2],
             'prev': res[3],
             'next': res[4]}
         //await this.dispatch(userRedux.actions.stableTokenBalance_update(_stableTokenBalance))

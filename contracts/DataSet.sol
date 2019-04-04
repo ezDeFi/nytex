@@ -3,8 +3,8 @@ pragma solidity ^0.5.2;
 contract DataSet {
     struct Order {
         address maker;
-        uint256 fromAmount;
-        uint256 toAmount;
+        uint256 haveAmount;
+        uint256 wantAmount;
 
         // linked list
         bytes32 prev;

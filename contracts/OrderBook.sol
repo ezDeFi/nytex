@@ -9,8 +9,8 @@ contract OrderBook is Initializer, DataSet {
     bytes32 public debug ;
     function insert(
         bool _orderType,
-        uint256 _fromAmount,
-        uint256 _toAmount,
+        uint256 _haveAmount,
+        uint256 _wantAmount,
         address _maker,
         bytes32 _checkpoint
         ) 
@@ -19,7 +19,7 @@ contract OrderBook is Initializer, DataSet {
     {
         require(validOrder(_orderType, _checkpoint), "save your gas");
         OrderList storage book = books[_orderType];
-        bytes32 id = initOrder(_maker, _orderType, _fromAmount, _toAmount);
+        bytes32 id = initOrder(_maker, _orderType, _haveAmount, _wantAmount);
 
         // direction to bottom, search first order, that new order better than
         bytes32 cursor = _checkpoint;
@@ -69,23 +69,23 @@ contract OrderBook is Initializer, DataSet {
     {
         OrderList storage book = books[_orderType];
         Order storage _order = book.orders[_id];
-        return _order.toAmount > 0;
+        return _order.wantAmount > 0;
     }
 
     function initOrder(
         address _maker,
         bool _orderType,
-        uint256 _fromAmount,
-        uint256 _toAmount
+        uint256 _haveAmount,
+        uint256 _wantAmount
     )
         public
         returns (bytes32)
     {
-        require(_fromAmount > 0 && _toAmount > 0, "save your time");
+        require(_haveAmount > 0 && _wantAmount > 0, "save your time");
         pNonce[_maker]++;
         OrderList storage book = books[_orderType];
-        bytes32 id = sha256(abi.encodePacked(_maker, pNonce[_maker], _fromAmount, _toAmount));
-        book.orders[id] = Order(_maker, _fromAmount, _toAmount, 0, 0);
+        bytes32 id = sha256(abi.encodePacked(_maker, pNonce[_maker], _haveAmount, _wantAmount));
+        book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
         debug = id;
         return id;
     }
@@ -97,7 +97,7 @@ contract OrderBook is Initializer, DataSet {
         // after: prev => next
         book.orders[order.prev].next = order.next;
         book.orders[order.next].prev = order.prev;
-        token[_orderType].transfer(order.maker, order.fromAmount);
+        token[_orderType].transfer(order.maker, order.haveAmount);
         delete book.orders[_id];
     }
 
@@ -109,7 +109,7 @@ contract OrderBook is Initializer, DataSet {
         // after: prev => next
         book.orders[order.prev].next = order.next;
         book.orders[order.next].prev = order.prev;
-        token[_orderType].transfer(order.maker, order.fromAmount);
+        token[_orderType].transfer(order.maker, order.haveAmount);
         delete book.orders[_id];
     }
 
@@ -148,9 +148,9 @@ contract OrderBook is Initializer, DataSet {
         OrderList storage book = books[orderType];
         Order storage _new = book.orders[_newId];
         Order storage _old = book.orders[_oldId];
-        // newTo / newFrom < oldTo / oldFrom
-        uint256 a = _new.fromAmount.mul(_old.toAmount);
-        uint256 b = _old.fromAmount.mul(_new.toAmount);
+        // newWant / newHave < oldWant / oldHave
+        uint256 a = _new.haveAmount.mul(_old.wantAmount);
+        uint256 b = _old.haveAmount.mul(_new.wantAmount);
         return a > b;
     }
 
@@ -205,6 +205,6 @@ contract OrderBook is Initializer, DataSet {
     {
         OrderList storage book = books[_orderType];
         Order storage order = book.orders[_id];
-        return (order.maker, order.fromAmount, order.toAmount, order.prev, order.next);
+        return (order.maker, order.haveAmount, order.wantAmount, order.prev, order.next);
     }
 }

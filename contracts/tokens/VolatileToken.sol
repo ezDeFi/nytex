@@ -80,13 +80,13 @@ contract VolatileToken is ERC223 {
     // TESTING
     function simpleBuy(
         uint256  _value,
-        uint256 _toAmount,
+        uint256 _wantAmount,
         bytes32 _checkpoint
     ) 
         public 
         payable 
     {
-        bytes memory data = abi.encode(_toAmount, _checkpoint);
+        bytes memory data = abi.encode(_wantAmount, _checkpoint);
         buy(_value, data);
     }
 }

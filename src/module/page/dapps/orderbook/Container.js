@@ -58,11 +58,11 @@ export default createContainer(Component, (state, ownProps) => {
     const stableTokenService = new NusdService()
     const bookService = new BookService()
     return {
-        async sellVolatileToken(_fromAmount, _toAmount) {
-            return volatileTokenService.simpleBuy(_fromAmount, _toAmount)
+        async sellVolatileToken(_haveAmount, _wantAmount) {
+            return volatileTokenService.simpleBuy(_haveAmount, _wantAmount)
         },
-        async sellStableToken(_fromAmount, _toAmount) {
-            return stableTokenService.simpleBuy(_fromAmount, _toAmount)
+        async sellStableToken(_haveAmount, _wantAmount) {
+            return stableTokenService.simpleBuy(_haveAmount, _wantAmount)
         },
         async reload() {
             await bookService.reload()

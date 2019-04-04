@@ -95,12 +95,12 @@ export default class extends StandardPage {
             data.push({
                 idWnty: falseOrder.id,
                 addressWnty: cutString(falseOrder.maker),
-                amountWnty: falseOrder.fromAmount,
-                priceWnty: falseOrder.fromAmount ? falseOrder.toAmount / falseOrder.fromAmount : '',
+                amountWnty: falseOrder.haveAmount,
+                priceWnty: falseOrder.haveAmount ? falseOrder.wantAmount / falseOrder.haveAmount : '',
                 idNusd: trueOrder.id,
                 addressNusd: cutString(trueOrder.maker),
-                amountNusd: trueOrder.toAmount,
-                priceNusd: trueOrder.fromAmount ? trueOrder.fromAmount / trueOrder.toAmount : ''
+                amountNusd: trueOrder.wantAmount,
+                priceNusd: trueOrder.haveAmount ? trueOrder.haveAmount / trueOrder.wantAmount : ''
             })
         }
         this.setState({data: data})
@@ -197,15 +197,15 @@ export default class extends StandardPage {
     }
 
     sellVolatileToken() {
-        let fromAmount = this.state.amount
-        let toAmount = Math.floor(fromAmount * this.state.price)
-        this.props.sellVolatileToken(fromAmount, toAmount)
+        let haveAmount = this.state.amount
+        let wantAmount = Math.floor(haveAmount * this.state.price)
+        this.props.sellVolatileToken(haveAmount, wantAmount)
     }
 
     buyVolatileToken() {
-        let toAmount = this.state.amount
-        let fromAmount = Math.floor(toAmount * this.state.price)
-        this.props.sellStableToken(fromAmount, toAmount)
+        let wantAmount = this.state.amount
+        let haveAmount = Math.floor(wantAmount * this.state.price)
+        this.props.sellStableToken(haveAmount, wantAmount)
     }
 
     idChange(e) {

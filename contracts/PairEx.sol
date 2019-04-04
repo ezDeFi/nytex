@@ -14,7 +14,7 @@ contract PairEx is OrderBook {
         public
     {
         Order memory order;
-        order.toAmount = 1;
+        order.wantAmount = 1;
         OrderList storage book = books[false];
         book.orders[bytes32(0)] = order;  
         book = books[true]; 
@@ -32,7 +32,7 @@ contract PairEx is OrderBook {
     }
 
     // Token transfer's fallback
-    // bytes _data = uint256[2] = (toAmount, checkpoint)
+    // bytes _data = uint256[2] = (wantAmount, checkpoint)
     // RULE : delegateCall never used
     function tokenFallback(
         address _from,
@@ -42,14 +42,14 @@ contract PairEx is OrderBook {
     {
         address maker = _from;
         bool orderType = getOrderType();
-        uint256 fromAmount = _value;
-        uint256 toAmount;
+        uint256 haveAmount = _value;
+        uint256 wantAmount;
         bytes32 checkpoint;
-        (toAmount, checkpoint) = abi.decode(_data, (uint256, bytes32));
+        (wantAmount, checkpoint) = abi.decode(_data, (uint256, bytes32));
         bytes32 _newId = insert(
             orderType,
-            fromAmount,
-            toAmount,
+            haveAmount,
+            wantAmount,
             maker,
             checkpoint
         );
@@ -69,23 +69,23 @@ contract PairEx is OrderBook {
         while (_oppoTopId[0] != 0) {
             Order storage _oppoOrder = oppoBook.orders[_oppoTopId];
             // if not pairable, return
-            if (_newOrder.fromAmount.mul(_oppoOrder.fromAmount) < _newOrder.toAmount.mul(_oppoOrder.toAmount)) return;
+            if (_newOrder.haveAmount.mul(_oppoOrder.haveAmount) < _newOrder.wantAmount.mul(_oppoOrder.wantAmount)) return;
             // token type = newOrder have
-            uint256 comfirmAmount_new = getMin(_newOrder.fromAmount, _oppoOrder.toAmount);
+            uint256 comfirmAmount_new = getMin(_newOrder.haveAmount, _oppoOrder.wantAmount);
             // token type = oppoOrder have
-            uint256 comfirmAmount_oppo = _oppoOrder.fromAmount * comfirmAmount_new / _oppoOrder.toAmount;
-            // comfirm price = _oppoOrder.fromAmount / _oppoOrder.toAmount
-            _newOrder.toAmount = _newOrder.toAmount * (_newOrder.fromAmount - comfirmAmount_new) / _newOrder.fromAmount;
-            _newOrder.fromAmount = _newOrder.fromAmount.sub(comfirmAmount_new);
+            uint256 comfirmAmount_oppo = _oppoOrder.haveAmount * comfirmAmount_new / _oppoOrder.wantAmount;
+            // comfirm price = _oppoOrder.haveAmount / _oppoOrder.wantAmount
+            _newOrder.wantAmount = _newOrder.wantAmount * (_newOrder.haveAmount - comfirmAmount_new) / _newOrder.haveAmount;
+            _newOrder.haveAmount = _newOrder.haveAmount.sub(comfirmAmount_new);
 
-            _oppoOrder.toAmount = _oppoOrder.toAmount * (_oppoOrder.fromAmount - comfirmAmount_oppo) / _oppoOrder.fromAmount;
-            _oppoOrder.fromAmount = _oppoOrder.fromAmount.sub(comfirmAmount_oppo);
+            _oppoOrder.wantAmount = _oppoOrder.wantAmount * (_oppoOrder.haveAmount - comfirmAmount_oppo) / _oppoOrder.haveAmount;
+            _oppoOrder.haveAmount = _oppoOrder.haveAmount.sub(comfirmAmount_oppo);
 
             token[!_orderType].transfer(_newOrder.maker, comfirmAmount_oppo);
             token[_orderType].transfer(_oppoOrder.maker, comfirmAmount_new);
-            if (_oppoOrder.fromAmount == 0 || _oppoOrder.toAmount == 0) _remove(!_orderType, _oppoTopId);
+            if (_oppoOrder.haveAmount == 0 || _oppoOrder.wantAmount == 0) _remove(!_orderType, _oppoTopId);
             _oppoTopId = top(!_orderType);
-            if (_newOrder.fromAmount == 0 || _newOrder.toAmount == 0) {
+            if (_newOrder.haveAmount == 0 || _newOrder.wantAmount == 0) {
                 _remove(_orderType, _newId);
                 return;
             }

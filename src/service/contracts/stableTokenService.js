@@ -13,14 +13,14 @@ export default class extends BaseService {
         return await _stableTokenBalance
     }
 
-    async simpleBuy(_fromAmount, _toAmount) {
+    async simpleBuy(_haveAmount, _wantAmount) {
         const store = this.store.getState()
         let wallet = store.user.walletAddress
         let _stableTokenBalance = store.user.stableTokenBalance
-        let _toDeposit = _fromAmount > _stableTokenBalance ? _fromAmount - _stableTokenBalance : 0
+        let _toDeposit = _haveAmount > _stableTokenBalance ? _haveAmount - _stableTokenBalance : 0
         console.log('_toDeposit', _toDeposit)
         let methods = store.contract.stableToken.methods
-        await methods.simpleBuy(_fromAmount, _toAmount, [0]).send({from: wallet, value: _toDeposit})
+        await methods.simpleBuy(_haveAmount, _wantAmount, [0]).send({from: wallet, value: _toDeposit})
     }
 
     async transfer(_toWallet, _amount) {

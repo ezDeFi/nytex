@@ -23,14 +23,14 @@ export default class extends BaseService {
         return await diceAddress
     }
 
-    async simpleBuy(_fromAmount, _toAmount) {
+    async simpleBuy(_haveAmount, _wantAmount) {
         const store = this.store.getState()
         let wallet = store.user.walletAddress
         let _volatileTokenBalance = store.user.volatileTokenBalance
-        let _toDeposit = _fromAmount > _volatileTokenBalance ? _fromAmount - _volatileTokenBalance : 0
+        let _toDeposit = _haveAmount > _volatileTokenBalance ? _haveAmount - _volatileTokenBalance : 0
         console.log('_toDeposit', _toDeposit)
         let methods = store.contract.volatileToken.methods
-        await methods.simpleBuy(_fromAmount, _toAmount, [0]).send({from: wallet, value: _toDeposit})
+        await methods.simpleBuy(_haveAmount, _wantAmount, [0]).send({from: wallet, value: _toDeposit})
     }
 
     async transfer(_toWallet, _amount) {

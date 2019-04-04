@@ -13,13 +13,13 @@ library ABI {
     }
 
     function encode(
-        uint256 toAmount,
+        uint256 wantAmount,
         bytes32 checkpoint
     )
         public
         pure
         returns(bytes memory)
     {
-        return abi.encode(toAmount, checkpoint);
+        return abi.encode(wantAmount, checkpoint);
     }
 }
