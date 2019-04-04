@@ -159,7 +159,7 @@ contract Order is Install, DataSet {
         uint b
     )
         public
-        view
+        pure
         returns(uint)
     {
         return a > b ? b : a;
