@@ -19,31 +19,31 @@ contract OrderBook is Initializer, DataSet {
     {
         require(validOrder(_orderType, _assistingID), "save your gas");
         OrderList storage book = books[_orderType];
-        bytes32 id = initOrder(_maker, _orderType, _haveAmount, _wantAmount);
+        bytes32 newID = initOrder(_maker, _orderType, _haveAmount, _wantAmount);
 
         // direction to bottom, search first order, that new order better than
-        bytes32 cursor = _assistingID;
-        if (!betterOrder(_orderType, id, cursor)) {
-            // order[id] always better than oder[0] with price = 0
-            // if price of order[id] = 0 => throw cause infinite loop
-            while (!betterOrder(_orderType, id, cursor)) {
-                cursor = book.orders[cursor].next;
+        bytes32 id = _assistingID;
+        if (!betterOrder(_orderType, newID, id)) {
+            // order[newID] always better than oder[0] with price = 0
+            // if price of order[newID] = 0 => throw cause infinite loop
+            while (!betterOrder(_orderType, newID, id)) {
+                id = book.orders[id].next;
             }
-            prevInsert(_orderType, id, cursor);
-            return id;
+            insertBefore(_orderType, newID, id);
+            return newID;
         }
-        cursor = book.orders[cursor].prev;
+        id = book.orders[id].prev;
         // direction to top, search first order that new order not better than
         // this part triggered only if new order not better than assistingID order
-        while (cursor[0] != 0 && betterOrder(_orderType, id, cursor)) {
-            cursor = book.orders[cursor].prev;
+        while (id[0] != 0 && betterOrder(_orderType, newID, id)) {
+            id = book.orders[id].prev;
         }
-        prevInsert(_orderType, id, book.orders[cursor].next);
-        return id;
+        insertBefore(_orderType, newID, book.orders[id].next);
+        return newID;
     }
 
     // inseter _id as prev element of _next
-    function prevInsert(
+    function insertBefore(
         bool _orderType,
         bytes32 _id,
         bytes32 _next
