@@ -1,0 +1,422 @@
+
+@import "../../../../style/variable";
+@import "../../../../style/color";
+
+@mixin homeContent {
+  max-width: $main_width;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.c_Home {
+  .container {
+    clear: both;
+    margin: 50px 0px;
+  }
+
+  .row_item {
+    margin: 10px 50px;
+
+    .alert_text {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .btn_payment {
+      height: 80px;
+      width: 280px;
+      margin: 10px 0px;
+      padding: 0px 10px;
+      background: #ff0000;
+      color: #fff;
+    }
+
+    .show_amount {
+      color: #ff0000;
+      padding: 5px !important;
+    }
+
+    .card_metamask {
+      width: 280px;
+      margin: 0 auto;
+      background: #e2e2e2;
+    }
+
+    .img_metamask {
+      position: absolute;
+      width: 25px;
+      left: 15px;
+    }
+
+    .img_metamask_deposit {
+      width: 25px;
+    }
+
+    @media only screen and (max-width: $mobile-width) {
+      margin: 20px 10px;
+    }
+  }
+
+  .banner {
+    max-width: 380px;
+    width: 100%;
+  }
+  .games {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      @media only screen and (max-width: $mobile-width) {
+        margin: 10px auto;
+      }
+
+    .item {
+        float: left;
+        margin: 20px;
+        @media only screen and (max-width: $mobile-width) {
+          margin: 10px;
+        }
+
+        .ant-card {
+          width: 200px;
+          background: transparent;
+          border: none;
+
+          @media only screen and (max-width: $mobile-width) {
+            width: 150px;
+          }
+
+          .ant-card-body {
+            padding: 15px !important;
+          }
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: 300;
+            color: #fff;
+            text-align: center;
+            margin-top: 10px;
+        }
+    }
+  }
+
+  .test {
+    color: #fff;
+  }
+
+  .ant-table-thead > tr > th {
+    background: transparent;
+    color: #fff;
+    border: none !important;
+    padding: 8px 8px !important;
+  }
+
+  .ant-table-tbody > tr > td {
+    background: transparent;
+    color: #fff;
+    border: none !important;
+    padding: 5px 8px !important;
+  }
+
+  .ant-table-placeholder {
+    color: #fff;
+    background: transparent;
+    border-bottom: none;
+  }
+
+  .ant-table-header {
+    overflow: hidden !important;
+    background: transparent !important;
+  }
+
+  .ant-table-scroll > .ant-table-body {
+    background: transparent !important;
+  }
+
+  .ant-table-wrapper {
+    background: #040404 !important;
+  }
+
+  .ant-progress-inner {
+    width: 200px !important;
+    height: 200px !important;
+
+    @media only screen and (max-width: $mobile-width) {
+      width: 150px !important;
+      height: 150px !important;
+    }
+  }
+
+  .ant-progress-circle-trail {
+    stroke: #000 !important;
+  }
+
+  .ant-progress-circle-path {
+    stroke: #e22b18 !important
+  }
+
+  .game-container {
+    background: #040404;
+    max-width: 800px;
+    margin: 50px auto;
+
+    .bet-countdown {
+      width: 100%;
+      height: 360px;
+
+      .wrap-bet {
+        width: 90%;
+        margin: 0 auto;
+        height: 100%;
+      }
+    }
+    .count-round {
+      color: #FFD45A;
+    }
+
+    .tails {
+      width: 250px;
+      float: left;
+      text-align: center;
+
+      @media only screen and (max-width: $mobile-width) {
+        width: 45%;
+      }
+
+      .image {
+        margin-top: 20px;
+        transition: 350ms ease-in-out;
+      }
+      .image:hover {
+        transform: scale(1.1);
+      }
+      .player {
+        margin-top: 10px;
+        color: #FFD45A;
+      }
+      .amount {
+        color: #FFD45A;
+        font-weight: bold;
+        font-size: 24px;
+      }
+      .input-bet {
+        margin-top: 20px;
+
+        .ant-input-number {
+          border: 1px solid #FFD45A !important;
+          width: 150px;
+          background: #000;
+          color: #fff;
+        }
+      }
+      .bet {
+        margin-top: 10px;
+      }
+    }
+
+    .heads {
+      width: 250px;
+      float: left;
+      text-align: center;
+
+      @media only screen and (max-width: $mobile-width) {
+        width: 45%;
+        margin-left: 10%;
+      }
+
+      .image {
+        margin-top: 20px;
+        transition: 350ms ease-in-out;
+      }
+      .image:hover {
+        transform: scale(1.1);
+      }
+      .player {
+        margin-top: 10px;
+        color: #F40D73;
+      }
+      .amount {
+        color: #F40D73;
+        font-weight: bold;
+        font-size: 24px;
+      }
+      .input-bet {
+        margin-top: 20px;
+
+        .ant-input-number {
+          border: 1px solid #F40D73 !important;
+          width: 150px;
+          background: #000;
+          color: #fff;
+        }
+      }
+      .bet {
+        margin-top: 10px;
+      }
+    }
+
+    .countdown {
+      width: 300px;
+      float: left;
+      text-align: center;
+
+      @media only screen and (max-width: $mobile-width) {
+        float: none;
+        margin: 0 auto;
+      }
+
+      .content-countdown {
+        text-align: center;
+
+        .countdown-times {
+          width: 200px;
+          height: 200px;
+          background: #350617;
+          border-radius: 50%;
+          margin: 0 auto;
+          font-size: 50px;
+          font-size: 60px;
+          /*padding: 47px 0px;*/
+          color: #DEDEDE;
+
+          @media only screen and (max-width: $mobile-width) {
+            width: 150px;
+            height: 150px;
+            /*padding: 44px 0px;*/
+            font-size: 38px;
+          }
+
+          .times {
+            margin-top: -148px;
+
+            @media only screen and (max-width: $mobile-width) {
+              margin-top: -100px;
+            }
+          }
+        }
+
+        .spin-times {
+            width: 125px;
+            height: 125px;
+            margin: 0 auto;
+            padding: 47px 0px;
+
+            img {
+              margin-top: -50px;
+            }
+
+            @media only screen and (max-width: $mobile-width) {
+              width: 100px;
+              height: 100px;
+              padding: 44px 0px;
+            }
+        }
+      }
+    }
+
+    .auto-amount {
+      clear: both;
+      text-align: center;
+
+      .item {
+        background: #000000;
+        box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.35);
+        border-radius: 5px;
+        margin: 0 20px;
+        color: #FFFFFF;
+        padding: 0px 30px;
+        border: 1px solid #F40D73;
+
+        @media only screen and (max-width: $mobile-width) {
+          padding: 0px 10px;
+          margin: 0 10px;
+        }
+      }
+
+      .item:hover {
+        border: 1px solid #FFD45A;
+      }
+    }
+
+    .bet-btn {
+        background: linear-gradient(101.8deg, #E41E78 1.6%, #F68426 98.77%);
+        box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.35);
+        border-radius: 5px;
+        border: none;
+        width: 100%;
+        color: #FFFFFF;
+        font-size: 24px;
+        height: 50px;
+        font-weight: bold;
+    }
+
+    .bet-btn:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.finalizedgame {
+  max-width: 580px;
+
+    .youwin::after {
+        background-image: url(/assets/images/youwin.jpg);
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        opacity: 1;
+        bottom: 0;
+        z-index: -1;
+    }
+
+    .youlose::after {
+        background-image: url(/assets/images/youlose.jpg);
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        opacity: 1;
+        bottom: 0;
+        z-index: -1;
+    }
+
+    .finalized-content {
+      width: 500px;
+      height: 500px;
+      text-align: center;
+
+      @media only screen and (max-width: $mobile-width) {
+        max-width: 230px;
+        height: 250px;
+      }
+
+      .playagain {
+          background: linear-gradient(180deg, #E41E78 0%, #F68426 100%);
+          border-radius: 3px;
+          border: none;
+          width: 100%;
+          color: #FFFFFF;
+          font-size: 18px;
+          height: 38px;
+          width: 136px;
+          margin-top: 200px;
+
+          @media only screen and (max-width: $mobile-width) {
+            margin-top: 100px;
+          }
+      }
+    }
+
+    .ant-modal-content {
+      background-color: transparent;
+    }
+
+    .ant-modal-body {
+      background: transparent;
+    }
+}

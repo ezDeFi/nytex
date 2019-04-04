@@ -1,3 +1,7 @@
-build
-node_modules
-*.log
+node_modules/
+.idea/
+coverage/
+
+dev_dist/
+dist/
+build/

@@ -1,0 +1,24 @@
+
+@import '../../../../style/variable';
+@import '../../../../style/color';
+
+.transaction_detail {
+
+  .ant-btn-primary {
+    margin-right: $gap_0;
+  }
+
+  .gridCol {
+    padding: 0 $gap_2;
+    margin: $gap_0 0;
+  }
+
+  .form-wrapper {
+    padding: $gap_2 0;
+  }
+
+  .user-avatar {
+    width: 75px;
+    height: auto;
+  }
+}
