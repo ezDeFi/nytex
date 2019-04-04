@@ -60,8 +60,8 @@ export default class extends StandardPage {
                             defaultValue={0}
                         />
                         <p></p>
-                        <Button size="large" onClick={() => this.sellVolatileToken()} className="item">Sell VolatileToken</Button>
-                        <Button size="large" onClick={() => this.buyVolatileToken()} className="item">Buy VolatileToken</Button>
+                        <Button size="large" onClick={() => this.sellVolatileToken()} className="item">Sell</Button>
+                        <Button size="large" onClick={() => this.buyVolatileToken()} className="item">Buy</Button>
                         <Input size="large"
                             onChange={this.idChange.bind(this)}
                             value={this.state.id}
@@ -115,7 +115,7 @@ export default class extends StandardPage {
         //const data = [{'fromAmountWnty' : 0, 'toAmountWnty' : 1, 'fromAmountNusd' : 2, 'toAmountNusd' : 3}];
         const columns = [
             {
-                title: 'VolatileToken => StableToken',
+                title: 'Sell',
                 children: [
                     {
                         title: 'id',
@@ -149,7 +149,7 @@ export default class extends StandardPage {
                 ]
             },
             {
-                title: 'StableToken => VolatileToken',
+                title: 'Buy',
                 children: [
                     {
                         title: 'id',

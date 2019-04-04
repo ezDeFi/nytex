@@ -2,7 +2,7 @@ pragma solidity ^0.5.2;
 
 import "./interfaces/IOwnableERC223.sol";
 
-contract Install {
+contract Initializer {
     mapping(bool => IOwnableERC223) token;
     // IOwnableERC223 internal volatileToken;
     // IOwnableERC223 internal stableToken;

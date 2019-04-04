@@ -2,9 +2,9 @@ pragma solidity ^0.5.2;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./DataSet.sol";
-import "./Install.sol";
+import "./Initializer.sol";
 
-contract OrderBook is Install, DataSet {
+contract OrderBook is Initializer, DataSet {
     using SafeMath for uint256;
     bytes32 public debug ;
     function insert(
