@@ -1,5 +1,6 @@
 pragma solidity ^0.5.2;
 
+import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./OrderBook.sol";
 import "./lib/BytesConvert.sol";
@@ -72,7 +73,7 @@ contract PairEx is OrderBook {
                 // not pairable
                 return;
             }
-            uint256 orderPairableAmount = getMin(_order.haveAmount, _redro.wantAmount);
+            uint256 orderPairableAmount = Math.min(_order.haveAmount, _redro.wantAmount);
             // pairable price = _redro.haveAmount / _redro.wantAmount
             _order.wantAmount = _order.wantAmount * (_order.haveAmount - orderPairableAmount) / _order.haveAmount;
             _order.haveAmount = _order.haveAmount.sub(orderPairableAmount);

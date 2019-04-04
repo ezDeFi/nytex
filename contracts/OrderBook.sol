@@ -154,17 +154,6 @@ contract OrderBook is Initializer, DataSet {
         return a > b;
     }
 
-    function getMin(
-        uint a,
-        uint b
-    )
-        public
-        pure
-        returns(uint)
-    {
-        return a > b ? b : a;
-    }
-
     function getNext(
         bool _orderType,
         bytes32 _id
