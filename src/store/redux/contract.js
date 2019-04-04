@@ -8,8 +8,8 @@ class ContractRedux extends BaseRedux {
     defineDefaultState() {
         return {
             loading: false,
-            wnty: null,
-            nusd: null,
+            volatileToken: null,
+            stableToken: null,
             book: null,
             dapps: {
                 simpleDice: null

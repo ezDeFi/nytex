@@ -10,9 +10,9 @@ import {WEB3, TOKEN_ADDRESS, ABI_TOKEN_ERC20, WS_PROVIDER, HTTP_PROVIDER, ETHERS
 import { Notification, Message } from 'antd'
 import {isMobile} from "../util"
 
-import wntyContractData from '../../build/contracts/WNTY.json'
-import nusdContractData from '../../build/contracts/NUSD.json';
-import bookContractData from '../../build/contracts/Orderbook.json';
+import volatileTokenContractData from '../../build/contracts/VolatileToken.json'
+import stableTokenContractData from '../../build/contracts/StableToken.json';
+import bookContractData from '../../build/contracts/PairEx.json';
 
 Notification.config({
     placement: 'bottomRight',
@@ -28,8 +28,8 @@ export default class extends BaseService {
         var web3 = _web3 === undefined ? new Web3(HTTP_PROVIDER) : new Web3(_web3.currentProvider)
         // const contract = new web3.eth.Contract(ABI_TOKEN_ERC20, TOKEN_ADDRESS)
 
-        const wnty = new web3.eth.Contract(wntyContractData.abi, wntyContractData.networks[NETWORK_ID].address)
-        const nusd = new web3.eth.Contract(nusdContractData.abi, nusdContractData.networks[NETWORK_ID].address)
+        const volatileToken = new web3.eth.Contract(volatileTokenContractData.abi, volatileTokenContractData.networks[NETWORK_ID].address)
+        const stableToken = new web3.eth.Contract(stableTokenContractData.abi, stableTokenContractData.networks[NETWORK_ID].address)
         const book = new web3.eth.Contract(bookContractData.abi, bookContractData.networks[NETWORK_ID].address)
         // console.log('citizen', citizenContract, citizenContractData.abi, citizenContractData.networks[NETWORK_ID].address)
 
@@ -53,8 +53,8 @@ export default class extends BaseService {
 
         this.dispatch(contractRedux.actions.lib_update({web3}))
         // this.dispatch(contractRedux.actions.contract_update(contract))
-        this.dispatch(contractRedux.actions.wnty_update(wnty))
-        this.dispatch(contractRedux.actions.nusd_update(nusd))
+        this.dispatch(contractRedux.actions.volatileToken_update(volatileToken))
+        this.dispatch(contractRedux.actions.stableToken_update(stableToken))
         this.dispatch(contractRedux.actions.book_update(book))
         // this.listenEventDepositSuccess(contract)
         // this.listenEventRewardRoundWinner(contract)

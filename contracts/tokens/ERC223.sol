@@ -16,7 +16,7 @@ contract ERC223 is ERC20, Ownable {
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
 
-    function opMint(
+    function mintToOwner(
         uint256 _amount
     )
         public
@@ -25,7 +25,7 @@ contract ERC223 is ERC20, Ownable {
         _mint(owner(), _amount);
     }
 
-    function opBurn(
+    function burnFromOwner(
         uint256 _amount
     )
         public

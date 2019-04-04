@@ -32,7 +32,7 @@ export default class extends StandardPage {
                 <MediaQuery minWidth={MIN_WIDTH_PC}>
                     <div className="game-container white-text">
                         <p>Wallet = {this.props.wallet}</p>
-                        WNTY Balances : {this.props.wntyBalance} WNTY {this.props.nusdBalance} NUSD
+                        VolatileToken Balances : {this.props.volatileTokenBalance} VolatileToken {this.props.stableTokenBalance} StableToken
                         <p>TRANSFER</p>
                         <Input size="medium"
                             onChange={this.toWalletChange.bind(this)}
@@ -44,8 +44,8 @@ export default class extends StandardPage {
                             value={this.state.transferAmount}
                             defaultValue={0}
                         />
-                            <Button size="large" onClick={() => this.transferWNTY()} className="item">transfer WNTY</Button>
-                            <Button size="large" onClick={() => this.transferNUSD()} className="item">transfer</Button>
+                            <Button size="large" onClick={() => this.transferVolatileToken()} className="item">transfer VolatileToken</Button>
+                            <Button size="large" onClick={() => this.transferStableToken()} className="item">transfer</Button>
                         <p></p>
                         amount
                         <InputNumber size="large"
@@ -60,8 +60,8 @@ export default class extends StandardPage {
                             defaultValue={0}
                         />
                         <p></p>
-                        <Button size="large" onClick={() => this.sellWNTY()} className="item">Sell WNTY</Button>
-                        <Button size="large" onClick={() => this.buyWNTY()} className="item">Buy WNTY</Button>
+                        <Button size="large" onClick={() => this.sellVolatileToken()} className="item">Sell</Button>
+                        <Button size="large" onClick={() => this.buyVolatileToken()} className="item">Buy</Button>
                         <Input size="large"
                             onChange={this.idChange.bind(this)}
                             value={this.state.id}
@@ -95,12 +95,12 @@ export default class extends StandardPage {
             data.push({
                 idWnty: falseOrder.id,
                 addressWnty: cutString(falseOrder.maker),
-                amountWnty: falseOrder.fromAmount,
-                priceWnty: falseOrder.fromAmount ? falseOrder.toAmount / falseOrder.fromAmount : '',
+                amountWnty: falseOrder.haveAmount,
+                priceWnty: falseOrder.haveAmount ? falseOrder.wantAmount / falseOrder.haveAmount : '',
                 idNusd: trueOrder.id,
                 addressNusd: cutString(trueOrder.maker),
-                amountNusd: trueOrder.toAmount,
-                priceNusd: trueOrder.fromAmount ? trueOrder.fromAmount / trueOrder.toAmount : ''
+                amountNusd: trueOrder.wantAmount,
+                priceNusd: trueOrder.haveAmount ? trueOrder.haveAmount / trueOrder.wantAmount : ''
             })
         }
         this.setState({data: data})
@@ -115,7 +115,7 @@ export default class extends StandardPage {
         //const data = [{'fromAmountWnty' : 0, 'toAmountWnty' : 1, 'fromAmountNusd' : 2, 'toAmountNusd' : 3}];
         const columns = [
             {
-                title: 'WNTY => NUSD',
+                title: 'Sell',
                 children: [
                     {
                         title: 'id',
@@ -149,7 +149,7 @@ export default class extends StandardPage {
                 ]
             },
             {
-                title: 'NUSD => WNTY',
+                title: 'Buy',
                 children: [
                     {
                         title: 'id',
@@ -188,24 +188,24 @@ export default class extends StandardPage {
         </div>)
     }
 
-    transferWNTY() {
-        this.props.transferWNTY(this.state.toWallet, this.state.transferAmount)
+    transferVolatileToken() {
+        this.props.transferVolatileToken(this.state.toWallet, this.state.transferAmount)
     }
 
-    transferNUSD() {
-        this.props.transferNUSD(this.state.toWallet, this.state.transferAmount)
+    transferStableToken() {
+        this.props.transferStableToken(this.state.toWallet, this.state.transferAmount)
     }
 
-    sellWNTY() {
-        let fromAmount = this.state.amount
-        let toAmount = Math.floor(fromAmount * this.state.price)
-        this.props.sellWNTY(fromAmount, toAmount)
+    sellVolatileToken() {
+        let haveAmount = this.state.amount
+        let wantAmount = Math.floor(haveAmount * this.state.price)
+        this.props.sellVolatileToken(haveAmount, wantAmount)
     }
 
-    buyWNTY() {
-        let toAmount = this.state.amount
-        let fromAmount = Math.floor(toAmount * this.state.price)
-        this.props.sellNUSD(fromAmount, toAmount)
+    buyVolatileToken() {
+        let wantAmount = this.state.amount
+        let haveAmount = Math.floor(wantAmount * this.state.price)
+        this.props.sellStableToken(haveAmount, wantAmount)
     }
 
     idChange(e) {

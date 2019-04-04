@@ -2,28 +2,28 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
-import "./../lib/BytesConvert.sol";
-import "./../lib/ABI.sol";
-import "./../interfaces/IOrderbook.sol";
+import "../lib/BytesConvert.sol";
+import "../lib/ABI.sol";
+import "../interfaces/IPairEx.sol";
 
 /*
-    . Exchanged with NTY with rate 1 WNTY = 1 NTY
+    . Exchanged with NTY with rate 1 VolatileToken = 1 NTY
     . Mint. / burn. able(free) by owner = orderbook contract
 */
 
-contract WNTY is ERC223 {
+contract VolatileToken is ERC223 {
     using BytesConvert for *;
     using ABI for *;
 
-    IOrderbook internal orderbook;
+    IPairEx internal orderbook;
 
     constructor (address _orderbook)
         public
     {
-        orderbook = IOrderbook(_orderbook);
-        orderbook.wntyRegister();
+        orderbook = IPairEx(_orderbook);
+        orderbook.volatileTokenRegister();
         initialize(address(_orderbook));
-        _mint(0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d, 1000000);
+        _mint(msg.sender, 1000000);
     }
 
 
@@ -80,13 +80,13 @@ contract WNTY is ERC223 {
     // TESTING
     function simpleBuy(
         uint256  _value,
-        uint256 _toAmount,
-        bytes32 _checkpoint
+        uint256 _wantAmount,
+        bytes32 _assistingID
     ) 
         public 
         payable 
     {
-        bytes memory data = abi.encode(_toAmount, _checkpoint);
+        bytes memory data = abi.encode(_wantAmount, _assistingID);
         buy(_value, data);
     }
 }
