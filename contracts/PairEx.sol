@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./OrderBook.sol";
 import "./lib/BytesConvert.sol";
 import "./lib/ABI.sol";
