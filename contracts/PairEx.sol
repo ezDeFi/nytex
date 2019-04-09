@@ -44,7 +44,7 @@ contract PairEx is OrderBook {
         uint256 haveAmount = _value;
         uint256 wantAmount;
         bytes32 assistingID;
-        (wantAmount, assistingID) = abi.decode(_data, (uint256, bytes32));
+        (wantAmount, assistingID) = _data.length == 32 ? (abi.decode(_data, (uint256)), bytes32(0)) : abi.decode(_data, (uint256, bytes32));
         bytes32 _orderID = insert(
             orderType,
             haveAmount,
