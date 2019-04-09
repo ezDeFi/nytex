@@ -9,7 +9,6 @@ import "./lib/ABI.sol";
 contract PairEx is OrderBook {
     using BytesConvert for *;
     using ABI for *;
-    // uint256 constant MAX = 2**127;
 
     constructor () 
         public
@@ -74,12 +73,11 @@ contract PairEx is OrderBook {
                 return;
             }
             uint256 orderPairableAmount = Math.min(_order.haveAmount, _redro.wantAmount);
-            // pairable price = _redro.haveAmount / _redro.wantAmount
-            _order.wantAmount = _order.wantAmount * (_order.haveAmount - orderPairableAmount) / _order.haveAmount;
+            _order.wantAmount = _order.wantAmount.mul(_order.haveAmount.sub(orderPairableAmount)).div(_order.haveAmount);
             _order.haveAmount = _order.haveAmount.sub(orderPairableAmount);
 
-            uint256 redroPairableAmount = _redro.haveAmount * orderPairableAmount / _redro.wantAmount;
-            _redro.wantAmount = _redro.wantAmount * (_redro.haveAmount - redroPairableAmount) / _redro.haveAmount;
+            uint256 redroPairableAmount = _redro.haveAmount.mul(orderPairableAmount).div(_redro.wantAmount);
+            _redro.wantAmount = _redro.wantAmount.mul(_redro.haveAmount.sub(redroPairableAmount)).div(_redro.haveAmount);
             _redro.haveAmount = _redro.haveAmount.sub(redroPairableAmount);
 
             token[_redroType].transfer(_order.maker, redroPairableAmount);
