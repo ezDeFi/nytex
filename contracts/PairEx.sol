@@ -94,4 +94,39 @@ contract PairEx is OrderBook {
         return;
     }
 
+    // orderToFill(BuyType, 123) returns an SellType order to fill enough buying orders to burn as much as 123 StableToken.
+    // orderToFill(SellType, 456) returns an BuyType order to fill enough selling orders to create as much as 456 StableToken.
+    function orderToFill(
+        bool _orderType,
+        uint256 _nusdTarget //nusd
+    )
+        public
+        view
+        returns(
+            uint256
+        )
+    {
+        OrderList storage orderBook = books[_orderType];
+        uint256 nusdSum = 0;
+        uint256 wntySum = 0;
+        bytes32 cursor = top(_orderType);
+        while(cursor[0] != 0 && nusdSum < _nusdTarget) {
+            Order storage _order = orderBook.orders[cursor];
+            uint256 _nusdAmount = _orderType ? _order.haveAmount : _order.wantAmount;
+            uint256 _wntyAmount = _orderType ? _order.wantAmount : _order.haveAmount;
+            // break-point
+            if (nusdSum.add(_nusdAmount) >= _nusdTarget) {
+                uint256 _nusdRest = _nusdTarget.sub(nusdSum);
+                uint256 _wntyRest = _wntyAmount.mul(_nusdRest).div(_nusdAmount);
+                wntySum = wntySum.add(_wntyRest);
+                return wntySum;
+            }
+            wntySum = wntySum.add(_wntyAmount);
+            nusdSum = nusdSum.add(_nusdAmount);
+            cursor = _order.next;
+        }
+        // orders not not enough
+        return 0;
+    }
+
 }
