@@ -6,6 +6,11 @@ import "./Initializer.sol";
 
 contract OrderBook is Initializer, DataSet {
     using SafeMath for uint256;
+    // Stepping price param
+    // Define T as the half of the price percentage step
+    // New orders with price fall between (1/(100+T))% and (100+T)% of an existing order, should belong to a same group/bucket.
+    uint256 internal T = 1;
+
     function insert(
         bool _orderType,
         uint256 _haveAmount,
@@ -111,6 +116,10 @@ contract OrderBook is Initializer, DataSet {
         delete book.orders[_id];
     }
 
+    function _setT(uint256 _T) private {
+        T = _T;
+    }
+
     // read functions
     function top(
         bool _orderType
@@ -146,9 +155,10 @@ contract OrderBook is Initializer, DataSet {
         OrderList storage book = books[orderType];
         Order storage _new = book.orders[_newId];
         Order storage _old = book.orders[_oldId];
-        // newWant / newHave < oldWant / oldHave
-        uint256 a = _new.haveAmount.mul(_old.wantAmount);
-        uint256 b = _old.haveAmount.mul(_new.wantAmount);
+        // stepping price
+        // newWant / newHave < (oldWant / oldHave) * (100 / (100 + T))
+        uint256 a = _new.haveAmount.mul(_old.wantAmount).mul(100);
+        uint256 b = _old.haveAmount.mul(_new.wantAmount).mul(100 + T);
         return a > b;
     }
 
