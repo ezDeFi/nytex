@@ -62,31 +62,31 @@ contract PairEx is OrderBook {
     {
         bool _redroType = !_orderType;
         OrderList storage orderBook = books[_orderType];
-        Order storage _order = orderBook.orders[_orderID];
+        Order storage order = orderBook.orders[_orderID];
         OrderList storage redroBook = books[_redroType];
-        bytes32 _redroTopId = top(_redroType);
+        bytes32 redroTopID = top(_redroType);
 
-        while (_redroTopId[0] != 0) {
-            Order storage _redro = redroBook.orders[_redroTopId];
-            if (_order.haveAmount.mul(_redro.haveAmount) < _order.wantAmount.mul(_redro.wantAmount)) {
+        while (redroTopID[0] != 0) {
+            Order storage redro = redroBook.orders[redroTopID];
+            if (order.haveAmount.mul(redro.haveAmount) < order.wantAmount.mul(redro.wantAmount)) {
                 // not pairable
                 return;
             }
-            uint256 orderPairableAmount = Math.min(_order.haveAmount, _redro.wantAmount);
-            _order.wantAmount = _order.wantAmount.mul(_order.haveAmount.sub(orderPairableAmount)).div(_order.haveAmount);
-            _order.haveAmount = _order.haveAmount.sub(orderPairableAmount);
+            uint256 orderPairableAmount = Math.min(order.haveAmount, redro.wantAmount);
+            order.wantAmount = order.wantAmount.mul(order.haveAmount.sub(orderPairableAmount)).div(order.haveAmount);
+            order.haveAmount = order.haveAmount.sub(orderPairableAmount);
 
-            uint256 redroPairableAmount = _redro.haveAmount.mul(orderPairableAmount).div(_redro.wantAmount);
-            _redro.wantAmount = _redro.wantAmount.mul(_redro.haveAmount.sub(redroPairableAmount)).div(_redro.haveAmount);
-            _redro.haveAmount = _redro.haveAmount.sub(redroPairableAmount);
+            uint256 redroPairableAmount = redro.haveAmount.mul(orderPairableAmount).div(redro.wantAmount);
+            redro.wantAmount = redro.wantAmount.mul(redro.haveAmount.sub(redroPairableAmount)).div(redro.haveAmount);
+            redro.haveAmount = redro.haveAmount.sub(redroPairableAmount);
 
-            token[_redroType].transfer(_order.maker, redroPairableAmount);
-            token[_orderType].transfer(_redro.maker, orderPairableAmount);
-            if (_redro.haveAmount == 0 || _redro.wantAmount == 0) {
-                _remove(_redroType, _redroTopId);
+            token[_redroType].transfer(order.maker, redroPairableAmount);
+            token[_orderType].transfer(redro.maker, orderPairableAmount);
+            if (redro.haveAmount == 0 || redro.wantAmount == 0) {
+                _remove(_redroType, redroTopID);
             }
-            _redroTopId = top(_redroType);
-            if (_order.haveAmount == 0 || _order.wantAmount == 0) {
+            redroTopID = top(_redroType);
+            if (order.haveAmount == 0 || order.wantAmount == 0) {
                 _remove(_orderType, _orderID);
                 return;
             }
@@ -102,31 +102,28 @@ contract PairEx is OrderBook {
     )
         public
         view
-        returns(
-            uint256
-        )
+        returns(uint256, uint256)
     {
-        OrderList storage orderBook = books[_orderType];
-        uint256 totalSTB = 0;
-        uint256 totalVOL = 0;
+        OrderList storage book = books[_orderType];
+        uint256 totalSTB;
+        uint256 totalVOL;
         bytes32 cursor = top(_orderType);
         while(cursor[0] != 0 && totalSTB < _stableTokenTarget) {
-            Order storage _order = orderBook.orders[cursor];
-            uint256 stb = _orderType ? _order.haveAmount : _order.wantAmount;
-            uint256 vol = _orderType ? _order.wantAmount : _order.haveAmount;
+            Order storage order = book.orders[cursor];
+            uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
+            uint256 vol = _orderType ? order.wantAmount : order.haveAmount;
             // break-point
-            if (totalSTB.add(stb) >= _stableTokenTarget) {
+            if (totalSTB.add(stb) > _stableTokenTarget) {
                 uint256 remainSTB = _stableTokenTarget.sub(totalSTB);
                 uint256 remainVOL = vol.mul(remainSTB).div(stb);
-                totalVOL = totalVOL.add(remainVOL);
-                return totalVOL;
+                return (totalVOL.add(remainVOL), totalSTB.add(remainSTB));
             }
             totalVOL = totalVOL.add(vol);
             totalSTB = totalSTB.add(stb);
-            cursor = _order.next;
+            cursor = order.next;
         }
-        // orders not not enough
-        return 0;
+        //  Not enough order, return all we have
+        return (totalVOL, totalSTB);
     }
 
 }
