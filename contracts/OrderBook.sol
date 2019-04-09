@@ -6,7 +6,6 @@ import "./Initializer.sol";
 
 contract OrderBook is Initializer, DataSet {
     using SafeMath for uint256;
-    bytes32 public debug ;
     function insert(
         bool _orderType,
         uint256 _haveAmount,
@@ -86,7 +85,6 @@ contract OrderBook is Initializer, DataSet {
         OrderList storage book = books[_orderType];
         bytes32 id = sha256(abi.encodePacked(_maker, pNonce[_maker], _haveAmount, _wantAmount));
         book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
-        debug = id;
         return id;
     }
 
