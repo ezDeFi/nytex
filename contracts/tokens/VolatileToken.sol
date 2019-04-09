@@ -7,11 +7,15 @@ import "../lib/ABI.sol";
 import "../interfaces/IPairEx.sol";
 
 /*
-    . Exchanged with NTY with rate 1 VolatileToken = 1 NTY
+    . Exchanged with NTY with rate 1 MANTY = 10000 NTY
     . Mint. / burn. able(free) by owner = orderbook contract
 */
 
 contract VolatileToken is ERC223 {
+    string public constant name = "Man NTY";
+    string public constant symbol = "MANTY";
+    uint8 public constant decimals = 14;
+
     using BytesConvert for *;
     using ABI for *;
 

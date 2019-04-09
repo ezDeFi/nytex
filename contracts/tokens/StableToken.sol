@@ -10,6 +10,10 @@ import "../interfaces/IPairEx.sol";
 */
 
 contract StableToken is ERC223{
+    string public constant name = "Nexty USD";
+    string public constant symbol = "NUSD";
+    uint8 public constant decimals = 18;
+
     using BytesConvert for *;
 
     IPairEx internal orderbook;
