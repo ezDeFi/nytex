@@ -12,9 +12,9 @@ import "../interfaces/IPairEx.sol";
 */
 
 contract VolatileToken is ERC223 {
-    string public constant name = "Man NTY";
-    string public constant symbol = "MANTY";
-    uint8 public constant decimals = 14;
+    string public constant name = "MNTY";
+    string public constant symbol = "Mega NTY";
+    uint8 public constant decimals = 24;
 
     using BytesConvert for *;
     using ABI for *;
