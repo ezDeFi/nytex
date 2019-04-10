@@ -7,9 +7,8 @@ import "./Initializer.sol";
 contract OrderBook is Initializer, DataSet {
     using SafeMath for uint256;
     // Stepping price param
-    // Define T as the half of the price percentage step
-    // New orders with price fall between (1/(100+T))% and (100+T)% of an existing order, should belong to a same group/bucket.
-    uint256 internal T = 1;
+    uint256 internal StepDividend = 1;
+    uint256 internal StepDivisor = 10000;
 
     function insert(
         bool _orderType,
@@ -116,8 +115,9 @@ contract OrderBook is Initializer, DataSet {
         delete book.orders[_id];
     }
 
-    function _setT(uint256 _T) private {
-        T = _T;
+    function _setStep(uint256 dividend, uint256 divisor) private {
+        StepDividend = dividend;
+        StepDivisor = divisor;
     }
 
     // read functions
@@ -156,9 +156,9 @@ contract OrderBook is Initializer, DataSet {
         Order storage _new = book.orders[_newId];
         Order storage _old = book.orders[_oldId];
         // stepping price
-        // newWant / newHave < (oldWant / oldHave) * (100 / (100 + T))
-        uint256 a = _new.haveAmount.mul(_old.wantAmount).mul(100);
-        uint256 b = _old.haveAmount.mul(_new.wantAmount).mul(100 + T);
+        // newWant / newHave < (oldWant / oldHave) * (10000 / (10000 + T))
+        uint256 a = _new.haveAmount.mul(_old.wantAmount).mul(StepDivisor);
+        uint256 b = _old.haveAmount.mul(_new.wantAmount).mul(StepDivisor + StepDividend);
         return a > b;
     }
 
