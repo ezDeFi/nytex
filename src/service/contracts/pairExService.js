@@ -24,8 +24,10 @@ export default class extends BaseService {
         let amount = weiToMNTY(await weiMNTY)
         // let price = NUSDs / 1 MNTY = (weiNUSD / 1e18) / (weiMNTY / 1e24) = 1e6 * weiNUSD / weiMNTY
         let wPrice = BigNumber(await weiNUSD).multiply(BigNumber(10).power(24)).div(await weiMNTY) // weiNUSD / 1 MNTY
-        
-        let price = weiToEthS(Number(wPrice.toString()))
+        let expo = BigNumber(10).power(18)
+        let _before = BigNumber(wPrice).div(expo)
+        let _after = BigNumber(wPrice).mod(expo)
+        let price = _before.toString() + '.' + _after.toString()
         let order = await {
             'id': _id,
             'maker': cutString(res[0]),
@@ -47,7 +49,7 @@ export default class extends BaseService {
         let prev = await order.prev
         let loop = 10
         while ((await prev !== byteZero) && (loop > 0)) {
-            await console.log('orderId', _id, 'prev', prev)
+            // await console.log('orderId', _id, 'prev', prev)
             _id = await prev
             order = await this.getOrder(_orderType, _id)
             //await this.addOrderToRedux(_orderType, order)
@@ -55,7 +57,7 @@ export default class extends BaseService {
             prev = await order.prev
             await loop--
         }
-        await console.log('ABCD', orders)
+        // await console.log('ABCD', orders)
         if (_orderType) {
             await this.dispatch(pairExRedux.actions.orders_update({'true': orders}))
         } else {
