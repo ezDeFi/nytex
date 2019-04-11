@@ -1,4 +1,5 @@
 import moment from 'moment'
+import web3 from 'web3'
 
 const MAX = 88888888888
 
@@ -13,7 +14,9 @@ export function cutString (s) {
     var last3 = s.slice(-3)
     return first5 + '...' + last3
 }
-
+export function weiToMNTY (wei) {
+    return (Number(web3.utils.fromWei(wei.toString())) / 1000000).toFixed(4)
+  }
 // string
 export function weiToEthS (weiAmount) {
     if (isNaN(weiAmount)) return 'Loading'

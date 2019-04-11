@@ -1,6 +1,6 @@
 # hotlot
 
-This is hotlot front end which based on **webpack + react + redux**.
+This is front end which based on **webpack + react + redux**.
 
 ## how to run
 ```

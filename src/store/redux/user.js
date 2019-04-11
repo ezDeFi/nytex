@@ -19,6 +19,8 @@ class UserRedux extends BaseRedux {
       blockNumber: 0,
       wallet: null,
       balance: 0,
+      volatileTokenBalance: 0,
+      stableTokenBalance: 0,
       loginMetamask: true
     }
   }

@@ -82,14 +82,14 @@
     "absolutePath": "/C/Users/bestb/Desktop/workshop/nextyio/nytex/contracts/interfaces/IPairEx.sol",
     "exportedSymbols": {
       "IPairEx": [
-        1304
+        1316
       ]
     },
-    "id": 1305,
+    "id": 1317,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1275,
+        "id": 1287,
         "literals": [
           "solidity",
           "^",
@@ -105,9 +105,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1304,
+        "id": 1316,
         "linearizedBaseContracts": [
-          1304
+          1316
         ],
         "name": "IPairEx",
         "nodeType": "ContractDefinition",
@@ -115,22 +115,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1286,
+            "id": 1298,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "sell",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1284,
+              "id": 1296,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1277,
+                  "id": 1289,
                   "name": "_volatileTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "66:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -139,7 +139,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1276,
+                    "id": 1288,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "66:7:6",
@@ -153,10 +153,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1279,
+                  "id": 1291,
                   "name": "_stableTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "96:26:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -165,7 +165,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1278,
+                    "id": 1290,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "96:7:6",
@@ -179,10 +179,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1281,
+                  "id": 1293,
                   "name": "maker",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "124:13:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -191,7 +191,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1280,
+                    "id": 1292,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "124:7:6",
@@ -206,10 +206,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1283,
+                  "id": 1295,
                   "name": "index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "139:13:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -218,7 +218,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1282,
+                    "id": 1294,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "139:7:6",
@@ -234,12 +234,12 @@
               "src": "65:88:6"
             },
             "returnParameters": {
-              "id": 1285,
+              "id": 1297,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "162:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "52:111:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -248,22 +248,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1297,
+            "id": 1309,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "buy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1295,
+              "id": 1307,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1288,
+                  "id": 1300,
                   "name": "_stableTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "182:26:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -272,7 +272,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1287,
+                    "id": 1299,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "182:7:6",
@@ -286,10 +286,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1290,
+                  "id": 1302,
                   "name": "_volatileTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "210:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -298,7 +298,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1289,
+                    "id": 1301,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "210:7:6",
@@ -312,10 +312,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1292,
+                  "id": 1304,
                   "name": "maker",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "240:21:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -324,7 +324,7 @@
                     "typeString": "address payable"
                   },
                   "typeName": {
-                    "id": 1291,
+                    "id": 1303,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "240:15:6",
@@ -339,10 +339,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1294,
+                  "id": 1306,
                   "name": "index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "263:13:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -351,7 +351,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1293,
+                    "id": 1305,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "263:7:6",
@@ -367,12 +367,12 @@
               "src": "181:96:6"
             },
             "returnParameters": {
-              "id": 1296,
+              "id": 1308,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "286:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "169:118:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -381,25 +381,25 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1300,
+            "id": 1312,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "volatileTokenRegister",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1298,
+              "id": 1310,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "323:2:6"
             },
             "returnParameters": {
-              "id": 1299,
+              "id": 1311,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "334:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "293:42:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -408,32 +408,32 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1303,
+            "id": 1315,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stableTokenRegister",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1301,
+              "id": 1313,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "369:2:6"
             },
             "returnParameters": {
-              "id": 1302,
+              "id": 1314,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "380:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "341:40:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1305,
+        "scope": 1317,
         "src": "27:357:6"
       }
     ],
@@ -443,14 +443,14 @@
     "absolutePath": "/C/Users/bestb/Desktop/workshop/nextyio/nytex/contracts/interfaces/IPairEx.sol",
     "exportedSymbols": {
       "IPairEx": [
-        1304
+        1316
       ]
     },
-    "id": 1305,
+    "id": 1317,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1275,
+        "id": 1287,
         "literals": [
           "solidity",
           "^",
@@ -466,9 +466,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1304,
+        "id": 1316,
         "linearizedBaseContracts": [
-          1304
+          1316
         ],
         "name": "IPairEx",
         "nodeType": "ContractDefinition",
@@ -476,22 +476,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1286,
+            "id": 1298,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "sell",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1284,
+              "id": 1296,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1277,
+                  "id": 1289,
                   "name": "_volatileTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "66:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -500,7 +500,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1276,
+                    "id": 1288,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "66:7:6",
@@ -514,10 +514,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1279,
+                  "id": 1291,
                   "name": "_stableTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "96:26:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -526,7 +526,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1278,
+                    "id": 1290,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "96:7:6",
@@ -540,10 +540,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1281,
+                  "id": 1293,
                   "name": "maker",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "124:13:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -552,7 +552,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1280,
+                    "id": 1292,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "124:7:6",
@@ -567,10 +567,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1283,
+                  "id": 1295,
                   "name": "index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1286,
+                  "scope": 1298,
                   "src": "139:13:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -579,7 +579,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1282,
+                    "id": 1294,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "139:7:6",
@@ -595,12 +595,12 @@
               "src": "65:88:6"
             },
             "returnParameters": {
-              "id": 1285,
+              "id": 1297,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "162:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "52:111:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -609,22 +609,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1297,
+            "id": 1309,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "buy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1295,
+              "id": 1307,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1288,
+                  "id": 1300,
                   "name": "_stableTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "182:26:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -633,7 +633,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1287,
+                    "id": 1299,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "182:7:6",
@@ -647,10 +647,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1290,
+                  "id": 1302,
                   "name": "_volatileTokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "210:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -659,7 +659,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1289,
+                    "id": 1301,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "210:7:6",
@@ -673,10 +673,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1292,
+                  "id": 1304,
                   "name": "maker",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "240:21:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -685,7 +685,7 @@
                     "typeString": "address payable"
                   },
                   "typeName": {
-                    "id": 1291,
+                    "id": 1303,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "240:15:6",
@@ -700,10 +700,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1294,
+                  "id": 1306,
                   "name": "index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1297,
+                  "scope": 1309,
                   "src": "263:13:6",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -712,7 +712,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1293,
+                    "id": 1305,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "263:7:6",
@@ -728,12 +728,12 @@
               "src": "181:96:6"
             },
             "returnParameters": {
-              "id": 1296,
+              "id": 1308,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "286:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "169:118:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -742,25 +742,25 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1300,
+            "id": 1312,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "volatileTokenRegister",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1298,
+              "id": 1310,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "323:2:6"
             },
             "returnParameters": {
-              "id": 1299,
+              "id": 1311,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "334:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "293:42:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -769,32 +769,32 @@
           {
             "body": null,
             "documentation": null,
-            "id": 1303,
+            "id": 1315,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stableTokenRegister",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1301,
+              "id": 1313,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "369:2:6"
             },
             "returnParameters": {
-              "id": 1302,
+              "id": 1314,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "380:0:6"
             },
-            "scope": 1304,
+            "scope": 1316,
             "src": "341:40:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1305,
+        "scope": 1317,
         "src": "27:357:6"
       }
     ],
@@ -806,7 +806,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-04-09T07:14:14.272Z",
+  "updatedAt": "2019-04-11T04:22:24.903Z",
   "devdoc": {
     "methods": {}
   },

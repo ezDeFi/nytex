@@ -59,7 +59,7 @@
         "id": 29,
         "nodeType": "ImportDirective",
         "scope": 91,
-        "sourceUnit": 1274,
+        "sourceUnit": 1286,
         "src": "27:41:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -87,7 +87,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+              "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
               "typeString": "mapping(bool => contract IOwnableERC223)"
             },
             "typeName": {
@@ -105,7 +105,7 @@
               "nodeType": "Mapping",
               "src": "100:31:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                 "typeString": "mapping(bool => contract IOwnableERC223)"
               },
               "valueType": {
@@ -113,10 +113,10 @@
                 "id": 31,
                 "name": "IOwnableERC223",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 1273,
+                "referencedDeclaration": 1285,
                 "src": "116:14:1",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                  "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                   "typeString": "contract IOwnableERC223"
                 }
               }
@@ -191,7 +191,7 @@
                                 "referencedDeclaration": 33,
                                 "src": "400:5:1",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                                   "typeString": "mapping(bool => contract IOwnableERC223)"
                                 }
                               },
@@ -221,7 +221,7 @@
                               "nodeType": "IndexAccess",
                               "src": "400:12:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             }
@@ -229,7 +229,7 @@
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             ],
@@ -358,10 +358,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2717,
-                        2718
+                        2800,
+                        2801
                       ],
-                      "referencedDeclaration": 2718,
+                      "referencedDeclaration": 2801,
                       "src": "384:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -405,7 +405,7 @@
                         "referencedDeclaration": 33,
                         "src": "454:5:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "mapping(bool => contract IOwnableERC223)"
                         }
                       },
@@ -435,7 +435,7 @@
                       "nodeType": "IndexAccess",
                       "src": "454:12:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
@@ -452,7 +452,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2714,
+                            "referencedDeclaration": 2797,
                             "src": "484:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -485,10 +485,10 @@
                         "name": "IOwnableERC223",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1273,
+                        "referencedDeclaration": 1285,
                         "src": "469:14:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "type(contract IOwnableERC223)"
                         }
                       },
@@ -502,13 +502,13 @@
                       "nodeType": "FunctionCall",
                       "src": "469:26:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
                     "src": "454:41:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                      "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                       "typeString": "contract IOwnableERC223"
                     }
                   },
@@ -578,7 +578,7 @@
                                 "referencedDeclaration": 33,
                                 "src": "615:5:1",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                                   "typeString": "mapping(bool => contract IOwnableERC223)"
                                 }
                               },
@@ -608,7 +608,7 @@
                               "nodeType": "IndexAccess",
                               "src": "615:11:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             }
@@ -616,7 +616,7 @@
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             ],
@@ -745,10 +745,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2717,
-                        2718
+                        2800,
+                        2801
                       ],
-                      "referencedDeclaration": 2718,
+                      "referencedDeclaration": 2801,
                       "src": "599:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -792,7 +792,7 @@
                         "referencedDeclaration": 33,
                         "src": "668:5:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "mapping(bool => contract IOwnableERC223)"
                         }
                       },
@@ -822,7 +822,7 @@
                       "nodeType": "IndexAccess",
                       "src": "668:11:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
@@ -839,7 +839,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2714,
+                            "referencedDeclaration": 2797,
                             "src": "697:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -872,10 +872,10 @@
                         "name": "IOwnableERC223",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1273,
+                        "referencedDeclaration": 1285,
                         "src": "682:14:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "type(contract IOwnableERC223)"
                         }
                       },
@@ -889,13 +889,13 @@
                       "nodeType": "FunctionCall",
                       "src": "682:26:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
                     "src": "668:40:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                      "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                       "typeString": "contract IOwnableERC223"
                     }
                   },
@@ -964,7 +964,7 @@
         "id": 29,
         "nodeType": "ImportDirective",
         "scope": 91,
-        "sourceUnit": 1274,
+        "sourceUnit": 1286,
         "src": "27:41:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -992,7 +992,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+              "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
               "typeString": "mapping(bool => contract IOwnableERC223)"
             },
             "typeName": {
@@ -1010,7 +1010,7 @@
               "nodeType": "Mapping",
               "src": "100:31:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                 "typeString": "mapping(bool => contract IOwnableERC223)"
               },
               "valueType": {
@@ -1018,10 +1018,10 @@
                 "id": 31,
                 "name": "IOwnableERC223",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 1273,
+                "referencedDeclaration": 1285,
                 "src": "116:14:1",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                  "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                   "typeString": "contract IOwnableERC223"
                 }
               }
@@ -1096,7 +1096,7 @@
                                 "referencedDeclaration": 33,
                                 "src": "400:5:1",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                                   "typeString": "mapping(bool => contract IOwnableERC223)"
                                 }
                               },
@@ -1126,7 +1126,7 @@
                               "nodeType": "IndexAccess",
                               "src": "400:12:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             }
@@ -1134,7 +1134,7 @@
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             ],
@@ -1263,10 +1263,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2717,
-                        2718
+                        2800,
+                        2801
                       ],
-                      "referencedDeclaration": 2718,
+                      "referencedDeclaration": 2801,
                       "src": "384:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1310,7 +1310,7 @@
                         "referencedDeclaration": 33,
                         "src": "454:5:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "mapping(bool => contract IOwnableERC223)"
                         }
                       },
@@ -1340,7 +1340,7 @@
                       "nodeType": "IndexAccess",
                       "src": "454:12:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
@@ -1357,7 +1357,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2714,
+                            "referencedDeclaration": 2797,
                             "src": "484:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -1390,10 +1390,10 @@
                         "name": "IOwnableERC223",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1273,
+                        "referencedDeclaration": 1285,
                         "src": "469:14:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "type(contract IOwnableERC223)"
                         }
                       },
@@ -1407,13 +1407,13 @@
                       "nodeType": "FunctionCall",
                       "src": "469:26:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
                     "src": "454:41:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                      "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                       "typeString": "contract IOwnableERC223"
                     }
                   },
@@ -1483,7 +1483,7 @@
                                 "referencedDeclaration": 33,
                                 "src": "615:5:1",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                                  "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                                   "typeString": "mapping(bool => contract IOwnableERC223)"
                                 }
                               },
@@ -1513,7 +1513,7 @@
                               "nodeType": "IndexAccess",
                               "src": "615:11:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             }
@@ -1521,7 +1521,7 @@
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                                "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                                 "typeString": "contract IOwnableERC223"
                               }
                             ],
@@ -1650,10 +1650,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2717,
-                        2718
+                        2800,
+                        2801
                       ],
-                      "referencedDeclaration": 2718,
+                      "referencedDeclaration": 2801,
                       "src": "599:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1697,7 +1697,7 @@
                         "referencedDeclaration": 33,
                         "src": "668:5:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_mapping$_t_bool_$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "mapping(bool => contract IOwnableERC223)"
                         }
                       },
@@ -1727,7 +1727,7 @@
                       "nodeType": "IndexAccess",
                       "src": "668:11:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
@@ -1744,7 +1744,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2714,
+                            "referencedDeclaration": 2797,
                             "src": "697:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -1777,10 +1777,10 @@
                         "name": "IOwnableERC223",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1273,
+                        "referencedDeclaration": 1285,
                         "src": "682:14:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1273_$",
+                          "typeIdentifier": "t_type$_t_contract$_IOwnableERC223_$1285_$",
                           "typeString": "type(contract IOwnableERC223)"
                         }
                       },
@@ -1794,13 +1794,13 @@
                       "nodeType": "FunctionCall",
                       "src": "682:26:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                        "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                         "typeString": "contract IOwnableERC223"
                       }
                     },
                     "src": "668:40:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IOwnableERC223_$1273",
+                      "typeIdentifier": "t_contract$_IOwnableERC223_$1285",
                       "typeString": "contract IOwnableERC223"
                     }
                   },
@@ -1848,7 +1848,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-04-09T07:14:14.275Z",
+  "updatedAt": "2019-04-11T04:22:24.907Z",
   "devdoc": {
     "methods": {}
   },
