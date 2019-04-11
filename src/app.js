@@ -1,205 +1,131 @@
-import React from 'react';
+import React from 'react' // eslint-disable-line
 import ReactDOM from 'react-dom'
-import {Helmet} from "react-helmet"
-import _ from 'lodash';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
-import {Provider} from 'react-redux';
-import {ConnectedRouter} from 'react-router-redux';
-import store from '@/store';
-import config from '@/config';
-import {USER_ROLE} from '@/constant'
-import {api_request, isMobile} from "./util";
-import InitContractService from '@/service/InitContractService'
-import SocketService from '@/service/SocketService'
+import _ from 'lodash'
+import { BrowserRouter, Route, Switch } from 'react-router-dom' // eslint-disable-line
+import { Provider } from 'react-redux' // eslint-disable-line
+import { ConnectedRouter } from 'react-router-redux' // eslint-disable-line
+import store from '@/store'
+import config from '@/config'
+import { USER_ROLE } from '@/constant'
+import { api_request } from './util' // eslint-disable-line
 import UserService from '@/service/UserService'
-import io from 'socket.io-client'
+import {Helmet} from "react-helmet"
 import Web3 from 'web3'
+import { WEB3, CONTRACTS } from '@/constant'
 
-import './boot';
-import './style/index.scss';
-import './style/mobile.scss';
+import './boot'
+import './style/index.scss'
 
-const middleware = (render, props)=>{
-	return render;
-};
+console.log(CONTRACTS)
 
-const App = () => {
-    return (
-        <div>
-            <Helmet>
-                <meta name="cr-env" content={process.env.NODE_ENV} />
-                <meta name="cr-version-number" content={process.env.CR_VERSION ? '' + process.env.CR_VERSION : 'unknown'} />
-                {process.env.NODE_ENV === 'production' && <script defer src="/assets/js/rollbar_prod.js"></script>}
-                {process.env.NODE_ENV === 'staging' && <script defer src="/assets/js/rollbar_staging.js"></script>}
-                {process.env.NODE_ENV === 'production' && <script async src={'https://www.googletagmanager.com/gtag/js?id=' + process.env.GA_ID}></script>}
-                {process.env.NODE_ENV === 'production' && <script>{`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '` + process.env.GA_ID + `');`}</script>}
-                {window.location.pathname === '/' && <script defer src="/assets/js/luwa.js"></script>}
-                {process.env.NODE_ENV === 'production' && <script>{`
-                    (function(h,o,t,j,a,r){
-                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                    h._hjSettings={hjid:1076743,hjsv:6};
-                    a=o.getElementsByTagName('head')[0];
-                    r=o.createElement('script');r.async=1;
-                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                    a.appendChild(r);
-                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=')`}
-                </script>}
-                {/*<script>{
-                    (function() {
-                        window.Intercom("update");
-                    })()
-                }</script>*/}
-            </Helmet>
-            <Switch id="ebp-main">
+const middleware = (render, props) => {
+  return render
+}
 
-                {
-                    _.map(config.router, (item, i) => {
-                        const props = _.omit(item, ['page', 'path', 'type']);
-                        const R = item.type || Route;
-                        return (
-                            <R path={item.path} key={i} exact component={item.page} {...props} />
-                        );
-                    })
-                }
-            </Switch>
-        </div>
-    );
-};
+const App = () => { // eslint-disable-line
+  return (
+    <div>
+      <Helmet>
+          {/*<script defer src="/assets/js/web310.js"></script>*/}
+      </Helmet>
+      <Switch id="ss-main">
+        {_.map(config.router, (item, i) => {
+          const props = _.omit(item, ['page', 'path', 'type'])
+          const R = item.type || Route // eslint-disable-line
+          return (
+            <R path={item.path} key={i} exact component={item.page} {...props} />
+          )
+        })}
+      </Switch>
+    </div>
+  )
+}
 
 const render = () => {
-    ReactDOM.render(
-        (
-            <Provider store={store}>
-                <ConnectedRouter middleware={middleware} history={store.history}>
-                    <App/>
-                </ConnectedRouter>
-            </Provider>
-        ),
-        document.getElementById('ebp-root')
-    );
-};
-
-if (!sessionStorage.getItem('api-token') && localStorage.getItem('api-token')) {
-    sessionStorage.setItem('api-token', localStorage.getItem('api-token'))
+  ReactDOM.render(
+    <Provider store={store}>
+      <ConnectedRouter middleware={middleware} history={store.history}>
+        <App />
+      </ConnectedRouter>
+    </Provider>,
+    document.getElementById('ss-root')
+  )
 }
 
-if (sessionStorage.getItem('api-token') && !localStorage.getItem('api-token')) {
-    store.history.push('/login')
-    // sessionStorage.clear();
-}
-
-const contractRedux = store.getRedux('contract')
 const userRedux = store.getRedux('user')
-const initContractService = new InitContractService()
+const contractsRedux = store.getRedux('contracts')
 const userService = new UserService()
-
 let isRequest = false
-let alreadyCallLogin = false
-let netWorkId
+let isLogined = false
 
-function setupWeb3() {
-    window.web3.eth.getAccounts(async(err, accounts) => {
-        if (!err) {
-            if (accounts.length > 0) {
-                const userState = store.getState('user').user
-                store.dispatch(contractRedux.actions.connectedMetamask_update(true))
-                console.log('account detected : ', accounts[0])
-                console.log('account = ', accounts[0])
-                store.dispatch(userRedux.actions.walletAddress_update(accounts[0]))
+function setupWeb3 () {
+  window.web3.eth.getAccounts(async (err, accounts) => {
+    if (err) return
+    if (accounts.length > 0) {
+        window.web3.version.getNetwork( async (err, networkId) => {
+            if (networkId === WEB3.NETWORK_ID) {
+                let web3 = new Web3(window.ethereum)
 
-                if (userState.walletAddress && userState.walletAddress !== accounts[0]) {
-                    window.location.reload()
+                const contracts = {
+                  VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
+                  StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
+                  PairEx: new web3.eth.Contract(CONTRACTS.PairEx.abi, CONTRACTS.PairEx.address),
                 }
 
-                const userExists = await userService.checkUserExists(accounts[0])
-                if (userExists && !userState.is_login && !alreadyCallLogin) {
-                    await userService.loginByMetamask(accounts[0])
-                    userService.getWalletBalance()
-                    alreadyCallLogin = true
+                if (!isLogined) {
+                  await store.dispatch(userRedux.actions.loginMetamask_update(true))
 
-                    setTimeout(() => {
-                        alreadyCallLogin = false
-                    }, 1000)
+                  await store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
+                  await store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
+                  await store.dispatch(contractsRedux.actions.pairEx_update(contracts.PairEx))
+
+                  await store.dispatch(userRedux.actions.web3_update(web3))
+                  await userService.metaMaskLogin(accounts[0])
+                  userService.path.push('/home')
                 }
-                // console.log('account = ', accounts[0])
-                // store.dispatch(userRedux.actions.walletAddress_update(accounts[0]))
-                // store.dispatch(userRedux.actions.is_login_update(true))
-            } else {
-                if (!isRequest) {
-                    isRequest = true
-                    // Request account access if needed
-                    await window.ethereum.enable()
-                }
-                store.dispatch(contractRedux.actions.connectedMetamask_update(false))
+                isLogined = true
+            } else if (!isLogined) {
+                await store.dispatch(userRedux.actions.loginMetamask_update(false))
+                await userService.path.push('/login')
             }
-        }
-    })
-    window.web3.version.getNetwork((err, netId) => {
-        if (err) {} else
-
-        if (netWorkId && netWorkId !== netId)  {
-            window.location.reload()
-        }
-
-        if (netId == 1) {
-            console.log('NetworkId=', netId)
-            store.dispatch(contractRedux.actions.isMainnet_update(true))
-        } else {
-            console.log('NetworkId=', netId)
-            store.dispatch(contractRedux.actions.isMainnet_update(false))
-        }
-        netWorkId = netId
-    })
-}
-
-function setupWeb3WithDappBrowser() {
-    window.web3.eth.getAccounts(async(err, accounts) => {
-        if (!err) {
-            if (accounts.length > 0) {
-                const userState = store.getState('user').user
-                store.dispatch(contractRedux.actions.connectedMetamask_update(true))
-
-                if (userState.walletAddress && userState.walletAddress !== accounts[0]) {
-                    window.location.reload()
-                }
-
-                const userExists = await userService.checkUserExists(accounts[0])
-                if (userExists && !userState.is_login && !alreadyCallLogin) {
-                    await userService.loginByMetamask(accounts[0])
-                    userService.getWalletBalance()
-                    alreadyCallLogin = true
-
-                    setTimeout(() => {
-                        alreadyCallLogin = false
-                    }, 1000)
-                }
-
-                store.dispatch(userRedux.actions.walletAddress_update(accounts[0]))
-                // store.dispatch(userRedux.actions.is_login_update(true))
-            } else {
-                if (!isRequest) {
-                    isRequest = true
-                    // Request account access if needed
-                    await window.ethereum.enable()
-                }
-                store.dispatch(contractRedux.actions.connectedMetamask_update(false))
-            }
-        }
-    })
-}
-
-if (window.web3) {
-    //window.web3 = window.web3
-    initContractService.initContract(window.web3)
-    if (window.web3 && window.web3.currentProvider.isTrust) {
-        // window.web3 = new Web3(window.web3.currentProvider)
-        setupWeb3WithDappBrowser()
-    } else {
-        setupWeb3()
-        window.web3.currentProvider.publicConfigStore.on('update', async () => {
-            setupWeb3()
         })
+    } else {
+        if (!isRequest) {
+            isRequest = true
+            await window.ethereum.enable()
+        }
+        await store.dispatch(userRedux.actions.loginMetamask_update(false))
+        isLogined = false
+        await userService.path.push('/login')
     }
+  })
 }
 
-render();
+if (window.ethereum) {
+    setupWeb3()
+
+    window.web3.currentProvider.publicConfigStore.on('update', async () => {
+      setupWeb3()
+    })
+} else {
+  store.dispatch(userRedux.actions.loginMetamask_update(false))
+}
+
+if (sessionStorage.getItem('api-token')) { // eslint-disable-line
+  const userRedux = store.getRedux('user')
+  api_request({
+    path: '/user/current_user',
+    success: data => {
+      store.dispatch(userRedux.actions.is_login_update(true))
+      if ([USER_ROLE.ADMIN, USER_ROLE.COUNCIL].includes(data.role)) {
+        store.dispatch(userRedux.actions.is_admin_update(true))
+      }
+      store.dispatch(userRedux.actions.profile_update(data.profile))
+      store.dispatch(userRedux.actions.role_update(data.role))
+
+      render()
+    }
+  })
+} else {
+  render()
+}

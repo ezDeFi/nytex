@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react' // eslint-disable-line
 import BaseComponent from './BaseComponent'
-import {spring, Motion} from 'react-motion'
-import _ from 'lodash'
+import { spring, Motion } from 'react-motion' // eslint-disable-line
+import _ from 'lodash' // eslint-disable-line
 import store from '@/store'
 
 /**
@@ -10,74 +10,51 @@ import store from '@/store'
  wobbly: {stiffness: 180, damping: 12},
  stiff: {stiffness: 210, damping: 20},
  */
-const springConfig = {stiffness: 180, damping: 14}
 export default class extends BaseComponent {
-    ord_render(p) {
+  ord_render (p) { // eslint-disable-line
+    return (<div>{this.ord_renderPage(p)}</div>)
+  }
 
-        /*
-        const s = this.ord_animate()
-        const defaultStyle = {}
-        _.each(s.from, (v, i)=>{
-            defaultStyle[`value_${i}`] = v
-        })
-        const toStyle = {}
-        _.each(s.to, (v, i)=>{
-            toStyle[`value_${i}`] = spring(v, springConfig)
-        })
+  ord_init () { // eslint-disable-line
+    const storeUser = store.getState().user
 
-        const mp = {
-            defaultStyle,
-            style : toStyle
-        }
-
-        return (
-            <Motion {...mp}>
-                {
-                    (tar)=>{
-                        return (<div style={s.style_fn(_.values(tar))}>{this.ord_renderPage(p)}</div>)
-                    }
-                }
-            </Motion>
-        )
-        */
-
-        return (<div>{this.ord_renderPage(p)}</div>)
+    if (!storeUser) {
+      return
     }
+    const is_login = storeUser.is_login // eslint-disable-line
+    const is_admin = storeUser.is_admin // eslint-disable-line
 
-    ord_animate() {
+    if (!is_login && !storeUser.loginMetamask) { // eslint-disable-line
+      this.ord_checkLogin(is_login, is_admin)
+    }
+  }
+
+  ord_animate () { // eslint-disable-line
+    return {
+      from: [0, 50],
+      to: [1, 0],
+      style_fn: (values) => {
         return {
-            from: [0, 50],
-            to: [1, 0],
-            style_fn: (values) => {
-                return {
-                    position: 'relative',
-                    opacity: values[0],
-                    left: values[1]
-                }
-            }
+          position: 'relative',
+          opacity: values[0],
+          left: values[1]
         }
+      }
     }
+  }
 
-    ord_renderPage() {
-        return null
+  ord_renderPage () { // eslint-disable-line
+    return null
+  }
+
+  componentDidMount () { // eslint-disable-line
+  }
+
+  ord_checkLogin (isLogin, isAdmin) { // eslint-disable-line
+    let url = window.location.pathname
+
+    if (!isLogin && url !== '/user-guide') {
+      return this.props.history.replace('/login')
     }
-
-    componentDidMount() {
-        const storeUser = store.getState().user
-
-        if (!storeUser) {
-            return
-        }
-        const is_login = storeUser.is_login
-        const is_admin = storeUser.is_admin
-
-        this.ord_checkLogin(is_login, is_admin)
-    }
-
-    ord_checkLogin() {
-    }
-
-    $getParam(key){
-        return key ? this.props.match.params[key] : this.props.match.params[key];
-    }
+  }
 }

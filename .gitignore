@@ -1,8 +1,15 @@
 node_modules/
+dist/**
+jest/**
+migrations/**
+nginx/**
+public/**
+scripts/**
+webpack/**
 .idea/
 coverage/
 
-dev_dist/
-dist/
-build/
-*.log
+# disable dist due to the aws server performance is too low to build dist.
+#dist/
+
+dev_dist/node_modules/

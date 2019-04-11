@@ -1,54 +1,27 @@
-import BaseRedux from '@/model/BaseRedux';
+import BaseRedux from '@/model/BaseRedux'
 
 class UserRedux extends BaseRedux {
-    defineTypes() {
-        return ['user'];
+  defineTypes () {
+    return ['user']
+  }
+
+  defineDefaultState () {
+    return {
+      is_login: false,
+      is_admin: false,
+
+      login_form: {
+        privatekey: '',
+        loading: false
+      },
+
+      web3: null,
+      blockNumber: 0,
+      wallet: null,
+      balance: 0,
+      loginMetamask: true
     }
-
-    defineDefaultState() {
-        return {
-            loading: false,
-
-            is_login: false,
-            is_leader: false,
-            is_admin: false,
-
-            isCitizen: null,
-            email: '',
-            username: '',
-            messages: [],
-
-            role: '',
-            countPlay: 0,
-            walletBalance: 0,
-            stableTokenBalance: 0,
-            volatileTokenBalance: 0,
-            balance: 0,
-            walletAddress: '',
-            refAddress: '',
-            refUsername: '',
-            // TODO: I think we scrap this
-            login_form: {
-                username: '',
-                password: '',
-                loading: false
-            },
-            showRegisterModal: false,
-
-            // TODO: I think we scrap this
-            register_form: {
-                firstName: '',
-                lastName: '',
-                email: '',
-                password: ''
-            },
-
-            profile: {
-
-            },
-            current_user_id: null
-        };
-    }
+  }
 }
 
 export default new UserRedux()
