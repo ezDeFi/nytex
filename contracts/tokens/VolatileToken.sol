@@ -15,6 +15,7 @@ contract VolatileToken is ERC223 {
     string public constant name = "MNTY";
     string public constant symbol = "Mega NTY";
     uint8 public constant decimals = 24;
+    uint256 public constant exRate = 1000000;
 
     using BytesConvert for *;
     using ABI for *;
@@ -27,7 +28,7 @@ contract VolatileToken is ERC223 {
         orderbook = IPairEx(_orderbook);
         orderbook.volatileTokenRegister();
         initialize(address(_orderbook));
-        _mint(msg.sender, 10 ** 30);
+        // _mint(msg.sender, 10 ** 30);
     }
 
 
@@ -58,7 +59,7 @@ contract VolatileToken is ERC223 {
         /* concensus garantures, this contract always got enough NTY to cashout */
         /************************************************************************/
 
-        _to.transfer(_amount);
+        _to.transfer(_amount / exRate);
     }
 
     function buyFor(
@@ -69,7 +70,7 @@ contract VolatileToken is ERC223 {
         returns(bool)
     {
         uint256 _amount = msg.value;
-        _mint(_to, _amount);
+        _mint(_to, _amount.mul(exRate));
         return true;
     }
 
