@@ -1,28 +1,34 @@
-import React from 'react';
-import StandardPage from '../StandardPage';
-import LoginOrRegisterForm from '@/module/form/LoginOrRegisterForm/Container';
+import React from 'react' // eslint-disable-line
+import StandardPage from '../StandardPage'
+import LoginForm from '@/module/form/LoginForm/Container' // eslint-disable-line
+import { Col, Spin } from 'antd' // eslint-disable-line
 
 import './style.scss'
 
 export default class extends StandardPage {
-    ord_renderContent() {
-        return (
-            <div className="p_login ebp-wrap">
-                <div className="d_box">
-                    <div className="side-image">
-                        {/*<img src="/assets/images/banner.png"/>*/}
-                    </div>
-                    <div className="side-form">
-                        <LoginOrRegisterForm />
-                    </div>
-                </div>
-            </div>
-        );
-    }
+  ord_renderContent () { // eslint-disable-line
+    return (
+      <div>
+        <div className="p_login ebp-wrap" >
+          <Col span={24} style={{ marginTop: '30px', marginBottom: '30px' }}>
+            {(this.props.loginMetamask) && <div>
+              <Spin tip="Logging in with MetaMask...">
+              </Spin>
+            </div>}
+            {(!this.props.loginMetamask) && <div className="login-metamask">
+              <img src="/assets/images/metamask.svg" with="100px" height="100px" /><h2>Login with <a href="https://metamask.io/" target="_blank">MetaMask</a> or Private Key</h2>
+            </div>}
+             <LoginForm />
+          </Col>
 
-    ord_checkLogin(isLogin) {
-        if (isLogin) {
-            this.props.history.replace('/profile/teams');
-        }
+        </div>
+      </div>
+    )
+  }
+
+  ord_checkLogin (isLogin) { // eslint-disable-line
+    if (isLogin) {
+      this.props.history.replace('/manage')
     }
+  }
 }

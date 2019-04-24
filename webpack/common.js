@@ -16,11 +16,11 @@ module.exports = {
                 uglifyOptions: {
                     ecma: 6,
                     compress: {
-                        drop_console: process.env.NODE_ENV === 'production',
-                    },
-                },
+                        drop_console: process.env.NODE_ENV === 'production'
+                    }
+                }
             }),
-            new OptimizeCSSAssetsPlugin(),
+            new OptimizeCSSAssetsPlugin()
         ],
         splitChunks: {
             chunks: 'async',
@@ -33,7 +33,7 @@ module.exports = {
             cacheGroups: {
                 vendors: {
                     test: /[\\/]node_modules[\\/]/,
-                    priority: -10,
+                    priority: -10
                 },
                 styles: {
                     name: 'styles',
@@ -41,24 +41,24 @@ module.exports = {
                     chunks: 'all',
                     minChunks: 1,
                     reuseExistingChunk: true,
-                    enforce: true,
+                    enforce: true
                 },
                 default: {
                     minChunks: 2,
                     priority: -20,
-                    reuseExistingChunk: true,
-                },
-            },
-        },
+                    reuseExistingChunk: true
+                }
+            }
+        }
     },
     resolve: {
         extensions: ['.js', '.json', '.css', '.less', '.scss', '.sass', '.jsx'],
         alias: {
             '@': resolve('src'),
-            'img': resolve('src/img')
+            img: resolve('src/img')
         }
     },
-    plugins : [
+    plugins: [
         new CopyWebpackPlugin([
             {
                 from: 'src/assets',

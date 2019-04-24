@@ -1,0 +1,108 @@
+
+@import "../../../style/variable";
+@import "../../../style/color";
+
+@mixin homeContent {
+  max-width: $main_width;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.c_Home {
+  .container {
+    margin: 50px 0px;
+  }
+
+  .row_item {
+    margin: 10px 50px;
+
+    .alert_text {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .btn_payment {
+      height: 80px;
+      width: 280px;
+      margin: 10px 0px;
+      padding: 0px 10px;
+      background: #ff0000;
+      color: #fff;
+    }
+
+    .show_amount {
+      color: #ff0000;
+      padding: 5px !important;
+    }
+
+    .card_metamask {
+      width: 280px;
+      margin: 0 auto;
+      background: #e2e2e2;
+    }
+
+    .img_metamask {
+      position: absolute;
+      width: 25px;
+      left: 15px;
+    }
+
+    .img_metamask_deposit {
+      width: 25px;
+    }
+
+    @media only screen and (max-width: $mobile-width) {
+      margin: 20px 10px;
+    }
+  }
+
+  .banner {
+    max-width: 380px;
+    width: 100%;
+  }
+  .games {
+      text-align: center;
+      @media only screen and (max-width: $mobile-width) {
+        margin: 10px auto;
+        max-width: 340px;
+      }
+
+    .item {
+        float: left;
+        margin: 20px;
+        @media only screen and (max-width: $mobile-width) {
+          margin: 10px;
+        }
+
+        .ant-card {
+          width: 200px;
+          background: transparent;
+          border: none;
+
+          @media only screen and (max-width: $mobile-width) {
+            width: 150px;
+          }
+
+          .ant-card-cover {
+            transition: 200ms ease-in-out;
+          }
+
+          .ant-card-cover:hover {
+            transform: scale(1.1);
+          }
+
+          .ant-card-body {
+            padding: 15px !important;
+          }
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: 300;
+            color: #fff;
+            text-align: center;
+            margin-top: 10px;
+        }
+    }
+  }
+}

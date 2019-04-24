@@ -1,13 +1,8 @@
 .ant-layout{
-  background: none;
-}
-.c_Home {
-  max-width: $main_width;
-  margin: 0 auto;
+  background: #fff;
 }
 .ant-layout-content{
-  z-index: 1;
-  margin-bottom: 50px;
+  text-align: center;
 }
 
 .ant-dropdown-menu {
@@ -15,82 +10,38 @@
 
   > .ant-dropdown-menu-item {
     padding: 8px 48px 8px 32px;
+    color: rgba(0, 0, 0, 1);
   }
 }
 
-#root-container::after {
-    @media only screen and (max-width: $mobile-width) {
-      background-size: 100%;
-    }
-}
-
-.help-menu {
-  margin-right: -$gap_2;
-}
-
-.sider-collapsed {
-  margin-right: 280px;
-}
-
-.sider-no-collapsed {
-  margin-right: 0px;
-}
-
-.c_Header.ant-layout-header {
-  border-bottom: 1px solid #f00;
-  height: 88px;
+.c_Header{
+  background: #fff;
+  height: $header_height;
   padding: 0;
   text-align: center;
   box-shadow: none;
 
-  .c_Affix_Menu {
-    .c_Affix_Menu_Item {
-      width: 156;
-      height: 74px;
-      position: absolute;
-      &.hidden {
-        display: none;
-      }
-    }
-  }
-
   .c_Header_Menu.ant-menu {
+    max-width: $main_width;
+    background-color: #fff;
+
     padding-top: 0;
   }
 
-  .c_Side_Menu {
-    border-right: 0;
-    .c_MenuItem.ant-menu-item-selected {
-      .ant-dropdown-link {
-        color: inherit;
-      }
-    }
-
-    .c_MenuItem.help {
-      padding-right: 46px;
-      padding-left: 4px;
-    }
-
-    @media only screen and (max-width: $mobile-width) {
-      .c_MenuItem.help {
-        display: none;
-      }
-    }
-  }
-
   .c_MenuItem {
-    height: 80px;
-    font-size: 18px;
-    font-stretch: normal;
-    padding-top: 36px;
+    height: $header_height;
+    font-size: 16px;
+    font-weight: 600;
+    padding-top: 24px;
     line-height: 20px;
-    font-weight: 500;
-    margin: -1px 0 0 0;
+    color: #000000;
 
     &.logo {
+      padding-top: 0;
+
       > img {
-        margin-top: -12px;
-        height: 50px;
+        margin-top: 8px;
+        height: 60px;
       }
     }
 
@@ -99,6 +50,7 @@
       padding-right: 4px;
 
       > .ant-dropdown-link {
+        color: rgba(0, 0, 0, 1);
         height: 73px;
         padding-top: 24px;
       }
@@ -109,7 +61,11 @@
 
       // account dropdown
       &.account {
-        padding-right: 32px;
+        padding-right: 4px;
+
+        > .ant-dropdown-link {
+          color: rgba(0, 0, 0, 1);
+        }
       }
 
       .ant-menu-item {
@@ -146,13 +102,12 @@
 
     padding: 8px 16px;
 
-    margin-right: 100px;
-
     > .ant-menu-item{
       padding: 0 16px;
       border-bottom: 0;
 
       &.ant-menu-item-active:hover {
+        color: #000000;
         border-bottom: 0;
       }
     }
@@ -180,90 +135,19 @@
 }
 
 .l_banner {
-  background: $primary_color;
+  background: linear-gradient(90deg, rgba(71, 170, 167, 1) 0%, rgba(71, 170, 167, 0.75) 60%, rgba(224, 224, 224, 0.55) 100%);
   border-radius: 4px;
-  padding: $gap_1;
-  font-weight: 200;
+  padding: 8px $gap_1;
 
-  > :first-child {
+  > div:first-child {
     color: #ffffff;
     padding: 0;
+    padding-top: 3px;
+
     font-size: 120%;
   }
 
   .status {
-    font-weight: 500;
+    font-weight: 600;
   }
-
-  .pull-right {
-    button:not(:last-child) {
-      margin-right: $gap_1;
-    }
-  }
-}
-
-@media only screen and (max-width: 1700px) {
-  .c_Header .c_MenuTopRight {
-    margin-right: 0;
-  }
-  .c_Header.ant-layout-header {
-    .c_Side_Menu {
-      // display: none;
-      display: unset;
-    }
-  }
-}
-
-.project-detail-nobar {
-  .login-register-modal {
-    width: calc(100% + 72px);
-    margin-left: -36px;
-    margin-bottom: -36px;
-    display: flex;
-
-    .side-image {
-      display: flex;
-      max-width: 50%;
-
-      img {
-        padding-top: $gap_2;
-        width: 100%;
-      }
-    }
-    .side-form {
-      display: flex;
-      margin: $gap_4 auto 0;
-    }
-
-    @media only screen and (max-width: $mobile-width) {
-      .side-image {
-        display: none;
-      }
-      .side-form {
-        width: 100%;
-      }
-    }
-  }
-}
-
-.profile-overview-popup-modal {
-  .ant-modal-body {
-    padding: 0;
-  }
-}
-
-.icon-chat {
-  position: fixed;
-  bottom: 50px;
-  z-index: 999;
-  right: 30px;
-  cursor: pointer;
-}
-
-.admin-left-column {
-  min-width: 230px;
-}
-
-.admin-right-column {
-  max-width: 860px;
 }

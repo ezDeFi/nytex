@@ -1,59 +1,60 @@
-import React from 'react';
-import StandardPage from '../StandardPage';
-import _ from 'lodash'
-import I18N from '@/I18N'
-import {MAX_WIDTH_MOBILE, MIN_WIDTH_PC} from '@/config/constant'
-import {isMobile} from "../../../util"
-import URI from 'urijs'
+import React from 'react' // eslint-disable-line
+import LoggedInPage from '../LoggedInPage'
+import _ from 'lodash' // eslint-disable-line
 
 import './style.scss'
 
-import { Col, Row, Icon, Button, Carousel, Notification, Table, Card, Modal, InputNumber, Input, Divider, Message, Alert } from 'antd'
-import moment from 'moment/moment'
-import {TOKEN_ADDRESS, AMOUNT_DEFAULT, ETHERS_SCAN} from '@/constant'
+import { Col, Row, Breadcrumb, Icon } from 'antd' // eslint-disable-line
 
-export default class extends StandardPage {
+export default class extends LoggedInPage {
+  componentDidMount () {
+  }
 
-    state = {
+  componentWillUnmount () {
+  }
+
+  getCoreTenets () {
+    return [
+      'Organizers are decided by a transparent voting system',
+      'Voting power (EVP) is only earned through participation',
+      'Nexty can only veto tasks and define the ELA rewards'
+    ]
+  }
+
+  ord_renderContent () { // eslint-disable-line
+    const backdropStyle = {
+      backgroundPosition: '0 50%'
     }
 
-    async componentDidMount() {
-        const params = new URI(this.props.location.search || '').search(true)
-        if (params && params.ref) {
-            localStorage.setItem('ref', params.ref)
-        }
-    }
+    return (
+      <div className="c_Home">
+        <div className="d_topBackdrop" style={backdropStyle}>
+          <div className="d_topBackdrop_title">
+                        Nexty
+          </div>
+        </div>
+        <div className="horizGap">
 
-    gotoGame(game) {
-        this.props.history.push(game)
-    }
+        </div>
+        <Row className="d_rowPrograms">
+          <Col span={8} className="d_colProgram_middle">
+            <a href="/">
+              <img src="/assets/images/ss.jpeg" />
+              <h3>
 
-    ord_renderContent() {
+              </h3>
+            </a>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
 
-        return (
-            <Row className="c_Home">
-                <div className="container">
-                    <Row className="games">
-                        <Col className="item">
-                            <Card
-                                onClick={this.gotoGame.bind(this, 'dapps/simpledice')}
-                                hoverable
-                                cover={<img src="/assets/images/coinflip.png" />}
-                            >
-                                <span className="name">Coin Flip</span>
-                            </Card>
-                        </Col>
-                        <Col className="item">
-                            <Card
-                                hoverable
-                                cover={<img src="/assets/images/dice.png" />}
-                            >
-                                <span className="name">Dice (Comming soon)</span>
-                            </Card>
-                        </Col>
-                    </Row>
-                </div>
-            </Row>
-        );
-    }
+  ord_renderBreadcrumb () { // eslint-disable-line
+    return (
+      <Breadcrumb style={{ 'marginLeft': '16px', 'marginTop': '16px', float: 'right' }}>
+        <Breadcrumb.Item><Icon type="home" /> Home</Breadcrumb.Item>
+      </Breadcrumb>
+    )
+  }
 }
