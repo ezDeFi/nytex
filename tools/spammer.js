@@ -2,6 +2,7 @@ const VolatileTokenData = require('./../build/contracts/VolatileToken.json')
 const StableTokenData = require('./../build/contracts/StableToken.json')
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx')
+var BigNumber = require('bignumber.js');
 
 const networkId = 111111
 
@@ -19,30 +20,40 @@ const CONTRACTS =
       }
   }
 
+const UNITS =
+  {
+    'MNTY': BigNumber(10).pow(24),
+    'NUSD': BigNumber(10).pow(18)
+  }
+
 const BOUNDS =
 {
   'Sell':
     {
+      // WNTY Amount
       'Amount': {
-        'Min': 1,
-        'Max': 10 ** 18
+        'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
+        'Max': BigNumber(10).multipliedBy(UNITS.MNTY)
       },
+      // NUSD / 1 WNTY
       'Price': {
-        'Min': 1.144444444444,
-        'Max': 10
+        'Min': BigNumber(11).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
+        'Max': BigNumber(20).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
       }
     },
   'Buy':
     {
+      // WNTY Amount
       'Amount': {
-        'Min': 1,
-        'Max': 10 ** 18
+        'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
+        'Max': BigNumber(10).multipliedBy(UNITS.MNTY)
       },
+      // NUSD / 1 WNTY
       'Price': {
-        'Min': 1.144444444444,
-        'Max': 10
+        'Min': BigNumber(1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
+        'Max': BigNumber(10).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
       }
-    },
+    }
 }
 
 var web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'))
@@ -65,29 +76,37 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   let toDeposit
   toDeposit = 0
   if (_orderType === 'Sell') {
-    toDeposit = myBalance >= _haveAmount ? 0 : _haveAmount - myBalance
+    toDeposit = BigNumber(myBalance).isGreaterThan(BigNumber(_haveAmount)) ? 0 : BigNumber(_haveAmount).minus(BigNumber(myBalance))
+    toDeposit = new BigNumber(toDeposit).toFixed(0)
   }
-  if (toDeposit > 0) myBalance = 0
-  await console.log('current balance', myBalance, 'toDeposit', toDeposit)
+  if (BigNumber(toDeposit).isGreaterThan(0)) myBalance = 0
+  console.log('current balance xxx', myBalance, 'toDeposit', toDeposit)
   let rawTransaction = {
     'from': myAddress,
     'gasPrice': web3.utils.toHex(1e9),
     'gasLimit': web3.utils.toHex(780000),
     'to': contractAddress,
-    'value': web3.utils.toHex(toDeposit.toString()),
-    'data': methods.simpleBuy(_haveAmount.toString(), _wantAmount.toString(), [0]).encodeABI(),
+    'value': web3.utils.toHex(toDeposit),
+    'data': methods.simpleBuy(_haveAmount, _wantAmount, [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
+  console.log(rawTransaction)
   let transaction = new Tx(rawTransaction);
   // signing transaction with private key
   transaction.sign(privateKey)
   // sending transacton via web3 module
-  await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex')).on('transactionHash', console.log)
+  await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex')) // .on('transactionHash', console.log)
 }
 
 // return random integer number in range [MIN, MAX]
-function randomGen (MAX, MIN) {
-  return MIN + Math.floor(Math.random() * (MAX - MIN + 1))
+function randomGen (_min, _max) {
+  let zoom = new BigNumber(10).pow(18)
+  let min = new BigNumber(_min).multipliedBy(zoom)
+  let max = new BigNumber(_max).multipliedBy(zoom)
+  let range = new BigNumber(max).minus(BigNumber(min))
+  let random = new BigNumber(Math.random()).multipliedBy(range)
+  let res = ((BigNumber(min).plus(random)).dividedBy(zoom))
+  return res
 }
 
 function getZoom (_value) {
@@ -103,27 +122,23 @@ function getMaxZoom (a, b) {
 function createRandomOrderByType (_orderType) {
   let minPrice = BOUNDS[_orderType].Price.Min
   let maxPrice = BOUNDS[_orderType].Price.Max
-  let zoom = getMaxZoom(getZoom(minPrice), getZoom(maxPrice))
-  // console.log('zoom', zoom)
-  minPrice = Math.floor(minPrice * zoom)
-  maxPrice = Math.floor(maxPrice * zoom)
-  // console.log(min, max)
-  let price = randomGen(maxPrice, minPrice) / zoom
-  // console.log(price)
-
+  console.log('minPrice', minPrice)
+  console.log('maxPrice', maxPrice)
+  let price = randomGen(maxPrice, minPrice)
+  console.log('price', price)
   let minAmount = BOUNDS[_orderType].Amount.Min
   let maxAmount = BOUNDS[_orderType].Amount.Max
   let haveAmount
   let wantAmount
   if (_orderType === 'Sell') {
-    haveAmount = randomGen(maxAmount, minAmount)
-    wantAmount = Math.floor(haveAmount * price)
+    haveAmount = new BigNumber(randomGen(maxAmount, minAmount)).toFixed(0)
+    wantAmount = new BigNumber(haveAmount).multipliedBy(BigNumber(price)).toFixed(0)
   } else {
-    haveAmount = randomGen(maxAmount, minAmount)
-    wantAmount = Math.floor(haveAmount / price)
+    wantAmount = new BigNumber(randomGen(maxAmount, minAmount)).toFixed(0)
+    haveAmount = new BigNumber(wantAmount).multipliedBy(BigNumber(price)).toFixed(0)
   }
   let order = {
-    'orderType' : _orderType,
+    'orderType': _orderType,
     'haveAmount': haveAmount,
     'wantAmount': wantAmount
   }
@@ -132,7 +147,7 @@ function createRandomOrderByType (_orderType) {
 
 function createRandomOrder () {
   let _seed = randomGen(1, 0)
-  let _orderType = _seed === 0 ? 'Sell' : 'Buy'
+  let _orderType = BigNumber(_seed).isGreaterThan(BigNumber(0.5)) ? 'Sell' : 'Buy'
   return createRandomOrderByType(_orderType)
 }
 
@@ -142,12 +157,12 @@ async function randomOrder (nonce) {
 }
 
 async function spam () {
-  count = await getNonce(myAddress)
+  let count = await getNonce(myAddress)
   await console.log('start with nonce = ', count)
   let methods = VolatileToken.methods
   myBalance = await methods.balanceOf(myAddress).call()
-  await console.log('start with WNTY Amount = ', myBalance / 1e10)
-  for (let i = 0; i <= 100; i++) {
+  await console.log('start with WNTY Amount = ', BigNumber(myBalance).toFixed(0))
+  for (let i = 0; i <= 10; i++) {
     await randomOrder(count + i)
   }
 }
