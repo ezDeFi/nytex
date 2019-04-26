@@ -11,5 +11,10 @@ npm start
 # front-end will running on http://localhost:3001
 ```
 
+# how to deploy
+yarn deploy:localhost
+or
+yarn deployt:development
+
 
 

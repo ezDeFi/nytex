@@ -4,6 +4,9 @@
   "description": "Dapp Nexty Management",
   "scripts": {
     "compile": "truffle compile",
+    "deploy:localhost" : "truffle migrate --reset --network localhost",
+    "deploy:development" : "truffle migrate --reset --network development",
+    "spam" : "node tools/spammer.js",
     "parser": "babel-eslint",
     "pretest": "eslint --ignore-path .gitignore .",
     "test": "scripts/test.sh",
