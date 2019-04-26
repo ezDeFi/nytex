@@ -190,10 +190,10 @@ export default class extends LoggedInPage {
             <Col className="text-center" span={24}>
               <h3 className="text-center">Orderbook</h3>
             </Col>
-            <Col span={12}>
+            <Col span={24}>
               {this.ordersRender(false)}
             </Col>
-            <Col span={12}>
+            <Col span={24}>
               {this.ordersRender(true)}
             </Col>
 
