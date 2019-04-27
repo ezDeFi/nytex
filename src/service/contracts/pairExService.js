@@ -48,7 +48,7 @@ export default class extends BaseService {
         let order = await this.getOrder(_orderType, _id)
         let prev = await order.prev
         let loop = 10
-        while ((await prev !== byteZero) && (loop > 0)) {
+        while ((await prev !== byteZero)) {
             // await console.log('orderId', _id, 'prev', prev)
             _id = await prev
             order = await this.getOrder(_orderType, _id)
@@ -57,7 +57,7 @@ export default class extends BaseService {
             prev = await order.prev
             await loop--
         }
-        // await console.log('ABCD', orders)
+        await console.log('ABCD', orders)
         order = await orders.sort((a, b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0))
         if (_orderType) {
             await this.dispatch(pairExRedux.actions.orders_update({'true': orders}))
