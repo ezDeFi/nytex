@@ -4,6 +4,9 @@ const Web3 = require('web3');
 const Tx = require('ethereumjs-tx')
 var BigNumber = require('bignumber.js');
 
+let args = process.argv
+let network = args[2]
+let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
 const networkId = 111111
 
 const CONTRACTS =
@@ -56,7 +59,7 @@ const BOUNDS =
     }
 }
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'))
+var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
 var StableToken = new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address)
 var myAddress = '0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d';
