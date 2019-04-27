@@ -58,7 +58,7 @@ export default class extends BaseService {
             await loop--
         }
         // await console.log('ABCD', orders)
-        order = await orders.sort((a, b) => (a.price > b.price) ? -1 : ((b.price > a.price) ? 1 : 0))
+        order = await orders.sort((a, b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0))
         if (_orderType) {
             await this.dispatch(pairExRedux.actions.orders_update({'true': orders}))
         } else {
