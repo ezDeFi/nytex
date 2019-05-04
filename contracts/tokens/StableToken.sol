@@ -19,7 +19,7 @@ contract StableToken is ERC223{
         public
     {
         orderbook = IPairEx(_orderbook);
-        orderbook.stableTokenRegister();
+        orderbook.stableTokenRegister(address(this));
         initialize(address(_orderbook));
         _mint(msg.sender, 10**24);
     }
