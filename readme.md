@@ -1,4 +1,4 @@
-# hotlot
+# nytex
 
 This is front end which based on **webpack + react + redux**.
 
