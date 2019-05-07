@@ -20,6 +20,7 @@ export default class extends BaseService {
         let _volatileTokenBalance = BigNumber(store.user.volatileTokenBalance)
         let _toDeposit = _haveAmount.gt(_volatileTokenBalance) ? _haveAmount.subtract(_volatileTokenBalance) : 0
         let methods = store.contracts.volatileToken.methods
+        // console.log('sell MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
         await methods.simpleBuy(_haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet, value: _toDeposit.toString()})
     }
 

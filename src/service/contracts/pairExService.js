@@ -2,6 +2,7 @@ import BaseService from '../../model/BaseService'
 import _ from 'lodash'
 import { empty } from 'glamor';
 import { cutString, weiToMNTY, weiToEthS} from './help'
+import { DECIMALS } from '@/constant'
 
 var BigNumber = require('big-number');
 
@@ -23,8 +24,8 @@ export default class extends BaseService {
         let weiNUSD = _orderType ? BigNumber(await res[1]) : BigNumber(await res[2])
         let amount = weiToMNTY(await weiMNTY)
         // let price = NUSDs / 1 MNTY = (weiNUSD / 1e18) / (weiMNTY / 1e24) = 1e6 * weiNUSD / weiMNTY
-        let wPrice = BigNumber(await weiNUSD).multiply(BigNumber(10).power(24)).div(await weiMNTY) // weiNUSD / 1 MNTY
-        let expo = BigNumber(10).power(18)
+        let wPrice = BigNumber(await weiNUSD).multiply(BigNumber(10).power(DECIMALS.mnty)).div(await weiMNTY) // weiNUSD / 1 MNTY
+        let expo = BigNumber(10).power(DECIMALS.nusd)
         let _before = BigNumber(wPrice).div(expo)
         let _after = BigNumber(wPrice).mod(expo)
         let price = _before.toString() + '.' + _after.toString()

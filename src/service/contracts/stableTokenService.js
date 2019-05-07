@@ -19,8 +19,12 @@ export default class extends BaseService {
         let wallet = store.user.wallet
         let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
         let _toDeposit = _haveAmount.gt(_stableTokenBalance) ? _haveAmount.subtract(_stableTokenBalance) : 0
+        console.log('toDeposit', _toDeposit)
         let methods = store.contracts.stableToken.methods
-        await methods.simpleBuy(_haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet, value: _toDeposit.toString()})
+        let owner = await methods.owner().call()
+        await console.log('owner = ', owner)
+        console.log('buy MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
+        await methods.simpleBuy(_haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet})
     }
 
     async transfer(_toWallet, _amount) {
