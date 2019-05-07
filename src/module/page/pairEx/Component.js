@@ -5,6 +5,7 @@ import Tx from 'ethereumjs-tx' // eslint-disable-line
 import { Link } from 'react-router-dom' // eslint-disable-line
 import web3 from 'web3'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { DECIMALS } from '@/constant'
 
 import './style.scss'
 
@@ -12,8 +13,8 @@ import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'a
 
 var BigNumber = require('big-number');
 
-const weiToEther = (wei) => {
-  return Number(web3.utils.fromWei(wei.toString())).toFixed(4)
+const weiToNUSD = (wei) => {
+  return Number(wei / (10 ** (DECIMALS.nusd))).toFixed(4)
 }
 
 const weiToMNTY = (wei) => {
@@ -56,13 +57,13 @@ export default class extends LoggedInPage {
                 Balance:
               </Col>
               <Col span={6}>
-                {weiToEther(this.props.balance)} NTY
+                {weiToMNTY(this.props.balance)} MNTY
               </Col>
             </Row>
 
             <Row>
               <Col span={6}>
-                volatileTokenBalance:
+                MNTY Tokens:
               </Col>
               <Col span={6}>
                 {weiToMNTY(this.props.volatileTokenBalance)} MNTY
@@ -71,10 +72,10 @@ export default class extends LoggedInPage {
 
             <Row>
               <Col span={6}>
-                stableTokenBalance:
+                NUSD Tokens:
               </Col>
               <Col span={6}>
-                {weiToEther(this.props.stableTokenBalance)} NUSD
+                {weiToNUSD(this.props.stableTokenBalance)} NUSD
               </Col>
             </Row>
 
@@ -126,7 +127,7 @@ export default class extends LoggedInPage {
               </Col>
               <Col span={1}/>
               <Col span={8}>
-                <InputNumber className="maxWidth"
+                <Input className="maxWidth"
                   defaultValue={0}
                   value={this.state.amount}
                   onChange={this.amountChange.bind(this)}
@@ -138,7 +139,7 @@ export default class extends LoggedInPage {
               </Col>
               <Col span={1}/>
               <Col span={8}>
-                <InputNumber className="maxWidth"
+                <Input className="maxWidth"
                   defaultValue={0}
                   value={this.state.price}
                   onChange={this.priceChange.bind(this)}
@@ -301,30 +302,41 @@ remove(_orderType) {
 }
 
 transferVolatileToken() {
-    let amount = BigNumber(Math.floor(this.state.transferAmount *1e10))
-    amount = amount.multiply(BigNumber(10).power(14))
+    let zoom = 1e10
+    let zoomExpo = 10
+    let amount = BigNumber(Math.floor(this.state.transferAmount * zoom))
+    amount = amount.multiply(BigNumber(10).power(DECIMALS.mnty - zoomExpo))
     this.props.transferVolatileToken(this.state.toWallet, amount)
 }
 
 transferStableToken() {
-    let amount = BigNumber(Math.floor(this.state.transferAmount *1e10))
-    amount = amount.multiply(BigNumber(10).power(8))
+    let amount = BigNumber(Math.floor(this.state.transferAmount * zoom))
+    amount = amount.multiply(BigNumber(10).power(DECIMALS.nusd - zoomExpo))
     this.props.transferStableToken(this.state.toWallet, amount)
 }
 
 sellVolatileToken() {
-    let haveAmount = this.state.amount
-    let price = this.state.price
-    let wantAmount = BigNumber(Math.floor(haveAmount * price * 1e18))
-    haveAmount = BigNumber(haveAmount).multiply(BigNumber(10).pow(24))
+    let zoomExpo = 10
+    let zoom = 10 ** (zoomExpo)
+    let haveAmount = Number(this.state.amount)
+    let price = Number(this.state.price)
+    let wantAmount = BigNumber((Math.floor(haveAmount * price * (10 ** DECIMALS.nusd))).toFixed(0))
+    // console.log('wantA= ', wantAmount.toString())
+    haveAmount = BigNumber(Math.floor(haveAmount * zoom)).multiply(BigNumber(10).pow(DECIMALS.mnty - zoomExpo))
+    // console.log('haveAmount', haveAmount.toString())
     this.props.sellVolatileToken(haveAmount, wantAmount)
 }
 
 buyVolatileToken() {
-    let wantAmount = this.state.amount
-    let price = this.state.price
-    let haveAmount = BigNumber(Math.floor(wantAmount * price * 1e18))
-    wantAmount = BigNumber(wantAmount).multiply(BigNumber(10).pow(24))
+    let zoomExpo = 10
+    let zoom = 10 ** (zoomExpo)
+    let wantAmount = Number(this.state.amount)
+    let price = Number(this.state.price)
+
+    let haveAmount = BigNumber((Math.floor(wantAmount * price * (10 ** DECIMALS.nusd))).toFixed(0))
+    console.log('***', haveAmount.toString())
+    wantAmount = BigNumber(Math.floor(wantAmount * zoom)).multiply(BigNumber(10).pow(DECIMALS.mnty - zoomExpo))
+    console.log('***', wantAmount.toString())
     this.props.sellStableToken(haveAmount, wantAmount)
 }
 
@@ -346,15 +358,15 @@ transferAmountChange(amount) {
     })
 }
 
-amountChange(amount) {
+amountChange(e) {
     this.setState({
-        amount: amount
+        amount: e.target.value
     })
 }
 
-priceChange(price) {
+priceChange(e) {
     this.setState({
-        price: price
+        price: e.target.value
     })
 }
 }
