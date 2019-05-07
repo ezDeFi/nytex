@@ -15,13 +15,14 @@ contract StableToken is ERC223{
 
     IPairEx internal orderbook;
 
-    constructor ()
+    constructor (
+        address _orderbook
+    )
         public
     {
-        // orderbook = IPairEx(_orderbook);
-        // orderbook.stableTokenRegister(address(this));
-        // initialize(address(_orderbook));
         _mint(msg.sender, 10**12);
+        if (_orderbook == address(0)) return;
+        initialize(address(_orderbook));
     }
 
     function setup(
@@ -30,8 +31,7 @@ contract StableToken is ERC223{
         external
     {
         orderbook = IPairEx(_orderbook);
-        orderbook.stableTokenRegister(address(this));
-        initialize(address(_orderbook));
+        initialize(_orderbook);
     }
 
     function simpleBuy(

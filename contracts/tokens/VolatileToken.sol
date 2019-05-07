@@ -16,13 +16,13 @@ contract VolatileToken is ERC223 {
 
     IPairEx internal orderbook;
 
-    constructor ()
+    constructor (
+        address _orderbook
+    )
         public
     {
-        // orderbook = IPairEx(_orderbook);
-        // orderbook.volatileTokenRegister(address(this));
-        // initialize(address(_orderbook));
-        // _mint(msg.sender, 10 ** 30);
+        if (_orderbook == address(0)) return;
+        initialize(address(_orderbook));
     }
 
     function setup(
@@ -31,8 +31,7 @@ contract VolatileToken is ERC223 {
         external
     {
         orderbook = IPairEx(_orderbook);
-        orderbook.volatileTokenRegister(address(this));
-        initialize(address(_orderbook));
+        initialize(_orderbook);
     }
 
     function buy()
