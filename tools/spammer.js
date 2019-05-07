@@ -26,7 +26,7 @@ const CONTRACTS =
 const UNITS =
   {
     'MNTY': BigNumber(10).pow(24),
-    'NUSD': BigNumber(10).pow(18)
+    'NUSD': BigNumber(10).pow(6)
   }
 
 const BOUNDS =
@@ -35,26 +35,26 @@ const BOUNDS =
     {
       // WNTY Amount
       'Amount': {
-        'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
-        'Max': BigNumber(10).multipliedBy(UNITS.MNTY)
+        'Min': BigNumber(0.001).multipliedBy(UNITS.MNTY),
+        'Max': BigNumber(0.01).multipliedBy(UNITS.MNTY)
       },
       // NUSD / 1 WNTY
       'Price': {
-        'Min': BigNumber(11).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-        'Max': BigNumber(20).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
+        'Min': BigNumber(1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
+        'Max': BigNumber(9).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
       }
     },
   'Buy':
     {
       // WNTY Amount
       'Amount': {
-        'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
-        'Max': BigNumber(10).multipliedBy(UNITS.MNTY)
+        'Min': BigNumber(0.001).multipliedBy(UNITS.MNTY),
+        'Max': BigNumber(0.01).multipliedBy(UNITS.MNTY)
       },
       // NUSD / 1 WNTY
       'Price': {
-        'Min': BigNumber(1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-        'Max': BigNumber(10).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
+        'Min': BigNumber(5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
+        'Max': BigNumber(12).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
       }
     }
 }
@@ -165,7 +165,7 @@ async function spam () {
   let methods = VolatileToken.methods
   myBalance = await methods.balanceOf(myAddress).call()
   await console.log('start with WNTY Amount = ', BigNumber(myBalance).toFixed(0))
-  for (let i = 0; i <= 10; i++) {
+  for (let i = 0; i <= 100; i++) {
     await randomOrder(count + i)
   }
 }
