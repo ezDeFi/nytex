@@ -6,18 +6,27 @@ import "./OrderBook.sol";
 
 contract PairEx is OrderBook {
 
-    constructor (
+    constructor ()
+        public
+    {
+        Order memory order;
+        order.wantAmount = 1;
+        // Selling Book
+        books[false].orders[bytes32(0)] = order;
+        // Buying Book
+        books[true].orders[bytes32(0)] = order;
+    }
+
+    function setup(
         address _volatileTokenAddress,
         address _stableTokenAddress
     )
         public
     {
-        Order memory order;
-        order.wantAmount = 1;
-        books[false].orders[bytes32(0)] = order;
-        books[true].orders[bytes32(0)] = order;
         volatileTokenRegister(_volatileTokenAddress);
         stableTokenRegister(_stableTokenAddress);
+        token[volatileType].setup(address(this));
+        token[stableType].setup(address(this));
     }
 
     function getOrderType()
@@ -36,7 +45,7 @@ contract PairEx is OrderBook {
     function tokenFallback(
         address _from,
         uint _value,
-        bytes calldata _data) 
+        bytes calldata _data)
         external
     {
         address maker = _from;

@@ -4,8 +4,9 @@ import "./interfaces/IOwnableERC223.sol";
 
 contract Initializer {
     mapping(bool => IOwnableERC223) token;
-    // IOwnableERC223 internal volatileToken;
-    // IOwnableERC223 internal stableToken;
+
+    bool constant volatileType = false;
+    bool constant stableType = true;
 
     constructor ()
         public
@@ -17,15 +18,15 @@ contract Initializer {
         public
     {
         // SellType false
-        if (address(token[false]) != address(0)) return;
-        token[false] = IOwnableERC223(_address);
+        require(address(token[volatileType]) == address(0), "already set");
+        token[volatileType] = IOwnableERC223(_address);
     }
 
     function stableTokenRegister(address _address)
         public
     {
         // BuyType true
-        if (address(token[true]) != address(0)) return;
-        token[true] = IOwnableERC223(_address);
+        require(address(token[stableType]) == address(0), "already set");
+        token[stableType] = IOwnableERC223(_address);
     }
 }

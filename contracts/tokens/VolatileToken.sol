@@ -16,15 +16,24 @@ contract VolatileToken is ERC223 {
 
     IPairEx internal orderbook;
 
-    constructor (address _orderbook)
+    constructor ()
         public
+    {
+        // orderbook = IPairEx(_orderbook);
+        // orderbook.volatileTokenRegister(address(this));
+        // initialize(address(_orderbook));
+        // _mint(msg.sender, 10 ** 30);
+    }
+
+    function setup(
+        address _orderbook
+    )
+        external
     {
         orderbook = IPairEx(_orderbook);
         orderbook.volatileTokenRegister(address(this));
         initialize(address(_orderbook));
-        //_mint(msg.sender, 10 ** 30);
     }
-
 
     function buy()
         public
