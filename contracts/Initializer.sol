@@ -25,7 +25,7 @@ contract Initializer {
         public
     {
         // BuyType true
-        if (address(token[true]) == address(0)) return;
+        if (address(token[true]) != address(0)) return;
         token[true] = IOwnableERC223(_address);
     }
 }

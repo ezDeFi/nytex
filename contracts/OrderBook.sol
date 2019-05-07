@@ -6,7 +6,7 @@ import "./Initializer.sol";
 
 contract OrderBook is Initializer, DataSet {
     using SafeMath for uint256;
-    uint256 constant public INPUTS_MAX = 2 ** 128;
+    uint256 constant public INPUTS_MAX = 2 ** 120;
     // Stepping price param
     uint256 internal StepDividend = 1;
     uint256 internal StepDivisor = 10000;
@@ -86,7 +86,7 @@ contract OrderBook is Initializer, DataSet {
         returns (bytes32)
     {
         require(_haveAmount > 0 && _wantAmount > 0, "save your time");
-        require(_haveAmount < INPUTS_MAX && _wantAmount < INPUTS_MAX, "greater than supply?");
+        require((_haveAmount < INPUTS_MAX) && (_wantAmount < INPUTS_MAX), "greater than supply?");
         pNonce[_maker]++;
         OrderList storage book = books[_orderType];
         bytes32 id = sha256(abi.encodePacked(_maker, pNonce[_maker], _haveAmount, _wantAmount));
@@ -159,8 +159,10 @@ contract OrderBook is Initializer, DataSet {
         Order storage _old = book.orders[_oldId];
         // stepping price
         // newWant / newHave < (oldWant / oldHave) * (10000 / (10000 + T))
-        uint256 a = _new.haveAmount.mul(_old.wantAmount).div(StepDivisor + StepDividend);
-        uint256 b = _old.haveAmount.mul(_new.wantAmount).div(StepDivisor);
+        // uint256 a = _new.haveAmount.mul(_old.wantAmount).div(StepDivisor + StepDividend);
+        // uint256 b = _old.haveAmount.mul(_new.wantAmount).div(StepDivisor);
+        uint256 a = _new.haveAmount.mul(_old.wantAmount).mul(StepDivisor);
+        uint256 b = _old.haveAmount.mul(_new.wantAmount).mul(StepDivisor + StepDividend);
         return a > b;
     }
 
