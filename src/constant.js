@@ -11,6 +11,11 @@ export const USER_ROLE = {
   COUNCIL: 'COUNCIL'
 }
 
+export const DECIMALS = {
+  mnty: 24,
+  nusd: 6
+}
+
 export const CONTRACTS =
   {
     'VolatileToken':
