@@ -22,9 +22,9 @@ contract PairEx is OrderBook {
         Order memory order;
         order.wantAmount = 1;
         // Selling Book
-        books[false].orders[bytes32(0)] = order;
+        books[sellType].orders[bytes32(0)] = order;
         // Buying Book
-        books[true].orders[bytes32(0)] = order;
+        books[buyType].orders[bytes32(0)] = order;
     }
 
     function setup(
@@ -46,8 +46,8 @@ contract PairEx is OrderBook {
         returns(bool)
     {
         address _sender = msg.sender;
-        require(_sender == address(token[true]) || _sender == address(token[false]), "only VolatileToken and StableToken accepted");
-        return _sender == address(token[true]);
+        require(_sender == address(token[stableType]) || _sender == address(token[volatileType]), "only VolatileToken and StableToken accepted");
+        return _sender == address(token[stableType]);
     }
 
     // Token transfer's fallback

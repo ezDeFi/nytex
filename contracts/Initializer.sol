@@ -7,6 +7,8 @@ contract Initializer {
 
     bool constant volatileType = false;
     bool constant stableType = true;
+    bool constant sellType = false;
+    bool constant buyType = true;
 
     constructor ()
         public
