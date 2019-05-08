@@ -3,6 +3,9 @@ import StableToken from './../build/contracts/StableToken.json'
 import PairEx from './../build/contracts/PairEx.json'
 
 const NetId = '111111'
+const PairExAddress = '0x0000000000000000000000000000000000123456'
+const VolatileTokenAddress = '0x0000000000000000000000000000000001234567'
+const StableTokenAddress = '0x0000000000000000000000000000000012345678'
 
 export const USER_ROLE = {
   MEMBER: 'MEMBER',
@@ -21,17 +24,17 @@ export const CONTRACTS =
     'VolatileToken':
       {
         'abi': VolatileToken.abi,
-        'address': VolatileToken.networks[NetId].address
+        'address': VolatileTokenAddress
       },
     'StableToken':
       {
         'abi': StableToken.abi,
-        'address': StableToken.networks[NetId].address
+        'address': StableTokenAddress
       },
     'PairEx':
       {
         'abi': PairEx.abi,
-        'address': PairEx.networks[NetId].address
+        'address': PairExAddress
       },
   }
 

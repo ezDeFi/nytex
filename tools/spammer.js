@@ -13,6 +13,9 @@ let noo = args[4]
 if (!noo) noo = 30
 let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
 const networkId = 111111
+const PairExAddress = '0x0000000000000000000000000000000000123456'
+const VolatileTokenAddress = '0x0000000000000000000000000000000001234567'
+const StableTokenAddress = '0x0000000000000000000000000000000012345678'
 
 let seed = 1
 
@@ -38,17 +41,17 @@ const CONTRACTS =
     'VolatileToken':
       {
         'abi': VolatileTokenData.abi,
-        'address': VolatileTokenData.networks[networkId].address
+        'address': VolatileTokenAddress
       },
     'StableToken':
       {
         'abi': StableTokenData.abi,
-        'address': StableTokenData.networks[networkId].address
+        'address': StableTokenAddress
       },
     'PairEx':
       {
         'abi': PairExData.abi,
-        'address': PairExData.networks[networkId].address
+        'address': PairExAddress
       }
   }
 
