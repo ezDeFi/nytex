@@ -11,17 +11,20 @@ import "../interfaces/IPairEx.sol";
 contract StableToken is ERC223{
     string public constant name = "Nexty USD";
     string public constant symbol = "NUSD";
-    uint8 public constant decimals = 6;
+    uint256 public constant decimals = 6;
 
     IPairEx internal orderbook;
 
     constructor (
-        address _orderbook
+        address _orderbook,      // mandatory
+        address _prefundAddress, // optional
+        uint256 _prefundAmount   // optional
     )
         public
     {
-        _mint(msg.sender, 10**12);
-        if (_orderbook == address(0)) return;
+        if (_prefundAmount > 0 ) {
+            _mint(_prefundAddress, _prefundAmount * 10**decimals);
+        }
         initialize(address(_orderbook));
     }
 
@@ -30,8 +33,8 @@ contract StableToken is ERC223{
     )
         external
     {
+        // just an interface check
         orderbook = IPairEx(_orderbook);
-        initialize(_orderbook);
     }
 
     function simpleBuy(

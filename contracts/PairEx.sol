@@ -12,7 +12,12 @@ contract PairEx is OrderBook {
     )
         public
     {
-        setup(_volatileTokenAddress, _stableTokenAddress);
+        if (_volatileTokenAddress != address(0)) {
+            volatileTokenRegister(_volatileTokenAddress);
+        }
+        if (_stableTokenAddress != address(0)) {
+            stableTokenRegister(_stableTokenAddress);
+        }
         initBooks();
     }
 
@@ -33,7 +38,6 @@ contract PairEx is OrderBook {
     )
         public
     {
-        if ((_volatileTokenAddress == address(0)) || (_stableTokenAddress == address(0))) return;
         volatileTokenRegister(_volatileTokenAddress);
         stableTokenRegister(_stableTokenAddress);
         token[volatileType].setup(address(this));
