@@ -5,7 +5,7 @@ import "./ERC223.sol";
 import "../interfaces/IPairEx.sol";
 
 /*
-    . Exchanged with NTY with rate 1 MANTY = 10000 NTY
+    . Exchanged with NTY with rate 1 MegaNTY = 1000000 NTY
     . Mint. / burn. able(free) by owner = orderbook contract
 */
 
