@@ -165,8 +165,8 @@ async function spam () {
   let methods = VolatileToken.methods
   myBalance = await methods.balanceOf(myAddress).call()
   await console.log('start with WNTY Amount = ', BigNumber(myBalance).toFixed(0))
-  for (let i = 0; i <= 100; i++) {
-    await randomOrder(count + i)
+  for (let i = 0; i <= 30; i++) {
+    randomOrder(count + i)
   }
 }
 
