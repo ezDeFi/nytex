@@ -108,11 +108,11 @@ contract PairEx is OrderBook {
             token[_redroType].transfer(order.maker, redroPairableAmount);
             token[_orderType].transfer(redro.maker, orderPairableAmount);
             if (redro.haveAmount == 0 || redro.wantAmount == 0) {
-                _remove(_redroType, redroTopID);
+                _remove(_redroType, redroTopID, false);
             }
             redroTopID = top(_redroType);
             if (order.haveAmount == 0 || order.wantAmount == 0) {
-                _remove(_orderType, _orderID);
+                _remove(_orderType, _orderID, false);
                 return;
             }
         }
@@ -151,4 +151,39 @@ contract PairEx is OrderBook {
         return (totalVOL, totalSTB);
     }
 
+    function absorb(
+        bool _inflate,
+        uint256 _stableTokenTarget
+    )
+        public
+        payable
+        returns(uint256, uint256)
+    {
+        bool orderType = _inflate ? Sell : Buy; // inflate by filling NTY sell order
+        OrderList storage book = books[orderType];
+        uint256 totalVOL;
+        uint256 totalSTB;
+        bytes32 cursor = top(orderType);
+        while(cursor[0] != 0 && totalSTB < _stableTokenTarget) {
+            Order storage order = book.orders[cursor];
+            uint256 vol = _inflate ? order.haveAmount : order.wantAmount;
+            uint256 stb = _inflate ? order.wantAmount : order.haveAmount;
+            // break-point
+            // if (totalSTB.add(stb) > _stableTokenTarget) {
+            //     uint256 remainSTB = _stableTokenTarget.sub(totalSTB);
+            //     uint256 remainVOL = _fill(_inflate, cursor, remainSTB);
+            //     return (totalVOL.add(remainVOL), totalSTB.add(remainSTB));
+            // }
+
+            totalVOL = totalVOL.add(vol);
+            totalSTB = totalSTB.add(stb);
+
+            // fill the order
+            token[_inflate ? Volatile : Stable].burnFromOwner(order.haveAmount);
+            token[_inflate ? Stable : Volatile].mintToOwner(order.wantAmount);
+            cursor = _remove(orderType, cursor, true);
+        }
+        //  Not enough order, return all we have
+        return (totalVOL, totalSTB);
+    }
 }

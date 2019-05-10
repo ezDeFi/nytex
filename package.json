@@ -8,6 +8,8 @@
     "deploy:dev": "truffle migrate --reset --network development",
     "spam:local": "node tools/spammer.js localhost",
     "spam:dev": "node tools/spammer.js development",
+    "absorb:local": "node tools/absorb.js localhost",
+    "absorb:dev": "node tools/absorb.js development",
     "parser": "babel-eslint",
     "pretest": "eslint --ignore-path .gitignore .",
     "test": "scripts/test.sh",
