@@ -168,20 +168,35 @@ contract PairEx is OrderBook {
             Order storage order = book.orders[cursor];
             uint256 vol = _inflate ? order.haveAmount : order.wantAmount;
             uint256 stb = _inflate ? order.wantAmount : order.haveAmount;
-            // break-point
-            // if (totalSTB.add(stb) > _stableTokenTarget) {
-            //     uint256 remainSTB = _stableTokenTarget.sub(totalSTB);
-            //     uint256 remainVOL = _fill(_inflate, cursor, remainSTB);
-            //     return (totalVOL.add(remainVOL), totalSTB.add(remainSTB));
-            // }
-
-            totalVOL = totalVOL.add(vol);
-            totalSTB = totalSTB.add(stb);
-
-            // fill the order
-            token[_inflate ? Volatile : Stable].burnFromOwner(order.haveAmount);
-            token[_inflate ? Stable : Volatile].mintToOwner(order.wantAmount);
-            cursor = _remove(orderType, cursor, true);
+            if (totalSTB.add(stb) <= _stableTokenTarget) {
+                totalVOL = totalVOL.add(vol);
+                totalSTB = totalSTB.add(stb);
+                // fill the order
+                token[!_inflate].burnFromOwner(order.haveAmount);
+                token[_inflate].mintToOwner(order.wantAmount);
+                cursor = _remove(orderType, cursor, true);
+                // TODO: emit event for 'full order filled'
+                continue;
+            }
+            // partial order fill
+            uint256 fillableHave;
+            uint256 fillableWant;
+            {// temporary scope
+            uint256 fillableSTB = _stableTokenTarget.sub(totalSTB);
+            uint256 fillableVOL = vol.mul(fillableSTB).div(stb);
+            totalVOL = totalVOL.add(fillableVOL);
+            totalSTB = totalSTB.add(fillableSTB);
+            fillableHave = _inflate ? fillableVOL : fillableSTB;
+            fillableWant = _inflate ? fillableSTB : fillableVOL;
+            }
+            order.haveAmount = order.haveAmount.sub(fillableHave);
+            order.wantAmount = order.wantAmount.sub(fillableWant);
+            // fill the partial order
+            token[!_inflate].burnFromOwner(fillableHave);
+            token[_inflate].mintToOwner(fillableWant);
+            token[_inflate].transfer(order.maker, fillableWant);
+            // TODO: emit event for 'partial order filled'
+            break; // stop the absorption
         }
         //  Not enough order, return all we have
         return (totalVOL, totalSTB);
