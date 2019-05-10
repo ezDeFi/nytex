@@ -94,27 +94,38 @@ contract OrderBook is Initializer, DataSet {
         return id;
     }
 
-    function _remove(bool _orderType, bytes32 _id) internal {
+
+    // Remove order and payout or refund
+    function _remove(
+        bool _orderType,
+        bytes32 _id,
+        bool payout
+    )
+        internal
+        returns (bytes32)
+    {
         OrderList storage book = books[_orderType];
         Order storage order = book.orders[_id];
-        // before: prev => order =>next
-        // after: prev => next
+        // before: prev => order => next
+        // after:  prev ==========> next
         book.orders[order.prev].next = order.next;
         book.orders[order.next].prev = order.prev;
-        token[_orderType].transfer(order.maker, order.haveAmount);
+        if (payout) { // order is filled
+            token[!_orderType].transfer(order.maker, order.wantAmount);
+        } else { // order is refunded
+            token[_orderType].transfer(order.maker, order.haveAmount);
+        }
+        bytes32 next = order.next;
         delete book.orders[_id];
+        return next;
     }
 
-    function remove(bool _orderType, bytes32 _id) public {
+    // Cancel and refund the remaining order.haveAmount
+    function cancel(bool _orderType, bytes32 _id) public {
         OrderList storage book = books[_orderType];
         Order storage order = book.orders[_id];
         require(msg.sender == order.maker, "only order owner");
-        // before: prev => order =>next
-        // after: prev => next
-        book.orders[order.prev].next = order.next;
-        book.orders[order.next].prev = order.prev;
-        token[_orderType].transfer(order.maker, order.haveAmount);
-        delete book.orders[_id];
+        _remove(_orderType, _id, false);
     }
 
     function _setStep(uint256 dividend, uint256 divisor) private {
