@@ -8,8 +8,8 @@ contract OrderBook is Initializer, DataSet {
     using SafeMath for uint256;
     uint256 constant public INPUTS_MAX = 2 ** 120;
     // Stepping price param
-    uint256 internal StepDividend = 1;
-    uint256 internal StepDivisor = 10000;
+    uint256 internal StepDividend = 0;
+    uint256 internal StepDivisor = 1;
 
     function insert(
         bool _orderType,
