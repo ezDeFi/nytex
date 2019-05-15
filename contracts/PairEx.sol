@@ -5,9 +5,6 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./OrderBook.sol";
 
 contract PairEx is OrderBook {
-    bytes32 public lastRedroId;
-    Order public lastOrder;
-    Order public lastRedroOrder;
 
     constructor (
         address _volatileTokenAddress,
@@ -100,9 +97,6 @@ contract PairEx is OrderBook {
                 // not pairable
                 return;
             }
-            lastOrder = order;
-            lastRedroOrder = redro;
-            lastRedroId = redroTopID;
             uint256 orderPairableAmount = Math.min(order.haveAmount, redro.wantAmount);
             order.wantAmount = order.wantAmount.mul(order.haveAmount.sub(orderPairableAmount)).div(order.haveAmount);
             order.haveAmount = order.haveAmount.sub(orderPairableAmount);
