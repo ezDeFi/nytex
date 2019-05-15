@@ -5,6 +5,9 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./OrderBook.sol";
 
 contract PairEx is OrderBook {
+    bytes32 public lastRedroId;
+    Order public lastOrder;
+    Order public lastRedroOrder;
 
     constructor (
         address _volatileTokenAddress,
@@ -27,9 +30,9 @@ contract PairEx is OrderBook {
         Order memory order;
         order.wantAmount = 1;
         // Selling Book
-        books[Sell].orders[bytes32(0)] = order;
+        books[Sell].orders[zeroBytes32] = order;
         // Buying Book
-        books[Buy].orders[bytes32(0)] = order;
+        books[Buy].orders[zeroBytes32] = order;
     }
 
     function setup(
@@ -91,12 +94,15 @@ contract PairEx is OrderBook {
         OrderList storage redroBook = books[_redroType];
         bytes32 redroTopID = top(_redroType);
 
-        while (redroTopID[0] != 0) {
+        while (redroTopID != zeroBytes32) {
             Order storage redro = redroBook.orders[redroTopID];
             if (order.haveAmount.mul(redro.haveAmount) < order.wantAmount.mul(redro.wantAmount)) {
                 // not pairable
                 return;
             }
+            lastOrder = order;
+            lastRedroOrder = redro;
+            lastRedroId = redroTopID;
             uint256 orderPairableAmount = Math.min(order.haveAmount, redro.wantAmount);
             order.wantAmount = order.wantAmount.mul(order.haveAmount.sub(orderPairableAmount)).div(order.haveAmount);
             order.haveAmount = order.haveAmount.sub(orderPairableAmount);
@@ -133,7 +139,7 @@ contract PairEx is OrderBook {
         uint256 totalSTB;
         uint256 totalVOL;
         bytes32 cursor = top(_orderType);
-        while(cursor[0] != 0 && totalSTB < _stableTokenTarget) {
+        while(cursor != zeroBytes32 && totalSTB < _stableTokenTarget) {
             Order storage order = book.orders[cursor];
             uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
             uint256 vol = _orderType ? order.wantAmount : order.haveAmount;
@@ -164,7 +170,7 @@ contract PairEx is OrderBook {
         uint256 totalVOL;
         uint256 totalSTB;
         bytes32 cursor = top(orderType);
-        while(cursor[0] != 0 && totalSTB < _stableTokenTarget) {
+        while(cursor != zeroBytes32 && totalSTB < _stableTokenTarget) {
             Order storage order = book.orders[cursor];
             uint256 vol = _inflate ? order.haveAmount : order.wantAmount;
             uint256 stb = _inflate ? order.wantAmount : order.haveAmount;
