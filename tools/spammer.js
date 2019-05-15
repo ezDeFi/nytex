@@ -1,13 +1,33 @@
 const VolatileTokenData = require('./../build/contracts/VolatileToken.json')
 const StableTokenData = require('./../build/contracts/StableToken.json')
+const PairExData = require('./../build/contracts/PairEx.json')
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx')
-var BigNumber = require('bignumber.js');
+var BigNumber = require('bignumber.js')
 
 let args = process.argv
 let network = args[2]
 let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
 const networkId = 111111
+
+let seed = 1
+
+async function cutString (s) {
+  if (!s) return s
+  if (s.length < 20) return s
+  var first5 = s.substring(0, 5).toLowerCase()
+  var last3 = s.slice(-3)
+  return first5 + '...' + last3
+}
+
+async function weiToMNTY (wei) {
+  return await (Number(web3.utils.fromWei(wei.toString())) / 1000000).toFixed(4)
+}
+
+const DECIMALS = {
+  mnty: 24,
+  nusd: 6
+}
 
 const CONTRACTS =
   {
@@ -20,6 +40,11 @@ const CONTRACTS =
       {
         'abi': StableTokenData.abi,
         'address': StableTokenData.networks[networkId].address
+      },
+    'PairEx':
+      {
+        'abi': PairExData.abi,
+        'address': PairExData.networks[networkId].address
       }
   }
 
@@ -29,43 +54,43 @@ const UNITS =
     'NUSD': BigNumber(10).pow(6)
   }
 
-const BOUNDS =
-{
-  'Sell':
-    {
-      // WNTY Amount
-      'Amount': {
-        'Min': BigNumber(0.001).multipliedBy(UNITS.MNTY),
-        'Max': BigNumber(0.01).multipliedBy(UNITS.MNTY)
+  const BOUNDS =
+  {
+    'Sell':
+      {
+        // WNTY Amount
+        'Amount': {
+          'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
+          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
+        },
+        // NUSD / 1 WNTY
+        'Price': {
+          'Min': BigNumber(0.9).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
+          'Max': BigNumber(1.5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
+        }
       },
-      // NUSD / 1 WNTY
-      'Price': {
-        'Min': BigNumber(1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-        'Max': BigNumber(9).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
+    'Buy':
+      {
+        // WNTY Amount
+        'Amount': {
+          'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
+          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
+        },
+        // NUSD / 1 WNTY
+        'Price': {
+          'Min': BigNumber(0.5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
+          'Max': BigNumber(1.1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
+        }
       }
-    },
-  'Buy':
-    {
-      // WNTY Amount
-      'Amount': {
-        'Min': BigNumber(0.001).multipliedBy(UNITS.MNTY),
-        'Max': BigNumber(0.01).multipliedBy(UNITS.MNTY)
-      },
-      // NUSD / 1 WNTY
-      'Price': {
-        'Min': BigNumber(5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-        'Max': BigNumber(12).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
-      }
-    }
-}
+  }
 
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
 var StableToken = new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address)
+var PairEx = new web3.eth.Contract(CONTRACTS.PairEx.abi, CONTRACTS.PairEx.address)
 var myAddress = '0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d';
 var privateKey = Buffer.from('a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a5', 'hex')
 
-var count
 var myBalance
 
 async function getNonce (_address) {
@@ -101,13 +126,18 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex')) // .on('transactionHash', console.log)
 }
 
+function sinRandom () {
+  var x = Math.sin(seed++) * 10000
+  return x - Math.floor(x)
+}
+
 // return random integer number in range [MIN, MAX]
 function randomGen (_min, _max) {
   let zoom = new BigNumber(10).pow(18)
   let min = new BigNumber(_min).multipliedBy(zoom)
   let max = new BigNumber(_max).multipliedBy(zoom)
   let range = new BigNumber(max).minus(BigNumber(min))
-  let random = new BigNumber(Math.random()).multipliedBy(range)
+  let random = new BigNumber(sinRandom()).multipliedBy(range)
   let res = ((BigNumber(min).plus(random)).dividedBy(zoom))
   return res
 }
@@ -159,15 +189,115 @@ async function randomOrder (nonce) {
   await simpleBuy(nonce, order.orderType, order.haveAmount, order.wantAmount)
 }
 
+async function getOrder(_orderType, _id) {
+  // const store = this.store.getState()
+  let methods = PairEx.methods
+  let res = await methods.getOrder(_orderType, _id).call()
+  let weiMNTY = _orderType ? BigNumber(await res[2]) : BigNumber(await res[1])
+  weiMNTY = weiMNTY.toFixed(0)
+  // console.log('weiMNTY', weiMNTY)
+  let weiNUSD = _orderType ? BigNumber(await res[1]) : BigNumber(await res[2])
+  weiNUSD = weiNUSD.toFixed(0)
+  let amount = weiToMNTY(await weiMNTY)
+  // let price = NUSDs / 1 MNTY = (weiNUSD / 1e18) / (weiMNTY / 1e24) = 1e6 * weiNUSD / weiMNTY
+  let wPrice = BigNumber(await weiNUSD).multipliedBy(BigNumber(10).pow(DECIMALS.mnty)).div(await weiMNTY).div(BigNumber(10).pow(DECIMALS.nusd)) // weiNUSD / 1 MNTY
+  // let expo = BigNumber(10).pow(DECIMALS.nusd)
+  // let _before = BigNumber(wPrice).div(expo)
+  // let _after = BigNumber(wPrice).mod(expo)
+  // let price = _before.toString() + '.' + _after.toString()
+  let price = wPrice.toFixed(10)
+  let order = await {
+      'id': _id,
+      'maker': cutString(res[0]),
+      'amount': amount,
+      'price' : price,
+      'haveAmount': res[1],
+      'wantAmount': res[2],
+      'prev': res[3],
+      'next': res[4]}
+  return await order
+}
+
+async function loadOrders(_orderType) {
+  //const pairExRedux = this.store.getRedux('pairEx')
+  let orders = []
+  let byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
+  let _id = byteZero
+  let order = await getOrder(_orderType, _id)
+  let prev = await order.prev
+  let loop = 10
+  while ((await prev !== byteZero)) {
+      // await console.log('orderId', _id, 'prev', prev)
+      _id = await prev
+      order = await getOrder(_orderType, _id)
+      //await this.addOrderToRedux(_orderType, order)
+      await orders.push(order)
+      prev = await order.prev
+      await loop--
+  }
+  //await console.log('order' + _orderType ? 'Buy' : 'Sell', orders)
+  if (_orderType) orders = await orders.reverse()
+  console.log(await _orderType ? 'Buy' : 'Sell')
+  console.log('length ', orders.length)
+  //orders.push(orders[0])
+  //let sortedOrders = await orders.sort((a, b) => (Number(a.price) > Number(b.price)) ? 1 : ((Number(b.price) > Number(a.price)) ? -1 : 0))
+  // console.log('order 0', orders[0])
+  // console.log('order 1', orders[1])
+  for (let i = 0; i < orders.length - 1; i++) {
+    if (Number(orders[i].price) < Number(orders[i + 1].price)) {
+      console.log('ERROR at ', i)
+      console.log(orders[i - 1])
+      console.log(orders[i])
+      console.log(orders[i + 1])
+      return false
+    }
+  }
+  console.log('PAST')
+  return true
+  // if ((await orders) !== (await sortedOrders)) {
+  //   await console.log('ERROR')
+  // } else {
+  //   await console.log('CORRECT')
+  // }
+  // if (_orderType) {
+  //     await this.dispatch(pairExRedux.actions.orders_update({'true': orders.reverse()}))
+  // } else {
+  //     await this.dispatch(pairExRedux.actions.orders_update({'false': orders}))
+  // }
+}
+
 async function spam () {
   let count = await getNonce(myAddress)
   await console.log('start with nonce = ', count)
   let methods = VolatileToken.methods
   myBalance = await methods.balanceOf(myAddress).call()
   await console.log('start with WNTY Amount = ', BigNumber(myBalance).toFixed(0))
-  for (let i = 0; i <= 30; i++) {
+  for (let i = 0; i <= 100; i++) {
     randomOrder(count + i)
+    // let test = await loadOrders(false)
+    // if (!test) return
+    // test = await loadOrders(true)
+    // if (!test) return
   }
+  let test = await loadOrders(false)
+  if (!test) return
+  test = await loadOrders(true)
+  if (!test) return
 }
 
+seed = 6688
 spam()
+//console.log(sinRandom())
+// ERROR CASE
+// new order Buy 90955684 88306489700594284400000000
+// { id:
+//   '0x22ceefdd9f2865d3fbf02cc67f592cd59f978879f152e0fed45eb3a7ca214a02',
+//  maker: Promise { '0x95e...85d' },
+//  amount: Promise { '88.3065' },
+//  price: '1.0299999956',
+//  haveAmount: '90955684',
+//  wantAmount: '88306489700594284400000000',
+//  prev:
+//   '0x009638faa2c890252f9f7796fe04784f54fc525043474ea71e074c526ba1c41a',
+//  next:
+//   '0x77f0cbf7f61ff048c7e8920487465e2a167eea6975ed35a81d2b36c64d5be88c' }
