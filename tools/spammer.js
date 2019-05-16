@@ -7,6 +7,7 @@ var BigNumber = require('bignumber.js')
 
 let args = process.argv
 let network = args[2]
+let spamType = args[3]
 let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
 const networkId = 111111
 
@@ -56,7 +57,7 @@ const UNITS =
 
   const BOUNDS =
   {
-    'Sell':
+    'sell':
       {
         // WNTY Amount
         'Amount': {
@@ -69,7 +70,7 @@ const UNITS =
           'Max': BigNumber(1.5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
         }
       },
-    'Buy':
+    'buy':
       {
         // WNTY Amount
         'Amount': {
@@ -99,11 +100,11 @@ async function getNonce (_address) {
 
 async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   console.log('new order', _orderType, _haveAmount, _wantAmount)
-  let contractAddress = _orderType === 'Sell' ? VolatileToken._address : StableToken._address
-  let methods = _orderType === 'Sell' ? VolatileToken.methods : StableToken.methods
+  let contractAddress = _orderType === 'sell' ? VolatileToken._address : StableToken._address
+  let methods = _orderType === 'sell' ? VolatileToken.methods : StableToken.methods
   let toDeposit
   toDeposit = 0
-  if (_orderType === 'Sell') {
+  if (_orderType === 'sell') {
     toDeposit = BigNumber(myBalance).isGreaterThan(BigNumber(_haveAmount)) ? 0 : BigNumber(_haveAmount).minus(BigNumber(myBalance))
     toDeposit = new BigNumber(toDeposit).toFixed(0)
   }
@@ -163,7 +164,7 @@ function createRandomOrderByType (_orderType) {
   let maxAmount = BOUNDS[_orderType].Amount.Max
   let haveAmount
   let wantAmount
-  if (_orderType === 'Sell') {
+  if (_orderType === 'sell') {
     haveAmount = new BigNumber(randomGen(maxAmount, minAmount)).toFixed(0)
     wantAmount = new BigNumber(haveAmount).multipliedBy(BigNumber(price)).toFixed(0)
   } else {
@@ -180,7 +181,9 @@ function createRandomOrderByType (_orderType) {
 
 function createRandomOrder () {
   let _seed = randomGen(1, 0)
-  let _orderType = BigNumber(_seed).isGreaterThan(BigNumber(0.5)) ? 'Sell' : 'Buy'
+  let _orderType = BigNumber(_seed).isGreaterThan(BigNumber(0.5)) ? 'sell' : 'buy'
+  if (spamType.toLowerCase() === 'buy') _orderType = 'buy'
+  if (spamType.toLowerCase() === 'sell') _orderType = 'sell'
   return createRandomOrderByType(_orderType)
 }
 
