@@ -8,6 +8,7 @@ var BigNumber = require('bignumber.js')
 let args = process.argv
 let network = args[2]
 let spamType = args[3]
+if (!spamType) spamType = 'both'
 let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
 const networkId = 111111
 
