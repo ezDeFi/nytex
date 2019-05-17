@@ -64,8 +64,8 @@ const UNITS =
       {
         // WNTY Amount
         'Amount': {
-          'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
-          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
+          'Min': BigNumber(0).multipliedBy(UNITS.MNTY),
+          'Max': BigNumber(9).multipliedBy(UNITS.MNTY)
         },
         // NUSD / 1 WNTY
         'Price': {
@@ -77,8 +77,8 @@ const UNITS =
       {
         // WNTY Amount
         'Amount': {
-          'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
-          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
+          'Min': BigNumber(0).multipliedBy(UNITS.MNTY),
+          'Max': BigNumber(9).multipliedBy(UNITS.MNTY)
         },
         // NUSD / 1 WNTY
         'Price': {
