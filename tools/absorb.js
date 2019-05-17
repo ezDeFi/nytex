@@ -7,6 +7,8 @@ var BigNumber = require('bignumber.js');
 
 let args = process.argv
 let network = args[2]
+let type = args[3]
+let amount = args[4]
 let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
 const networkId = 111111
 
@@ -28,42 +30,6 @@ const CONTRACTS =
         'address': StableTokenData.networks[networkId].address
       }
   }
-
-const UNITS =
-  {
-    'MNTY': BigNumber(10).pow(24),
-    'NUSD': BigNumber(10).pow(6)
-  }
-
-const BOUNDS =
-{
-  'Sell':
-    {
-      // WNTY Amount
-      'Amount': {
-        'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
-        'Max': BigNumber(9).multipliedBy(UNITS.MNTY)
-      },
-      // NUSD / 1 WNTY
-      'Price': {
-        'Min': BigNumber(0.9).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-        'Max': BigNumber(1.5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
-      }
-    },
-  'Buy':
-    {
-      // WNTY Amount
-      'Amount': {
-        'Min': BigNumber(1).multipliedBy(UNITS.MNTY),
-        'Max': BigNumber(9).multipliedBy(UNITS.MNTY)
-      },
-      // NUSD / 1 WNTY
-      'Price': {
-        'Min': BigNumber(0.5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-        'Max': BigNumber(1.1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
-      }
-    }
-}
 
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
@@ -102,16 +68,6 @@ async function absorb(nonce, _orderType, _targetSTB) {
   await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex')) // .on('transactionHash', console.log)
 }
 
-function getZoom (_value) {
-  let parts = _value.toString().split('.')
-  if (parts.length < 2) return 1
-  return 10 ** (parts[1].length)
-}
-
-function getMaxZoom (a, b) {
-  return a > b ? a : b
-}
-
 async function doAbsorb() {
   let nonce = await getNonce(myAddress)
   await console.log('start with nonce = ', nonce)
@@ -119,7 +75,7 @@ async function doAbsorb() {
   await console.log('start with MegaNTY Amount = ', BigNumber(myBalance).toFixed(0)/1e24)
   myBalance = await StableToken.methods.balanceOf(myAddress).call()
   await console.log('start with nUSD Amount = ', BigNumber(myBalance).toFixed(0)/1e6)
-  await absorb(nonce, false, 30e6)
+  await absorb(nonce, type === 'inflate', amount * 1e6)
 }
 
 doAbsorb()
