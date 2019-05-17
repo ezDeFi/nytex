@@ -9,6 +9,8 @@ let args = process.argv
 let network = args[2]
 let spamType = args[3]
 if (!spamType) spamType = 'both'
+let noo = args[4]
+if (!noo) noo = 30
 let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
 const networkId = 111111
 
@@ -276,7 +278,7 @@ async function spam () {
   let methods = VolatileToken.methods
   myBalance = await methods.balanceOf(myAddress).call()
   await console.log('start with WNTY Amount = ', BigNumber(myBalance).toFixed(0))
-  for (let i = 0; i <= 100; i++) {
+  for (let i = 0; i < noo; i++) {
     randomOrder(count + i)
     // let test = await loadOrders(false)
     // if (!test) return
