@@ -158,7 +158,7 @@ contract PairEx is OrderBook {
         public
         returns(uint256, uint256)
     {
-        require(msg.sender == address(this), "consensus only");
+        //require(msg.sender == address(this), "consensus only");
         bool orderType = _inflate ? Sell : Buy; // inflate by filling NTY sell order
         OrderList storage book = books[orderType];
         uint256 totalVOL;
