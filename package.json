@@ -55,6 +55,7 @@
     "react-transition-group": "^2.3.1",
     "redux": "4.0.0",
     "redux-thunk": "^2.2.0",
+    "seedrandom": "^3.0.1",
     "truffle": "^5.0.12",
     "truffle-hdwallet-provider": "^1.0.6",
     "tslint": "^5.11.0",
