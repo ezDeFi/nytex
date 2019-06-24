@@ -78,8 +78,8 @@ export default class extends BaseService {
 
     async reload () {
         const pairExRedux = this.store.getRedux('pairEx')
-        await this.dispatch(pairExRedux.actions.orders_reset())
-        await this.loadOrders(true)
-        await this.loadOrders(false)
+        this.dispatch(pairExRedux.actions.orders_reset())
+        this.loadOrders(true)
+        this.loadOrders(false)
     }
 }
