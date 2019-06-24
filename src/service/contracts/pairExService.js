@@ -54,14 +54,16 @@ export default class extends BaseService {
         let order = await this.getOrder(_orderType, _id)
         let prev = await order.prev
         let loop = 10
-        while ((await prev !== byteZero)) {
+        for (let i = 0; i < loop; ++i) {
+            if (prev === byteZero) {
+              break;
+            }
             // await console.log('orderId', _id, 'prev', prev)
             _id = await prev
             order = await this.getOrder(_orderType, _id)
             //await this.addOrderToRedux(_orderType, order)
             await orders.push(order)
             prev = await order.prev
-            await loop--
         }
         await console.log('ABCD', orders)
         let orderNull = await this.getOrder(_orderType, byteZero)
