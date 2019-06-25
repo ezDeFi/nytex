@@ -52,7 +52,7 @@ async function absorb(nonce, _orderType, _targetSTB) {
   let toDeposit = 0
   let rawTransaction = {
     'from': myAddress,
-    'gasPrice': web3.utils.toHex(1e9),
+    'gasPrice': web3.utils.toHex(0),
     'gasLimit': web3.utils.toHex(9999999),
     'to': contractAddress,
     'value': web3.utils.toHex(toDeposit),
