@@ -68,12 +68,12 @@ const UNITS =
         // WNTY Amount
         'Amount': {
           'Min': BigNumber(0).multipliedBy(UNITS.MNTY),
-          'Max': BigNumber(9).multipliedBy(UNITS.MNTY)
+          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
         },
         // NUSD / 1 WNTY
         'Price': {
           'Min': BigNumber(0.9).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-          'Max': BigNumber(1.5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
+          'Max': BigNumber(1.2).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
         }
       },
     'buy':
@@ -81,11 +81,11 @@ const UNITS =
         // WNTY Amount
         'Amount': {
           'Min': BigNumber(0).multipliedBy(UNITS.MNTY),
-          'Max': BigNumber(9).multipliedBy(UNITS.MNTY)
+          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
         },
         // NUSD / 1 WNTY
         'Price': {
-          'Min': BigNumber(0.5).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
+          'Min': BigNumber(0.8).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
           'Max': BigNumber(1.1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
         }
       }
@@ -107,9 +107,21 @@ async function getNonce (_address) {
 async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   console.log('new order', _orderType, _haveAmount, _wantAmount)
   let contractAddress = _orderType === 'sell' ? VolatileToken._address : StableToken._address
-  let methods = _orderType === 'sell' ? VolatileToken.methods : StableToken.methods
-  let toDeposit
-  toDeposit = 0
+  const methods = _orderType === 'sell' ? VolatileToken.methods : StableToken.methods
+
+  // adjust _wantAmount to the demand/supply
+  const methodsRedro = _orderType !== 'sell' ? VolatileToken.methods : StableToken.methods
+  let orderSupply = await methods.totalSupply().call();
+  let redroSupply = await methodsRedro.totalSupply().call();
+  const wiggle = Math.random() * 0.2 + (_orderType === 'sell' ? 0.99 : 0.81) ;
+  console.log('wiggle', wiggle);
+  _wantAmount = Math.floor(_haveAmount * redroSupply / orderSupply * wiggle)
+    .toLocaleString('fullwide', {useGrouping:false});
+  //console.log('_want', _wantAmount, 'redroSupply', redroSupply, 'orderSupply', orderSupply);
+  const price = 1e18 * (_orderType === 'sell' ? _wantAmount / _haveAmount : _haveAmount / _wantAmount);
+  console.log('PRICE', price);
+
+  let toDeposit = 0
   if (_orderType === 'sell') {
     toDeposit = BigNumber(myBalance).isGreaterThan(BigNumber(_haveAmount)) ? 0 : BigNumber(_haveAmount).minus(BigNumber(myBalance))
     toDeposit = new BigNumber(toDeposit).toFixed(0)
@@ -125,7 +137,7 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
     'data': methods.simpleBuy(_haveAmount, _wantAmount, [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
-  console.log(rawTransaction)
+  //console.log(rawTransaction)
   let transaction = new Tx(rawTransaction);
   // signing transaction with private key
   transaction.sign(privateKey)
