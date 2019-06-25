@@ -115,7 +115,7 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   console.log('current balance xxx', myBalance, 'toDeposit', toDeposit)
   let rawTransaction = {
     'from': myAddress,
-    'gasPrice': web3.utils.toHex(1e9),
+    'gasPrice': web3.utils.toHex(0),
     'gasLimit': web3.utils.toHex(780000),
     'to': contractAddress,
     'value': web3.utils.toHex(toDeposit),
