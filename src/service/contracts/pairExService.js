@@ -52,27 +52,27 @@ export default class extends BaseService {
         let byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
         let _id = byteZero
         let order = await this.getOrder(_orderType, _id)
-        let prev = await order.prev
+        let next = order.next
         let loop = 10
         for (let i = 0; i < loop; ++i) {
-            if (prev === byteZero) {
+            if (next === byteZero) {
               break;
             }
-            // await console.log('orderId', _id, 'prev', prev)
-            _id = await prev
+            // await console.log('orderId', _id, 'next', next)
+            _id = next
             order = await this.getOrder(_orderType, _id)
             //await this.addOrderToRedux(_orderType, order)
-            await orders.push(order)
-            prev = await order.prev
+            orders.push(order)
+            next = order.next
         }
         await console.log('ABCD', orders)
         let orderNull = await this.getOrder(_orderType, byteZero)
         await console.log('order Zero', orderNull)
         //orders = await orders.sort((a, b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0))
         if (_orderType) {
-            await this.dispatch(pairExRedux.actions.orders_update({'true': orders.reverse()}))
+            await this.dispatch(pairExRedux.actions.orders_update({'true': orders}))
         } else {
-            await this.dispatch(pairExRedux.actions.orders_update({'false': orders}))
+            await this.dispatch(pairExRedux.actions.orders_update({'false': orders.reverse()}))
         }
     }
 
