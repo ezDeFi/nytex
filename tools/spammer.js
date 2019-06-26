@@ -61,36 +61,6 @@ const UNITS =
     'NUSD': BigNumber(10).pow(6)
   }
 
-  const BOUNDS =
-  {
-    'sell':
-      {
-        // WNTY Amount
-        'Amount': {
-          'Min': BigNumber(0).multipliedBy(UNITS.MNTY),
-          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
-        },
-        // NUSD / 1 WNTY
-        'Price': {
-          'Min': BigNumber(0.9).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-          'Max': BigNumber(1.2).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
-        }
-      },
-    'buy':
-      {
-        // WNTY Amount
-        'Amount': {
-          'Min': BigNumber(0).multipliedBy(UNITS.MNTY),
-          'Max': BigNumber(99).multipliedBy(UNITS.MNTY)
-        },
-        // NUSD / 1 WNTY
-        'Price': {
-          'Min': BigNumber(0.8).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY),
-          'Max': BigNumber(1.1).multipliedBy(UNITS.NUSD).dividedBy(UNITS.MNTY)
-        }
-      }
-  }
-
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
 var StableToken = new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address)
@@ -104,26 +74,26 @@ async function getNonce (_address) {
   return await web3.eth.getTransactionCount(_address)
 }
 
-async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
-  console.log('new order', _orderType, _haveAmount, _wantAmount)
-  let contractAddress = _orderType === 'sell' ? VolatileToken._address : StableToken._address
-  const methods = _orderType === 'sell' ? VolatileToken.methods : StableToken.methods
+async function simpleBuy (nonce, orderType) {
+  console.log('new order', orderType)
+  const contractAddress = orderType === 'sell' ? VolatileToken._address : StableToken._address
+  const methodsHave = orderType === 'sell' ? VolatileToken.methods : StableToken.methods
 
   // adjust _wantAmount to the demand/supply
-  const methodsRedro = _orderType !== 'sell' ? VolatileToken.methods : StableToken.methods
-  let orderSupply = await methods.totalSupply().call();
-  let redroSupply = await methodsRedro.totalSupply().call();
-  const wiggle = Math.random() * 0.2 + (_orderType === 'sell' ? 0.99 : 0.81) ;
-  console.log('wiggle', wiggle);
-  _wantAmount = Math.floor(_haveAmount * redroSupply / orderSupply * wiggle)
+  const methodsWant = orderType !== 'sell' ? VolatileToken.methods : StableToken.methods
+  //let supplyHave = await methodsHave.totalSupply().call();
+  const balanceHave = await methodsHave.balanceOf(myAddress).call();
+  const supplyWant = await methodsWant.totalSupply().call();
+  const wiggle = Math.random() * 0.2 + (orderType === 'sell' ? 1.0 : 0.8) ;
+  const amountHave = Math.floor(balanceHave / noo);
+  const amountWant = Math.floor(supplyWant / noo * wiggle)
     .toLocaleString('fullwide', {useGrouping:false});
-  //console.log('_want', _wantAmount, 'redroSupply', redroSupply, 'orderSupply', orderSupply);
-  const price = 1e18 * (_orderType === 'sell' ? _wantAmount / _haveAmount : _haveAmount / _wantAmount);
-  console.log('PRICE', price);
+  const price = 1e18 * (orderType === 'sell' ? amountWant / amountHave : amountHave / amountWant);
+  console.log('PRICE', price, 'wiggle', wiggle, 'have', amountHave, 'want', amountWant);
 
   let toDeposit = 0
-  if (_orderType === 'sell') {
-    toDeposit = BigNumber(myBalance).isGreaterThan(BigNumber(_haveAmount)) ? 0 : BigNumber(_haveAmount).minus(BigNumber(myBalance))
+  if (orderType === 'sell') {
+    toDeposit = BigNumber(myBalance).isGreaterThan(BigNumber(amountHave)) ? 0 : BigNumber(amountHave).minus(BigNumber(myBalance))
     toDeposit = new BigNumber(toDeposit).toFixed(0)
   }
   if (BigNumber(toDeposit).isGreaterThan(0)) myBalance = 0
@@ -131,10 +101,10 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   let rawTransaction = {
     'from': myAddress,
     'gasPrice': web3.utils.toHex(0),
-    'gasLimit': web3.utils.toHex(780000),
+    'gasLimit': web3.utils.toHex(9999999),
     'to': contractAddress,
     'value': web3.utils.toHex(toDeposit),
-    'data': methods.simpleBuy(_haveAmount, _wantAmount, [0]).encodeABI(),
+    'data': methodsHave.simpleBuy(amountHave, amountWant, [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
   //console.log(rawTransaction)
@@ -145,79 +115,26 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex')) // .on('transactionHash', console.log)
 }
 
-function sinRandom () {
-  var x = Math.sin(seed++) * 10000
-  return x - Math.floor(x)
-}
-
-// return random integer number in range [MIN, MAX]
-function randomGen (_min, _max) {
-  let zoom = new BigNumber(10).pow(18)
-  let min = new BigNumber(_min).multipliedBy(zoom)
-  let max = new BigNumber(_max).multipliedBy(zoom)
-  let range = new BigNumber(max).minus(BigNumber(min))
-  let random = new BigNumber(sinRandom()).multipliedBy(range)
-  let res = ((BigNumber(min).plus(random)).dividedBy(zoom))
-  return res
-}
-
-function getZoom (_value) {
-  let parts = _value.toString().split('.')
-  if (parts.length < 2) return 1
-  return 10 ** (parts[1].length)
-}
-
-function getMaxZoom (a, b) {
-  return a > b ? a : b
-}
-
-function createRandomOrderByType (_orderType) {
-  let minPrice = BOUNDS[_orderType].Price.Min
-  let maxPrice = BOUNDS[_orderType].Price.Max
-  console.log('minPrice', minPrice)
-  console.log('maxPrice', maxPrice)
-  let price = randomGen(maxPrice, minPrice)
-  console.log('price', price)
-  let minAmount = BOUNDS[_orderType].Amount.Min
-  let maxAmount = BOUNDS[_orderType].Amount.Max
-  let haveAmount
-  let wantAmount
-  if (_orderType === 'sell') {
-    haveAmount = new BigNumber(randomGen(maxAmount, minAmount)).toFixed(0)
-    wantAmount = new BigNumber(haveAmount).multipliedBy(BigNumber(price)).toFixed(0)
-  } else {
-    wantAmount = new BigNumber(randomGen(maxAmount, minAmount)).toFixed(0)
-    haveAmount = new BigNumber(wantAmount).multipliedBy(BigNumber(price)).toFixed(0)
-  }
-  let order = {
-    'orderType': _orderType,
-    'haveAmount': haveAmount,
-    'wantAmount': wantAmount
-  }
-  return order
-}
-
-function createRandomOrder () {
-  let _seed = randomGen(1, 0)
-  let _orderType = BigNumber(_seed).isGreaterThan(BigNumber(0.5)) ? 'sell' : 'buy'
-  if (spamType.toLowerCase() === 'buy') _orderType = 'buy'
-  if (spamType.toLowerCase() === 'sell') _orderType = 'sell'
-  return createRandomOrderByType(_orderType)
-}
-
 async function randomOrder (nonce) {
-  let order = createRandomOrder()
-  await simpleBuy(nonce, order.orderType, order.haveAmount, order.wantAmount)
+  let orderType
+  if (spamType.toLowerCase() === 'buy') {
+    orderType = 'buy'
+  } else if (spamType.toLowerCase() === 'sell') {
+    orderType = 'sell'
+  } else {
+    orderType = (Math.random() < 0.5) ? 'sell' : 'buy'
+}
+  await simpleBuy(nonce, orderType)
 }
 
-async function getOrder(_orderType, _id) {
+async function getOrder(orderType, id) {
   // const store = this.store.getState()
   let methods = PairEx.methods
-  let res = await methods.getOrder(_orderType, _id).call()
-  let weiMNTY = _orderType ? BigNumber(await res[2]) : BigNumber(await res[1])
+  let res = await methods.getOrder(orderType, id).call()
+  let weiMNTY = orderType ? BigNumber(await res[2]) : BigNumber(await res[1])
   weiMNTY = weiMNTY.toFixed(0)
   // console.log('weiMNTY', weiMNTY)
-  let weiNUSD = _orderType ? BigNumber(await res[1]) : BigNumber(await res[2])
+  let weiNUSD = orderType ? BigNumber(await res[1]) : BigNumber(await res[2])
   weiNUSD = weiNUSD.toFixed(0)
   let amount = weiToMNTY(await weiMNTY)
   // let price = NUSDs / 1 MNTY = (weiNUSD / 1e18) / (weiMNTY / 1e24) = 1e6 * weiNUSD / weiMNTY
@@ -228,7 +145,7 @@ async function getOrder(_orderType, _id) {
   // let price = _before.toString() + '.' + _after.toString()
   let price = wPrice.toFixed(10)
   let order = await {
-      'id': _id,
+      'id': id,
       'maker': cutString(res[0]),
       'amount': amount,
       'price' : price,
@@ -239,26 +156,26 @@ async function getOrder(_orderType, _id) {
   return await order
 }
 
-async function loadOrders(_orderType) {
+async function loadOrders(orderType) {
   //const pairExRedux = this.store.getRedux('pairEx')
   let orders = []
   let byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
-  let _id = byteZero
-  let order = await getOrder(_orderType, _id)
+  let id = byteZero
+  let order = await getOrder(orderType, id)
   let prev = await order.prev
   let loop = 10
   while ((await prev !== byteZero)) {
       // await console.log('orderId', _id, 'prev', prev)
-      _id = await prev
-      order = await getOrder(_orderType, _id)
+      id = await prev
+      order = await getOrder(orderType, id)
       //await this.addOrderToRedux(_orderType, order)
       await orders.push(order)
       prev = await order.prev
       await loop--
   }
   //await console.log('order' + _orderType ? 'Buy' : 'Sell', orders)
-  if (_orderType) orders = await orders.reverse()
-  console.log(await _orderType ? 'Buy' : 'Sell')
+  if (orderType) orders = await orders.reverse()
+  console.log(await orderType ? 'Buy' : 'Sell')
   console.log('length ', orders.length)
   //orders.push(orders[0])
   //let sortedOrders = await orders.sort((a, b) => (Number(a.price) > Number(b.price)) ? 1 : ((Number(b.price) > Number(a.price)) ? -1 : 0))
