@@ -5,7 +5,7 @@ var localPKey = 'a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a
 var localEndPoint = 'http://127.0.0.1:8545'
 
 var devPKey = 'a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a5'
-var devEndPoint = 'http://108.61.148.72:8545'
+var devEndPoint = 'http://45.32.103.64:8545'
 
 var mainPKey = ''
 var mainEndPoint = 'http://127.0.0.1:8545'

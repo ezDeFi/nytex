@@ -11,7 +11,7 @@ let spamType = args[3]
 if (!spamType) spamType = 'both'
 let noo = args[4]
 if (!noo) noo = 30
-let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
+let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://45.32.103.64:8545'
 const networkId = 111111
 const PairExAddress = '0x0000000000000000000000000000000000123456'
 const VolatileTokenAddress = '0x0000000000000000000000000000000001234567'
@@ -111,7 +111,7 @@ async function simpleBuy (nonce, orderType) {
   amountWant = parseInt(want).toLocaleString('fullwide', {useGrouping:false});
 
   const price = 1e18 * (orderType === 'sell' ? amountWant / amountHave : amountHave / amountWant);
-  console.log('PRICE', price, 'wiggle', wiggle, 'have', amountHave, 'want', amountWant);
+  console.log('PRICE', price.toFixed(2), 'wiggle', wiggle, 'have', amountHave, 'want', amountWant);
 
   let toDeposit = 0
   if (orderType === 'sell') {

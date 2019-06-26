@@ -9,7 +9,7 @@ let args = process.argv
 let network = args[2]
 let type = args[3]
 let amount = args[4]
-let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
+let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://45.32.103.64:8545'
 const networkId = 111111
 
 const CONTRACTS =
