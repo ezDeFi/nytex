@@ -36,6 +36,8 @@ const DECIMALS = {
   nusd: 6
 }
 
+const AMOUNT_MAX_DIGIT = 36;
+
 const CONTRACTS =
   {
     'VolatileToken':
@@ -85,9 +87,29 @@ async function simpleBuy (nonce, orderType) {
   const balanceHave = await methodsHave.balanceOf(myAddress).call();
   const supplyWant = await methodsWant.totalSupply().call();
   const wiggle = Math.random() * 0.2 + (orderType === 'sell' ? 1.0 : 0.8) ;
-  const amountHave = Math.floor(balanceHave / noo);
-  const amountWant = Math.floor(supplyWant / noo * wiggle)
+  let amountHave = Math.floor(balanceHave / noo);
+  let amountWant = Math.floor(supplyWant / noo * wiggle)
     .toLocaleString('fullwide', {useGrouping:false});
+
+  let have = amountHave.toString();
+  let want = amountWant.toString();
+  if (have.length > AMOUNT_MAX_DIGIT || want.length > AMOUNT_MAX_DIGIT) {
+    let toShift = Math.max(have.length, want.length) - AMOUNT_MAX_DIGIT;
+    console.log('have', have, 'want', want, 'toShift', toShift);
+    if (have.length > toShift) {
+      have = have.substr(0, have.length-toShift);
+    } else {
+      have = '1';
+    }
+    if (want.length > toShift) {
+      want = want.substr(0, want.length-toShift);
+    } else {
+      want = '1';
+    }
+  }
+  amountHave = parseInt(have).toLocaleString('fullwide', {useGrouping:false});
+  amountWant = parseInt(want).toLocaleString('fullwide', {useGrouping:false});
+
   const price = 1e18 * (orderType === 'sell' ? amountWant / amountHave : amountHave / amountWant);
   console.log('PRICE', price, 'wiggle', wiggle, 'have', amountHave, 'want', amountWant);
 
@@ -123,7 +145,7 @@ async function randomOrder (nonce) {
     orderType = 'sell'
   } else {
     orderType = (Math.random() < 0.5) ? 'sell' : 'buy'
-}
+  }
   await simpleBuy(nonce, orderType)
 }
 
