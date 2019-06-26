@@ -86,7 +86,7 @@ async function simpleBuy (nonce, orderType) {
   //let supplyHave = await methodsHave.totalSupply().call();
   const balanceHave = await methodsHave.balanceOf(myAddress).call();
   const supplyWant = await methodsWant.totalSupply().call();
-  const wiggle = Math.random() * 0.2 + (orderType === 'sell' ? 1.0 : 0.8) ;
+  const wiggle = Math.random() * 0.2 + (orderType === 'sell' ? 0.98 : 0.82) ;
   let amountHave = Math.floor(balanceHave / noo);
   let amountWant = Math.floor(supplyWant / noo * wiggle)
     .toLocaleString('fullwide', {useGrouping:false});
