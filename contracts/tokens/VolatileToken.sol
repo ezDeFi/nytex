@@ -38,6 +38,7 @@ contract VolatileToken is ERC223 {
         orderbook = IPairEx(_orderbook);
     }
 
+    // cashin (MNTY <- NTY)
     function buy()
         public
         payable
@@ -46,7 +47,7 @@ contract VolatileToken is ERC223 {
         buyFor(msg.sender);
     }
 
-    // alias = cashout
+    // alias = cashout (MNTY -> NTY)
     function sell(uint256 _amount)
         public
         returns(bool)
@@ -54,6 +55,7 @@ contract VolatileToken is ERC223 {
         sellTo(_amount, msg.sender);
     }
 
+    // cashoutTo (MNTY -> NTY -> address)
     function sellTo(uint256 _amount, address payable _to)
         public
         returns(bool)
@@ -68,6 +70,7 @@ contract VolatileToken is ERC223 {
         _to.transfer(_amount);
     }
 
+    // cashinTo (addresss <- MNTY <- NTY)
     function buyFor(
         address _to
     )
@@ -80,6 +83,7 @@ contract VolatileToken is ERC223 {
         return true;
     }
 
+    // cashin and order (NTY -> MNTY -> USD)
     function buy(uint _value, bytes memory _data) 
         public 
         payable 
@@ -89,6 +93,8 @@ contract VolatileToken is ERC223 {
     }
 
     // TESTING
+    // cashin and order (NTY -> MNTY -> USD)
+    // with verbose data = (ntyWant, assistingID)
     function simpleBuy(
         uint256  _value,
         uint256 _wantAmount,

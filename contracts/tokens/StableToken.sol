@@ -37,6 +37,7 @@ contract StableToken is ERC223{
         orderbook = IPairEx(_orderbook);
     }
 
+    // order USD -> MNTY
     function simpleBuy(
         uint256  _value,
         uint256 _wantAmount,
