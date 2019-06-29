@@ -9,8 +9,8 @@ import "../interfaces/IPairEx.sol";
 */
 
 contract StableToken is ERC223{
-    string public constant name = "Nexty USD";
-    string public constant symbol = "NUSD";
+    string public constant symbol = "NEWSD";
+    string public constant name = "New Stable Dollar";
     uint256 public constant decimals = 6;
 
     IPairEx internal orderbook;
@@ -37,8 +37,9 @@ contract StableToken is ERC223{
         orderbook = IPairEx(_orderbook);
     }
 
-    function simpleBuy(
-        uint256  _value,
+    // order USD -> MNTY
+    function order(
+        uint256 _haveAmount,
         uint256 _wantAmount,
         bytes32 _assistingID
     )
@@ -46,6 +47,6 @@ contract StableToken is ERC223{
         payable
     {
         bytes memory data = abi.encode(_wantAmount, _assistingID);
-        transfer(owner(), _value, data);
+        transfer(owner(), _haveAmount, data);
     }
 }

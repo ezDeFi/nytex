@@ -10,8 +10,8 @@ import "../interfaces/IPairEx.sol";
 */
 
 contract VolatileToken is ERC223 {
-    string public constant name = "MNTY";
-    string public constant symbol = "Mega NTY";
+    string public constant symbol = "MNTY";
+    string public constant name = "Mega NTY";
     uint256 public constant decimals = 24;
 
     IPairEx internal orderbook;
@@ -38,23 +38,25 @@ contract VolatileToken is ERC223 {
         orderbook = IPairEx(_orderbook);
     }
 
-    function buy()
+    // deposit (MNTY <- NTY)
+    function deposit()
         public
         payable
         returns(bool)
     {
-        buyFor(msg.sender);
+        depositTo(msg.sender);
     }
 
-    // alias = cashout
-    function sell(uint256 _amount)
+    // withdraw (MNTY -> NTY)
+    function withdraw(uint256 _amount)
         public
         returns(bool)
     {
-        sellTo(_amount, msg.sender);
+        withdrawTo(_amount, msg.sender);
     }
 
-    function sellTo(uint256 _amount, address payable _to)
+    // withdrawTo (MNTY -> NTY -> address)
+    function withdrawTo(uint256 _amount, address payable _to)
         public
         returns(bool)
     {
@@ -62,13 +64,14 @@ contract VolatileToken is ERC223 {
         _burn(_sender, _amount);
 
         /************************************************************************/
-        /* concensus garantures, this contract always got enough NTY to cashout */
+        /* concensus garantures, this contract always got enough NTY to withdraw */
         /************************************************************************/
 
         _to.transfer(_amount);
     }
 
-    function buyFor(
+    // depositTo (addresss <- MNTY <- NTY)
+    function depositTo(
         address _to
     )
         public
@@ -80,24 +83,37 @@ contract VolatileToken is ERC223 {
         return true;
     }
 
-    function buy(uint _value, bytes memory _data) 
-        public 
-        payable 
-    {
-        buy();
-        transfer(owner(), _value, _data);
-    }
-
-    // TESTING
-    function simpleBuy(
-        uint256  _value,
+    // deposit and order (NTY -> MNTY -> USD)
+    function depositAndOrder(
+        uint256 _haveAmount,
         uint256 _wantAmount,
         bytes32 _assistingID
-    ) 
-        public 
-        payable 
+    )
+        public
+        payable
+    {
+        deposit();
+        order(_haveAmount, _wantAmount, _assistingID);
+    }
+
+    // create selling order (NTY -> MNTY -> USD)
+    // with verbose data = (wantAmount, assistingID)
+    function order(
+        uint256 _haveAmount,
+        uint256 _wantAmount,
+        bytes32 _assistingID
+    )
+        public
     {
         bytes memory data = abi.encode(_wantAmount, _assistingID);
-        buy(_value, data);
+        transfer(exchange(), _haveAmount, data);
+    }
+
+    function exchange()
+        internal
+        view
+        returns(address)
+    {
+        return owner();
     }
 }

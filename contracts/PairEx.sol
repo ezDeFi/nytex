@@ -57,6 +57,9 @@ contract PairEx is OrderBook {
     // Token transfer's fallback
     // bytes _data = uint256[2] = (wantAmount, assistingID)
     // RULE : delegateCall never used
+    //
+    // buy/sell order is created by sending token to this address,
+    // with extra data = (wantAmount, assistingID)
     function tokenFallback(
         address _from,
         uint _value,
