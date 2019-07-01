@@ -113,19 +113,13 @@ async function simpleBuy (nonce, orderType) {
   const price = 1e18 * (orderType === 'sell' ? amountWant / amountHave : amountHave / amountWant);
   console.log('PRICE', price.toFixed(2), 'wiggle', wiggle, 'have', amountHave, 'want', amountWant);
 
-  let toDeposit = 0
-  if (orderType === 'sell') {
-    toDeposit = BigNumber(myBalance).isGreaterThan(BigNumber(amountHave)) ? 0 : BigNumber(amountHave).minus(BigNumber(myBalance))
-    toDeposit = new BigNumber(toDeposit).toFixed(0)
-  }
-  if (BigNumber(toDeposit).isGreaterThan(0)) myBalance = 0
   console.log('current balance xxx', myBalance, 'toDeposit', toDeposit)
   let rawTransaction = {
     'from': myAddress,
     'gasPrice': web3.utils.toHex(0),
     'gasLimit': web3.utils.toHex(9999999),
     'to': contractAddress,
-    'value': web3.utils.toHex(toDeposit),
+    'value': web3.utils.toHex(0),
     'data': methodsHave.simpleBuy(amountHave, amountWant, [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
