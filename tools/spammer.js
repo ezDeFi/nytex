@@ -36,6 +36,12 @@ const DECIMALS = {
   nusd: 6
 }
 
+const UNITS =
+{
+  'MNTY': BigNumber(10).pow(DECIMALS.mnty),
+  'NUSD': BigNumber(10).pow(DECIMALS.nusd)
+}
+
 const AMOUNT_MAX_DIGIT = 36;
 
 const CONTRACTS =
@@ -55,12 +61,6 @@ const CONTRACTS =
         'abi': PairExData.abi,
         'address': PairExAddress
       }
-  }
-
-const UNITS =
-  {
-    'MNTY': BigNumber(10).pow(24),
-    'NUSD': BigNumber(10).pow(6)
   }
 
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
@@ -86,7 +86,7 @@ async function simpleBuy (nonce, orderType) {
   //let supplyHave = await methodsHave.totalSupply().call();
   const balanceHave = await methodsHave.balanceOf(myAddress).call();
   const supplyWant = await methodsWant.totalSupply().call();
-  const wiggle = Math.random() * 0.2 + (orderType === 'sell' ? 0.98 : 0.82) ;
+  const wiggle = Math.random() * 0.003 + (orderType === 'sell' ? 0.9999 : 0.9998) ;
   let amountHave = Math.floor(balanceHave / 2 / noo);
   let amountWant = Math.floor(supplyWant / 2 / noo * wiggle)
     .toLocaleString('fullwide', {useGrouping:false});
