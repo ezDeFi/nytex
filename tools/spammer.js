@@ -110,7 +110,9 @@ async function simpleBuy (nonce, orderType) {
   amountHave = parseInt(have).toLocaleString('fullwide', {useGrouping:false});
   amountWant = parseInt(want).toLocaleString('fullwide', {useGrouping:false});
 
-  const price = 1e18 * (orderType === 'sell' ? amountWant / amountHave : amountHave / amountWant);
+  const price = orderType === 'sell' ?
+    (amountWant / amountHave / 1e18) :
+    (1e18 * amountHave / amountWant);
   console.log('PRICE', price, 'wiggle', wiggle, 'have', amountHave, 'want', amountWant);
 
   let rawTransaction = {
