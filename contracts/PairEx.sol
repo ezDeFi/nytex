@@ -27,9 +27,9 @@ contract PairEx is OrderBook {
         Order memory order;
         order.wantAmount = 1;
         // Selling Book
-        books[Sell].orders[zeroBytes32] = order;
+        books[Sell].orders[ZERO_ID] = order;
         // Buying Book
-        books[Buy].orders[zeroBytes32] = order;
+        books[Buy].orders[ZERO_ID] = order;
     }
 
     function setup(
@@ -71,7 +71,7 @@ contract PairEx is OrderBook {
         uint256 haveAmount = _value;
         uint256 wantAmount;
         bytes32 assistingID;
-        (wantAmount, assistingID) = _data.length == 32 ? (abi.decode(_data, (uint256)), bytes32(0)) : abi.decode(_data, (uint256, bytes32));
+        (wantAmount, assistingID) = _data.length == 32 ? (abi.decode(_data, (uint256)), ZERO_ID) : abi.decode(_data, (uint256, bytes32));
         bytes32 _orderID = insert(
             orderType,
             haveAmount,
@@ -94,7 +94,7 @@ contract PairEx is OrderBook {
         OrderList storage redroBook = books[_redroType];
         bytes32 redroTopID = top(_redroType);
 
-        while (redroTopID != zeroBytes32) {
+        while (redroTopID != ZERO_ID) {
             Order storage redro = redroBook.orders[redroTopID];
             if (order.haveAmount.mul(redro.haveAmount) < order.wantAmount.mul(redro.wantAmount)) {
                 // not pairable
@@ -136,7 +136,7 @@ contract PairEx is OrderBook {
         uint256 totalSTB;
         uint256 totalVOL;
         bytes32 cursor = top(_orderType);
-        while(cursor != zeroBytes32 && totalSTB < _stableTokenTarget) {
+        while(cursor != ZERO_ID && totalSTB < _stableTokenTarget) {
             Order storage order = book.orders[cursor];
             uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
             uint256 vol = _orderType ? order.wantAmount : order.haveAmount;
@@ -167,7 +167,7 @@ contract PairEx is OrderBook {
         uint256 totalVOL;
         uint256 totalSTB;
         bytes32 cursor = top(orderType);
-        while(cursor != zeroBytes32 && totalSTB < _stableTokenTarget) {
+        while(cursor != ZERO_ID && totalSTB < _stableTokenTarget) {
             Order storage order = book.orders[cursor];
             uint256 vol = _inflate ? order.haveAmount : order.wantAmount;
             uint256 stb = _inflate ? order.wantAmount : order.haveAmount;

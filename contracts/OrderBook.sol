@@ -26,9 +26,9 @@ contract OrderBook is Initializer, DataSet {
         bytes32 newID = initOrder(_maker, _orderType, _haveAmount, _wantAmount);
 
         // direction to bottom, search first order, that new order better than
-        bytes32 id = _assistingID == zeroBytes32 ? top(_orderType) : _assistingID;
+        bytes32 id = _assistingID == ZERO_ID ? top(_orderType) : _assistingID;
         if (!betterOrder(_orderType, newID, id)) {
-            // order[newID] always better than order[bytes32(0)] with price = 0
+            // order[newID] always better than order[ZERO_ID] with price = 0
             // if price of order[newID] = 0 => throw cause infinite loop
             while (!betterOrder(_orderType, newID, id)) {
                 id = book.orders[id].next;
@@ -39,7 +39,7 @@ contract OrderBook is Initializer, DataSet {
         id = book.orders[id].prev;
         // direction to top, search first order that new order not better than
         // this part triggered only if new order not better than assistingID order
-        while (id != zeroBytes32 && betterOrder(_orderType, newID, id)) {
+        while (id != ZERO_ID && betterOrder(_orderType, newID, id)) {
             id = book.orders[id].prev;
         }
         insertBefore(_orderType, newID, book.orders[id].next);
@@ -142,7 +142,7 @@ contract OrderBook is Initializer, DataSet {
         returns (bytes32)
     {
         OrderList storage book = books[_orderType];
-        return book.orders[bytes32(0)].next;
+        return book.orders[ZERO_ID].next;
     }
 
     function bottom(
@@ -153,7 +153,7 @@ contract OrderBook is Initializer, DataSet {
         returns (bytes32)
     {
         OrderList storage book = books[_orderType];
-        return book.orders[bytes32(0)].prev;
+        return book.orders[ZERO_ID].prev;
     }
 
     function betterOrder(
