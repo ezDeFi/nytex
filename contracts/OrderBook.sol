@@ -31,29 +31,6 @@ contract OrderBook is Initializer {
         StepDivisor = divisor;
     }
 
-    // read functions
-    function top(
-        bool _orderType
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        orderlib.OrderList storage book = books[_orderType];
-        return book.orders[ZERO_ID].next;
-    }
-
-    function bottom(
-        bool _orderType
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        orderlib.OrderList storage book = books[_orderType];
-        return book.orders[ZERO_ID].prev;
-    }
-
     function getNext(
         bool _orderType,
         bytes32 _id

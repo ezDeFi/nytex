@@ -73,99 +73,21 @@ contract PairEx is OrderBook {
         external
     {
         address maker = _from;
-        bool orderType = getOrderType();
         uint256 haveAmount = _value;
         uint256 wantAmount;
         bytes32 assistingID;
-        (wantAmount, assistingID) = _data.length == 32 ? (abi.decode(_data, (uint256)), ZERO_ID) : abi.decode(_data, (uint256, bytes32));
-        bytes32 _orderID = insert(
-            orderType,
-            haveAmount,
-            wantAmount,
-            maker,
-            assistingID
-        );
-        pairing(orderType, _orderID);
-    }
+        (wantAmount, assistingID) = _data.length == 32 ?
+            (abi.decode(_data, (uint256)), ZERO_ID) :
+            (abi.decode(_data, (uint256, bytes32)));
 
-    function insert(
-        bool _orderType,
-        uint256 _haveAmount,
-        uint256 _wantAmount,
-        address _maker,
-        bytes32 _assistingID
-    )
-        public
- 	    returns (bytes32)
-    {
-        orderlib.OrderList storage book = books[_orderType];
-        require(book.orders[_assistingID].isValid(), "save your gas");
+        // TODO: get order type from ripem160(haveToken)[:16] + ripem160(wantToken)[:16]
+        bool orderType = getOrderType();
+        orderlib.OrderList storage book = books[orderType];
+        require(book.getOrder(assistingID).isValid(), "assisting ID not exist");
 
-        bytes32 newID = book.createOrder(_maker, _haveAmount, _wantAmount);
-        orderlib.Order storage newOrder = book.getOrder(newID);
-
-        // direction to bottom, search first order, that new order better than
-        bytes32 id = _assistingID == ZERO_ID ? top(_orderType) : _assistingID;
-        orderlib.Order storage order = book.getOrder(id);
-
-        if (!newOrder.betterThan(order)) {
-            // order[newID] always better than order[ZERO_ID] with price = 0
-            // if price of order[newID] = 0 => throw cause infinite loop
-            // TODO: use do-while instead
-            while (!newOrder.betterThan(order)) {
-                order = book.getOrder(id = order.next);
-            }
-            book.insertBefore(newID, id);
-            return newID;
-        }
-        order = book.getOrder(id = order.prev);
-        // direction to top, search first order that new order not better than
-        // this part triggered only if new order not better than assistingID order
-        while (id != ZERO_ID && newOrder.betterThan(order)) {
-            order = book.getOrder(id = order.prev);
-        }
-        book.insertBefore(newID, order.next);
-        return newID;
-    }
-
-    function pairing(
-        bool _orderType,
-        bytes32 _orderID
-    )
-        private
-    {
-        bool _redroType = !_orderType;
-        orderlib.OrderList storage orderBook = books[_orderType];
-        orderlib.Order storage order = orderBook.orders[_orderID];
-        orderlib.OrderList storage redroBook = books[_redroType];
-        bytes32 redroTopID = top(_redroType);
-
-        while (redroTopID != ZERO_ID) {
-            orderlib.Order storage redro = redroBook.orders[redroTopID];
-            if (order.haveAmount.mul(redro.haveAmount) < order.wantAmount.mul(redro.wantAmount)) {
-                // not pairable
-                return;
-            }
-            uint256 orderPairableAmount = Math.min(order.haveAmount, redro.wantAmount);
-            order.wantAmount = order.wantAmount.mul(order.haveAmount.sub(orderPairableAmount)).div(order.haveAmount);
-            order.haveAmount = order.haveAmount.sub(orderPairableAmount);
-
-            uint256 redroPairableAmount = redro.haveAmount.mul(orderPairableAmount).div(redro.wantAmount);
-            redro.wantAmount = redro.wantAmount.mul(redro.haveAmount.sub(redroPairableAmount)).div(redro.haveAmount);
-            redro.haveAmount = redro.haveAmount.sub(redroPairableAmount);
-
-            token[_redroType].transfer(order.maker, redroPairableAmount);
-            token[_orderType].transfer(redro.maker, orderPairableAmount);
-            if (redro.haveAmount == 0 || redro.wantAmount == 0) {
-                redroBook.refund(redroTopID);
-            }
-            redroTopID = top(_redroType);
-            if (order.haveAmount == 0 || order.wantAmount == 0) {
-                orderBook.refund(_orderID);
-                return;
-            }
-        }
-        return;
+        bytes32 newID = book.createOrder(maker, haveAmount, wantAmount);
+        book.place(newID, assistingID);
+        book.fill(newID, books[!orderType]);
     }
 
     // orderToFill(BuyType, 123) returns an SellType order to fill enough buying orders to burn as much as 123 StableToken.
