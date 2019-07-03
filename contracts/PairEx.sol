@@ -8,6 +8,8 @@ contract PairEx is OrderBook {
     using orderlib for orderlib.Order;
     using orderlib for orderlib.OrderList;
 
+    bytes32 constant ZERO_ID = bytes32(0);
+
     constructor (
         address _volatileTokenAddress,
         address _stableTokenAddress
@@ -103,7 +105,7 @@ contract PairEx is OrderBook {
         orderlib.OrderList storage book = books[_orderType];
         uint256 totalSTB;
         uint256 totalVOL;
-        bytes32 cursor = top(_orderType);
+        bytes32 cursor = book.topID();
         while(cursor != ZERO_ID && totalSTB < _stableTokenTarget) {
             orderlib.Order storage order = book.orders[cursor];
             uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
@@ -127,55 +129,11 @@ contract PairEx is OrderBook {
         uint256 _stableTokenTarget
     )
         public
-        returns(uint256, uint256)
+        returns(uint256 totalVOL, uint256 totalSTB)
     {
         require(msg.sender == address(this), "consensus only");
         bool orderType = _inflate ? Sell : Buy; // inflate by filling NTY sell order
         orderlib.OrderList storage book = books[orderType];
-        uint256 totalVOL;
-        uint256 totalSTB;
-        bytes32 cursor = top(orderType);
-        while(cursor != ZERO_ID && totalSTB < _stableTokenTarget) {
-            orderlib.Order storage order = book.orders[cursor];
-            uint256 vol = _inflate ? order.haveAmount : order.wantAmount;
-            uint256 stb = _inflate ? order.wantAmount : order.haveAmount;
-            if (totalSTB.add(stb) <= _stableTokenTarget) {
-                totalVOL = totalVOL.add(vol);
-                totalSTB = totalSTB.add(stb);
-                // fill the order
-                token[!_inflate].burnFromOwner(order.haveAmount);
-                token[_inflate].mintToOwner(order.wantAmount);
-                bytes32 cursorToPayout = cursor;
-                cursor = order.next;
-                book.payout(cursorToPayout);
-                // TODO: emit event for 'full order filled'
-                continue;
-            }
-            // partial order fill
-            uint256 fillableHave;
-            uint256 fillableWant;
-            {// temporary scope
-            uint256 fillableSTB = _stableTokenTarget.sub(totalSTB);
-            uint256 fillableVOL = vol.mul(fillableSTB).div(stb);
-            totalVOL = totalVOL.add(fillableVOL);
-            totalSTB = totalSTB.add(fillableSTB);
-            fillableHave = _inflate ? fillableVOL : fillableSTB;
-            fillableWant = _inflate ? fillableSTB : fillableVOL;
-            }
-            // fill the partial order
-            token[!_inflate].burnFromOwner(fillableHave);
-            token[_inflate].mintToOwner(fillableWant);
-            token[_inflate].transfer(order.maker, fillableWant);
-            // TODO: emit event for 'partial order filled'
-            order.haveAmount = order.haveAmount.sub(fillableHave);
-            order.wantAmount = order.wantAmount.sub(fillableWant);
-            if (order.haveAmount == 0 || order.wantAmount == 0) {
-                book.refund(cursor);
-                // TODO: emit event for 'remain order rejected'
-            }
-            break; // stop the absorption
-        }
-        //  Not enough order, return all we have
-        return (totalVOL, totalSTB);
+        return book.absorb(token[Stable], _stableTokenTarget);
     }
 }

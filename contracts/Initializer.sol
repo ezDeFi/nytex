@@ -3,10 +3,13 @@ pragma solidity ^0.5.2;
 import "./interfaces/IOwnableERC223.sol";
 
 contract Initializer {
+    // TODO: change to VolatileToken and StableToken
     mapping(bool => IOwnableERC223) token;
 
     bool public constant Volatile = false;
     bool public constant Stable = true;
+
+    // TODO: change to Bid and Ask
     bool public constant Sell = false;
     bool public constant Buy = true;
 

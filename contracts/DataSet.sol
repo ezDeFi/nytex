@@ -37,7 +37,7 @@ library orderlib {
     function isValid(
         Order storage _order
     )
-        public
+        internal
         view
         returns(bool)
     {
@@ -48,7 +48,7 @@ library orderlib {
     function getID(
         Order storage _order
     )
-        public
+        internal
         view
         returns(bytes32)
     {
@@ -59,7 +59,7 @@ library orderlib {
         Order storage order,
         Order storage redro
     )
-        public
+        internal
         view
         returns (bool)
     {
@@ -78,11 +78,30 @@ library orderlib {
     }
     using orderlib for OrderList;
 
+    // get the order token amount, it can be either have or want amount
+    function getTokenAmount(
+        OrderList storage book,
+        Order storage order,
+        IOwnableERC223 token
+    )
+        internal
+        view
+        returns (uint256)
+    {
+        if (token == book.haveToken) {
+            return order.haveAmount;
+        }
+        if (token == book.wantToken) {
+            return order.wantAmount;
+        }
+        return 0;
+    }
+
     // read functions
     function topID(
         OrderList storage book
     )
-        public
+        internal
         view
         returns (bytes32)
     {
@@ -92,7 +111,7 @@ library orderlib {
     function bottomID(
         OrderList storage book
     )
-        public
+        internal
         view
         returns (bytes32)
     {
@@ -105,7 +124,7 @@ library orderlib {
         uint256 _haveAmount,
         uint256 _wantAmount
     )
-        public
+        internal
         returns (bytes32)
     {
         // TODO move require check to API
@@ -120,7 +139,7 @@ library orderlib {
         OrderList storage book,
         bytes32 id
     )
-        public
+        internal
         view
         returns (Order storage)
     {
@@ -133,7 +152,7 @@ library orderlib {
         bytes32 id,
         bytes32 next
     )
-        public
+        internal
     {
         // prev => [id] => next
         bytes32 prev = book.orders[next].prev;
@@ -149,7 +168,7 @@ library orderlib {
         Order storage newOrder,
         bytes32 assistingID
     )
-        public
+        internal
         view
  	    returns (bytes32)
     {
@@ -172,7 +191,7 @@ library orderlib {
         return id;
     }
 
-    // place a new order into its correct position
+    // place the new order into its correct position
     function place(
         OrderList storage book,
         bytes32 newID,
@@ -188,7 +207,7 @@ library orderlib {
     }
 
     // NOTE: this function does not payout nor refund
-    // Use payout/refund instead
+    // Use payout/refund/fill instead
     function _remove(
         OrderList storage book,
         bytes32 id
@@ -207,7 +226,7 @@ library orderlib {
         OrderList storage book,
         bytes32 id
     )
-        public
+        internal
     {
         book.wantToken.transfer(book.orders[id].maker, book.orders[id].wantAmount);
         book._remove(id);
@@ -217,10 +236,28 @@ library orderlib {
         OrderList storage book,
         bytes32 id
     )
-        public
+        internal
     {
         book.haveToken.transfer(book.orders[id].maker, book.orders[id].haveAmount);
         book._remove(id);
+    }
+
+    function payoutPartial(
+        OrderList storage book,
+        Order storage order,
+        uint256 fillableHave,
+        uint256 fillableWant
+    )
+        internal
+    {
+        book.wantToken.transfer(order.maker, fillableWant);
+        order.haveAmount = order.haveAmount.sub(fillableHave);
+        order.wantAmount = order.wantAmount.sub(fillableWant);
+        // TODO: emit event for 'partial order filled'
+        if (order.haveAmount == 0 || order.wantAmount == 0) {
+            book.refund(order.getID());
+            // TODO: emit event for 'remain order rejected'
+        }
     }
 
     function fill(
@@ -228,7 +265,7 @@ library orderlib {
         bytes32 orderID,
         OrderList storage redroBook
     )
-        public
+        internal
     {
         Order storage order = orderBook.getOrder(orderID);
         bytes32 redroTopID = redroBook.topID();
@@ -259,5 +296,49 @@ library orderlib {
             }
         }
         return;
+    }
+
+    function absorb(
+        OrderList storage book,
+        IOwnableERC223 token,
+        uint256 target
+    )
+        internal
+        returns(uint256 totalVOL, uint256 totalSTB)
+    {
+        bytes32 cursor = book.topID();
+        while(cursor != ZERO_ID && totalSTB < target) {
+            orderlib.Order storage order = book.getOrder(cursor);
+            uint256 vol = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
+            uint256 stb = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
+            if (totalSTB.add(stb) <= target) {
+                // fill the order
+                book.haveToken.burnFromOwner(order.haveAmount);
+                book.wantToken.mintToOwner(order.wantAmount);
+                // bytes32 cursorToPayout = cursor;
+                // cursor = order.next;
+                // book.payout(cursorToPayout);
+                book.payout(cursor);
+                cursor = order.next;
+                // TODO: emit event for 'full order filled'
+            } else {
+                // partial order fill
+                uint256 fillableSTB = target.sub(totalSTB);
+                vol = vol.mul(fillableSTB).div(stb);
+                stb = fillableSTB;
+                uint256 fillableHave = (book.haveToken == token) ? stb : vol;
+                uint256 fillableWant = (book.wantToken == token) ? stb : vol;
+                // fill the partial order
+                book.haveToken.burnFromOwner(fillableHave);
+                book.wantToken.mintToOwner(fillableWant);
+                book.payoutPartial(order, fillableHave, fillableWant);
+                // extra step to make sure the loop will stop after this
+                cursor = ZERO_ID;
+            }
+            totalVOL = totalVOL.add(vol);
+            totalSTB = totalSTB.add(stb);
+        }
+        // not enough order, return all we have
+        return (totalVOL, totalSTB);
     }
 }

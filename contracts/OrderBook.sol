@@ -9,12 +9,6 @@ contract OrderBook is Initializer {
     using orderlib for orderlib.Order;
     using orderlib for orderlib.OrderList;
 
-    bytes32 constant ZERO_ID = bytes32(0);
-    address constant ZERO_ADDRESS = address(0x0);
-    // Stepping price param
-    uint256 internal StepDividend = 0;
-    uint256 internal StepDivisor = 1;
-
     // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => orderlib.OrderList)
     mapping(bool => orderlib.OrderList) internal books;
 
@@ -24,11 +18,6 @@ contract OrderBook is Initializer {
         orderlib.Order storage order = book.orders[_id];
         require(msg.sender == order.maker, "only order owner");
         book.refund(_id);
-    }
-
-    function _setStep(uint256 dividend, uint256 divisor) private {
-        StepDividend = dividend;
-        StepDivisor = divisor;
     }
 
     function getNext(
