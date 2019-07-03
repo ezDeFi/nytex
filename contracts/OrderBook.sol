@@ -7,41 +7,52 @@ import "./Initializer.sol";
 contract OrderBook is Initializer {
     using SafeMath for uint256;
     using orderlib for orderlib.Order;
-    using orderlib for orderlib.OrderList;
+    using orderlib for orderlib.Book;
 
-    // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => orderlib.OrderList)
-    mapping(bool => orderlib.OrderList) internal books;
+    // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => orderlib.Book)
+    mapping(bool => orderlib.Book) internal books;
 
     // Cancel and refund the remaining order.haveAmount
     function cancel(bool _orderType, bytes32 _id) public {
-        orderlib.OrderList storage book = books[_orderType];
+        orderlib.Book storage book = books[_orderType];
         orderlib.Order storage order = book.orders[_id];
         require(msg.sender == order.maker, "only order owner");
         book.refund(_id);
     }
 
-    function getNext(
-        bool _orderType,
-        bytes32 _id
+    function top(
+        bool orderType
     )
         public
         view
         returns (bytes32)
     {
-        orderlib.OrderList storage book = books[_orderType];
-        return book.orders[_id].next;
+        orderlib.Book storage book = books[orderType];
+        return book.topID();
     }
 
-    function getPrev(
-        bool _orderType,
-        bytes32 _id
+    function next(
+        bool orderType,
+        bytes32 id
     )
         public
         view
         returns (bytes32)
     {
-        orderlib.OrderList storage book = books[_orderType];
-        return book.orders[_id].prev;
+        orderlib.Book storage book = books[orderType];
+        return book.orders[id].next;
+    }
+
+    function prev(
+        bool orderType,
+        bytes32 id
+    )
+        public
+        view
+        returns (bytes32)
+    {
+        orderlib.Book storage book = books[orderType];
+        return book.orders[id].prev;
     }
 
     function getOrder(
@@ -58,7 +69,7 @@ contract OrderBook is Initializer {
             bytes32
         )
     {
-        orderlib.OrderList storage book = books[_orderType];
+        orderlib.Book storage book = books[_orderType];
         orderlib.Order storage order = book.orders[_id];
         return (order.maker, order.haveAmount, order.wantAmount, order.prev, order.next);
     }

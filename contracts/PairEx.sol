@@ -6,7 +6,7 @@ import "./OrderBook.sol";
 
 contract PairEx is OrderBook {
     using orderlib for orderlib.Order;
-    using orderlib for orderlib.OrderList;
+    using orderlib for orderlib.Book;
 
     bytes32 constant ZERO_ID = bytes32(0);
 
@@ -28,16 +28,16 @@ contract PairEx is OrderBook {
     function initBooks()
         private
     {
-        books[Sell].haveToken = token[Stable];
-        books[Sell].wantToken = token[Volatile];
-        books[Buy].haveToken = token[Stable];
-        books[Buy].wantToken = token[Volatile];
+        books[Ask].haveToken = StablizeToken;
+        books[Ask].wantToken = VolatileToken;
+        books[Bid].haveToken = StablizeToken;
+        books[Bid].wantToken = VolatileToken;
         orderlib.Order memory order;
         order.wantAmount = 1;
         // Selling Book
-        books[Sell].orders[ZERO_ID] = order;
+        books[Ask].orders[ZERO_ID] = order;
         // Buying Book
-        books[Buy].orders[ZERO_ID] = order;
+        books[Bid].orders[ZERO_ID] = order;
     }
 
     function setup(
@@ -48,8 +48,8 @@ contract PairEx is OrderBook {
     {
         volatileTokenRegister(_volatileTokenAddress);
         stableTokenRegister(_stableTokenAddress);
-        token[Volatile].setup(address(this));
-        token[Stable].setup(address(this));
+        VolatileToken.setup(address(this));
+        StablizeToken.setup(address(this));
     }
 
     function getOrderType()
@@ -58,8 +58,8 @@ contract PairEx is OrderBook {
         returns(bool)
     {
         address _sender = msg.sender;
-        require(_sender == address(token[Stable]) || _sender == address(token[Volatile]), "only VolatileToken and StableToken accepted");
-        return _sender == address(token[Stable]);
+        require(_sender == address(StablizeToken) || _sender == address(VolatileToken), "only VolatileToken and StableToken accepted");
+        return _sender == address(StablizeToken);
     }
 
     // Token transfer's fallback
@@ -84,7 +84,7 @@ contract PairEx is OrderBook {
 
         // TODO: get order type from ripem160(haveToken)[:16] + ripem160(wantToken)[:16]
         bool orderType = getOrderType();
-        orderlib.OrderList storage book = books[orderType];
+        orderlib.Book storage book = books[orderType];
         require(book.getOrder(assistingID).isValid(), "assisting ID not exist");
 
         bytes32 newID = book.createOrder(maker, haveAmount, wantAmount);
@@ -102,7 +102,7 @@ contract PairEx is OrderBook {
         view
         returns(uint256, uint256)
     {
-        orderlib.OrderList storage book = books[_orderType];
+        orderlib.Book storage book = books[_orderType];
         uint256 totalSTB;
         uint256 totalVOL;
         bytes32 cursor = book.topID();
@@ -132,8 +132,8 @@ contract PairEx is OrderBook {
         returns(uint256 totalVOL, uint256 totalSTB)
     {
         require(msg.sender == address(this), "consensus only");
-        bool orderType = inflate ? Sell : Buy; // inflate by filling NTY sell order
-        orderlib.OrderList storage book = books[orderType];
-        return book.absorb(token[Stable], stableTokenTarget);
+        bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell order
+        orderlib.Book storage book = books[orderType];
+        return book.absorb(StablizeToken, stableTokenTarget);
     }
 }

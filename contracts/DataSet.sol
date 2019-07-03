@@ -69,18 +69,18 @@ library orderlib {
     }
 
 
-    struct OrderList {
+    struct Book {
         IOwnableERC223 haveToken;
         IOwnableERC223 wantToken;
         mapping (bytes32 => Order) orders;
         // bytes32 top;	// the highest priority (lowest sell or highest buy)
         // bytes32 bottom;	// the lowest priority (highest sell or lowest buy)
     }
-    using orderlib for OrderList;
+    using orderlib for Book;
 
     // get the order token amount, it can be either have or want amount
     function getTokenAmount(
-        OrderList storage book,
+        Book storage book,
         Order storage order,
         IOwnableERC223 token
     )
@@ -99,7 +99,7 @@ library orderlib {
 
     // read functions
     function topID(
-        OrderList storage book
+        Book storage book
     )
         internal
         view
@@ -109,7 +109,7 @@ library orderlib {
     }
 
     function bottomID(
-        OrderList storage book
+        Book storage book
     )
         internal
         view
@@ -119,7 +119,7 @@ library orderlib {
     }
 
     function createOrder(
-        OrderList storage book,
+        Book storage book,
         address _maker,
         uint256 _haveAmount,
         uint256 _wantAmount
@@ -136,7 +136,7 @@ library orderlib {
     }
 
     function getOrder(
-        OrderList storage book,
+        Book storage book,
         bytes32 id
     )
         internal
@@ -148,7 +148,7 @@ library orderlib {
 
     // inseter _id as prev element of _next
     function insertBefore(
-        OrderList storage book,
+        Book storage book,
         bytes32 id,
         bytes32 next
     )
@@ -164,7 +164,7 @@ library orderlib {
 
     // find the next id (position) to insertBefore
     function find(
-        OrderList storage book,
+        Book storage book,
         Order storage newOrder,
         bytes32 assistingID
     )
@@ -193,7 +193,7 @@ library orderlib {
 
     // place the new order into its correct position
     function place(
-        OrderList storage book,
+        Book storage book,
         bytes32 newID,
         bytes32 assistingID
     )
@@ -209,7 +209,7 @@ library orderlib {
     // NOTE: this function does not payout nor refund
     // Use payout/refund/fill instead
     function _remove(
-        OrderList storage book,
+        Book storage book,
         bytes32 id
     )
         internal
@@ -223,7 +223,7 @@ library orderlib {
     }
 
     function payout(
-        OrderList storage book,
+        Book storage book,
         bytes32 id
     )
         internal
@@ -233,7 +233,7 @@ library orderlib {
     }
 
     function refund(
-        OrderList storage book,
+        Book storage book,
         bytes32 id
     )
         internal
@@ -243,7 +243,7 @@ library orderlib {
     }
 
     function payoutPartial(
-        OrderList storage book,
+        Book storage book,
         Order storage order,
         uint256 fillableHave,
         uint256 fillableWant
@@ -261,9 +261,9 @@ library orderlib {
     }
 
     function fill(
-        OrderList storage orderBook,
+        Book storage orderBook,
         bytes32 orderID,
-        OrderList storage redroBook
+        Book storage redroBook
     )
         internal
     {
@@ -299,7 +299,7 @@ library orderlib {
     }
 
     function absorb(
-        OrderList storage book,
+        Book storage book,
         IOwnableERC223 token,
         uint256 target
     )

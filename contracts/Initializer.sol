@@ -3,15 +3,11 @@ pragma solidity ^0.5.2;
 import "./interfaces/IOwnableERC223.sol";
 
 contract Initializer {
-    // TODO: change to VolatileToken and StableToken
-    mapping(bool => IOwnableERC223) token;
+    IOwnableERC223 VolatileToken;
+    IOwnableERC223 StablizeToken;
 
-    bool public constant Volatile = false;
-    bool public constant Stable = true;
-
-    // TODO: change to Bid and Ask
-    bool public constant Sell = false;
-    bool public constant Buy = true;
+    bool public constant Ask = false;
+    bool public constant Bid = true;
 
     constructor ()
         public
@@ -23,15 +19,15 @@ contract Initializer {
         public
     {
         // SellType false
-        require(address(token[Volatile]) == address(0), "already set");
-        token[Volatile] = IOwnableERC223(_address);
+        require(address(VolatileToken) == address(0), "already set");
+        VolatileToken = IOwnableERC223(_address);
     }
 
     function stableTokenRegister(address _address)
         public
     {
         // BuyType true
-        require(address(token[Stable]) == address(0), "already set");
-        token[Stable] = IOwnableERC223(_address);
+        require(address(StablizeToken) == address(0), "already set");
+        StablizeToken = IOwnableERC223(_address);
     }
 }
