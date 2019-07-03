@@ -5,6 +5,8 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./OrderBook.sol";
 
 contract PairEx is OrderBook {
+    using orderlib for orderlib.Order;
+    using orderlib for orderlib.OrderList;
 
     constructor (
         address _volatileTokenAddress,
@@ -24,7 +26,7 @@ contract PairEx is OrderBook {
     function initBooks()
         private
     {
-        Order memory order;
+        orderlib.Order memory order;
         order.wantAmount = 1;
         // Selling Book
         books[Sell].orders[ZERO_ID] = order;
@@ -82,6 +84,41 @@ contract PairEx is OrderBook {
         pairing(orderType, _orderID);
     }
 
+    function insert(
+        bool _orderType,
+        uint256 _haveAmount,
+        uint256 _wantAmount,
+        address _maker,
+        bytes32 _assistingID
+    )
+        public
+ 	    returns (bytes32)
+    {
+        orderlib.OrderList storage book = books[_orderType];
+        require(book.orders[_assistingID].isValid(), "save your gas");
+        bytes32 newID = book.createOrder(_maker, _haveAmount, _wantAmount);
+
+        // direction to bottom, search first order, that new order better than
+        bytes32 id = _assistingID == ZERO_ID ? top(_orderType) : _assistingID;
+        if (!betterOrder(_orderType, newID, id)) {
+            // order[newID] always better than order[ZERO_ID] with price = 0
+            // if price of order[newID] = 0 => throw cause infinite loop
+            while (!betterOrder(_orderType, newID, id)) {
+                id = book.orders[id].next;
+            }
+            book.insertBefore(newID, id);
+            return newID;
+        }
+        id = book.orders[id].prev;
+        // direction to top, search first order that new order not better than
+        // this part triggered only if new order not better than assistingID order
+        while (id != ZERO_ID && betterOrder(_orderType, newID, id)) {
+            id = book.orders[id].prev;
+        }
+        book.insertBefore(newID, book.orders[id].next);
+        return newID;
+    }
+
     function pairing(
         bool _orderType,
         bytes32 _orderID
@@ -89,13 +126,13 @@ contract PairEx is OrderBook {
         private
     {
         bool _redroType = !_orderType;
-        OrderList storage orderBook = books[_orderType];
-        Order storage order = orderBook.orders[_orderID];
-        OrderList storage redroBook = books[_redroType];
+        orderlib.OrderList storage orderBook = books[_orderType];
+        orderlib.Order storage order = orderBook.orders[_orderID];
+        orderlib.OrderList storage redroBook = books[_redroType];
         bytes32 redroTopID = top(_redroType);
 
         while (redroTopID != ZERO_ID) {
-            Order storage redro = redroBook.orders[redroTopID];
+            orderlib.Order storage redro = redroBook.orders[redroTopID];
             if (order.haveAmount.mul(redro.haveAmount) < order.wantAmount.mul(redro.wantAmount)) {
                 // not pairable
                 return;
@@ -132,12 +169,12 @@ contract PairEx is OrderBook {
         view
         returns(uint256, uint256)
     {
-        OrderList storage book = books[_orderType];
+        orderlib.OrderList storage book = books[_orderType];
         uint256 totalSTB;
         uint256 totalVOL;
         bytes32 cursor = top(_orderType);
         while(cursor != ZERO_ID && totalSTB < _stableTokenTarget) {
-            Order storage order = book.orders[cursor];
+            orderlib.Order storage order = book.orders[cursor];
             uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
             uint256 vol = _orderType ? order.wantAmount : order.haveAmount;
             // break-point
@@ -163,12 +200,12 @@ contract PairEx is OrderBook {
     {
         require(msg.sender == address(this), "consensus only");
         bool orderType = _inflate ? Sell : Buy; // inflate by filling NTY sell order
-        OrderList storage book = books[orderType];
+        orderlib.OrderList storage book = books[orderType];
         uint256 totalVOL;
         uint256 totalSTB;
         bytes32 cursor = top(orderType);
         while(cursor != ZERO_ID && totalSTB < _stableTokenTarget) {
-            Order storage order = book.orders[cursor];
+            orderlib.Order storage order = book.orders[cursor];
             uint256 vol = _inflate ? order.haveAmount : order.wantAmount;
             uint256 stb = _inflate ? order.wantAmount : order.haveAmount;
             if (totalSTB.add(stb) <= _stableTokenTarget) {
