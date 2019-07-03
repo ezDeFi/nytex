@@ -304,14 +304,14 @@ library orderlib {
         uint256 target
     )
         internal
-        returns(uint256 totalVOL, uint256 totalSTB)
+        returns(uint256 totalTMA, uint256 totalAMT)
     {
         bytes32 cursor = book.topID();
-        while(cursor != ZERO_ID && totalSTB < target) {
+        while(cursor != ZERO_ID && totalAMT < target) {
             orderlib.Order storage order = book.getOrder(cursor);
-            uint256 vol = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
-            uint256 stb = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
-            if (totalSTB.add(stb) <= target) {
+            uint256 amt = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
+            uint256 tma = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
+            if (totalAMT.add(amt) <= target) {
                 // fill the order
                 book.haveToken.burnFromOwner(order.haveAmount);
                 book.wantToken.mintToOwner(order.wantAmount);
@@ -323,11 +323,11 @@ library orderlib {
                 // TODO: emit event for 'full order filled'
             } else {
                 // partial order fill
-                uint256 fillableSTB = target.sub(totalSTB);
-                vol = vol.mul(fillableSTB).div(stb);
-                stb = fillableSTB;
-                uint256 fillableHave = (book.haveToken == token) ? stb : vol;
-                uint256 fillableWant = (book.wantToken == token) ? stb : vol;
+                uint256 fillableAMT = target.sub(totalAMT);
+                tma = tma.mul(fillableAMT).div(amt);
+                amt = fillableAMT;
+                uint256 fillableHave = (book.haveToken == token) ? amt : tma;
+                uint256 fillableWant = (book.wantToken == token) ? amt : tma;
                 // fill the partial order
                 book.haveToken.burnFromOwner(fillableHave);
                 book.wantToken.mintToOwner(fillableWant);
@@ -335,10 +335,10 @@ library orderlib {
                 // extra step to make sure the loop will stop after this
                 cursor = ZERO_ID;
             }
-            totalVOL = totalVOL.add(vol);
-            totalSTB = totalSTB.add(stb);
+            totalAMT = totalAMT.add(amt);
+            totalTMA = totalTMA.add(tma);
         }
         // not enough order, return all we have
-        return (totalVOL, totalSTB);
+        return (totalTMA, totalAMT);
     }
 }

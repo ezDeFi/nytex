@@ -125,15 +125,15 @@ contract PairEx is OrderBook {
     }
 
     function absorb(
-        bool _inflate,
-        uint256 _stableTokenTarget
+        bool inflate,
+        uint256 stableTokenTarget
     )
         public
         returns(uint256 totalVOL, uint256 totalSTB)
     {
         require(msg.sender == address(this), "consensus only");
-        bool orderType = _inflate ? Sell : Buy; // inflate by filling NTY sell order
+        bool orderType = inflate ? Sell : Buy; // inflate by filling NTY sell order
         orderlib.OrderList storage book = books[orderType];
-        return book.absorb(token[Stable], _stableTokenTarget);
+        return book.absorb(token[Stable], stableTokenTarget);
     }
 }
