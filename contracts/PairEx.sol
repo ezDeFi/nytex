@@ -26,6 +26,10 @@ contract PairEx is OrderBook {
     function initBooks()
         private
     {
+        books[Sell].haveToken = token[Stable];
+        books[Sell].wantToken = token[Volatile];
+        books[Buy].haveToken = token[Stable];
+        books[Buy].wantToken = token[Volatile];
         orderlib.Order memory order;
         order.wantAmount = 1;
         // Selling Book
@@ -96,26 +100,31 @@ contract PairEx is OrderBook {
     {
         orderlib.OrderList storage book = books[_orderType];
         require(book.orders[_assistingID].isValid(), "save your gas");
+
         bytes32 newID = book.createOrder(_maker, _haveAmount, _wantAmount);
+        orderlib.Order storage newOrder = book.getOrder(newID);
 
         // direction to bottom, search first order, that new order better than
         bytes32 id = _assistingID == ZERO_ID ? top(_orderType) : _assistingID;
-        if (!betterOrder(_orderType, newID, id)) {
+        orderlib.Order storage order = book.getOrder(id);
+
+        if (!newOrder.betterThan(order)) {
             // order[newID] always better than order[ZERO_ID] with price = 0
             // if price of order[newID] = 0 => throw cause infinite loop
-            while (!betterOrder(_orderType, newID, id)) {
-                id = book.orders[id].next;
+            // TODO: use do-while instead
+            while (!newOrder.betterThan(order)) {
+                order = book.getOrder(id = order.next);
             }
             book.insertBefore(newID, id);
             return newID;
         }
-        id = book.orders[id].prev;
+        order = book.getOrder(id = order.prev);
         // direction to top, search first order that new order not better than
         // this part triggered only if new order not better than assistingID order
-        while (id != ZERO_ID && betterOrder(_orderType, newID, id)) {
-            id = book.orders[id].prev;
+        while (id != ZERO_ID && newOrder.betterThan(order)) {
+            order = book.getOrder(id = order.prev);
         }
-        book.insertBefore(newID, book.orders[id].next);
+        book.insertBefore(newID, order.next);
         return newID;
     }
 
@@ -148,11 +157,11 @@ contract PairEx is OrderBook {
             token[_redroType].transfer(order.maker, redroPairableAmount);
             token[_orderType].transfer(redro.maker, orderPairableAmount);
             if (redro.haveAmount == 0 || redro.wantAmount == 0) {
-                _remove(_redroType, redroTopID, false);
+                redroBook.refund(redroTopID);
             }
             redroTopID = top(_redroType);
             if (order.haveAmount == 0 || order.wantAmount == 0) {
-                _remove(_orderType, _orderID, false);
+                orderBook.refund(_orderID);
                 return;
             }
         }
@@ -214,7 +223,9 @@ contract PairEx is OrderBook {
                 // fill the order
                 token[!_inflate].burnFromOwner(order.haveAmount);
                 token[_inflate].mintToOwner(order.wantAmount);
-                cursor = _remove(orderType, cursor, true);
+                bytes32 cursorToPayout = cursor;
+                cursor = order.next;
+                book.payout(cursorToPayout);
                 // TODO: emit event for 'full order filled'
                 continue;
             }
@@ -237,7 +248,7 @@ contract PairEx is OrderBook {
             order.haveAmount = order.haveAmount.sub(fillableHave);
             order.wantAmount = order.wantAmount.sub(fillableWant);
             if (order.haveAmount == 0 || order.wantAmount == 0) {
-                _remove(orderType, cursor, false);
+                book.refund(cursor);
                 // TODO: emit event for 'remain order rejected'
             }
             break; // stop the absorption
