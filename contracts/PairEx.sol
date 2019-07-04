@@ -41,16 +41,6 @@ contract PairEx is Initializer {
         StablizeToken.setup(address(this));
     }
 
-    function getOrderType()
-        internal
-        view
-        returns(bool)
-    {
-        address _sender = msg.sender;
-        require(_sender == address(StablizeToken) || _sender == address(VolatileToken), "only VolatileToken and StableToken accepted");
-        return _sender == address(StablizeToken);
-    }
-
     // iterator
     function top(
         bool orderType
@@ -151,13 +141,44 @@ contract PairEx is Initializer {
             (abi.decode(_data, (uint256, bytes32)));
 
         // TODO: get order type from ripem160(haveToken)[:16] + ripem160(wantToken)[:16]
-        bool orderType = getOrderType();
-        dex.Book storage book = books[orderType];
+        dex.Book storage book = bookHave(msg.sender);
         require(book.getOrder(assistingID).isValid(), "assisting ID not exist");
 
         bytes32 newID = book.createOrder(maker, haveAmount, wantAmount);
         book.place(newID, assistingID);
-        book.fill(newID, books[!orderType]);
+        book.fill(newID, bookWant(msg.sender));
+    }
+
+    function bookHave(
+        address haveToken
+    )
+        internal
+        view
+        returns(dex.Book storage)
+    {
+        if (haveToken == address(books[false].haveToken)) {
+            return books[false];
+        }
+        if (haveToken == address(books[true].haveToken)) {
+            return books[true];
+        }
+        revert("no order book for token");
+    }
+
+    function bookWant(
+        address wantToken
+    )
+        internal
+        view
+        returns(dex.Book storage)
+    {
+        if (wantToken == address(books[false].wantToken)) {
+            return books[false];
+        }
+        if (wantToken == address(books[true].wantToken)) {
+            return books[true];
+        }
+        revert("no order book for token");
     }
 
     // Cancel and refund the remaining order.haveAmount
