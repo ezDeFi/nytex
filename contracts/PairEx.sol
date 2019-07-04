@@ -2,64 +2,110 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./OrderBook.sol";
+import "./Initializer.sol";
+import "./dex.sol";
 
-contract PairEx is OrderBook {
-    using orderlib for orderlib.Order;
-    using orderlib for orderlib.Book;
+contract PairEx is Initializer {
+    using dex for dex.Order;
+    using dex for dex.Book;
+    using SafeMath for uint256;
 
-    bytes32 constant ZERO_ID = bytes32(0);
+    // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => dex.Book)
+    mapping(bool => dex.Book) internal books;
 
     constructor (
         address _volatileTokenAddress,
-        address _stableTokenAddress
+        address _stablizeTokenAddress
     )
         public
     {
         if (_volatileTokenAddress != address(0)) {
             volatileTokenRegister(_volatileTokenAddress);
         }
-        if (_stableTokenAddress != address(0)) {
-            stableTokenRegister(_stableTokenAddress);
+        if (_stablizeTokenAddress != address(0)) {
+            stablizeTokenRegister(_stablizeTokenAddress);
         }
-        initBooks();
-    }
-
-    function initBooks()
-        private
-    {
-        books[Ask].haveToken = StablizeToken;
-        books[Ask].wantToken = VolatileToken;
-        books[Bid].haveToken = StablizeToken;
-        books[Bid].wantToken = VolatileToken;
-        orderlib.Order memory order;
-        order.wantAmount = 1;
-        // Selling Book
-        books[Ask].orders[ZERO_ID] = order;
-        // Buying Book
-        books[Bid].orders[ZERO_ID] = order;
+        books[Ask].init(VolatileToken, StablizeToken);
+        books[Bid].init(StablizeToken, VolatileToken);
     }
 
     function setup(
         address _volatileTokenAddress,
-        address _stableTokenAddress
+        address _stablizeTokenAddress
     )
         public
     {
         volatileTokenRegister(_volatileTokenAddress);
-        stableTokenRegister(_stableTokenAddress);
+        stablizeTokenRegister(_stablizeTokenAddress);
         VolatileToken.setup(address(this));
         StablizeToken.setup(address(this));
     }
 
     function getOrderType()
-        public
+        internal
         view
         returns(bool)
     {
         address _sender = msg.sender;
         require(_sender == address(StablizeToken) || _sender == address(VolatileToken), "only VolatileToken and StableToken accepted");
         return _sender == address(StablizeToken);
+    }
+
+    // iterator
+    function top(
+        bool orderType
+    )
+        public
+        view
+        returns (bytes32)
+    {
+        dex.Book storage book = books[orderType];
+        return book.topID();
+    }
+
+    // iterator
+    function next(
+        bool orderType,
+        bytes32 id
+    )
+        public
+        view
+        returns (bytes32)
+    {
+        dex.Book storage book = books[orderType];
+        return book.orders[id].next;
+    }
+
+    // iterator
+    function prev(
+        bool orderType,
+        bytes32 id
+    )
+        public
+        view
+        returns (bytes32)
+    {
+        dex.Book storage book = books[orderType];
+        return book.orders[id].prev;
+    }
+
+    function getOrder(
+        bool _orderType,
+        bytes32 _id
+    )
+        public
+        view
+        returns (
+            address,
+            uint256,
+            uint256,
+            bytes32,
+            bytes32
+        )
+    {
+        dex.Book storage book = books[_orderType];
+        dex.Order storage order = book.orders[_id];
+        return (order.maker, order.haveAmount, order.wantAmount, order.prev, order.next);
     }
 
     // Token transfer's fallback
@@ -79,17 +125,25 @@ contract PairEx is OrderBook {
         uint256 wantAmount;
         bytes32 assistingID;
         (wantAmount, assistingID) = _data.length == 32 ?
-            (abi.decode(_data, (uint256)), ZERO_ID) :
+            (abi.decode(_data, (uint256)), dex.zeroID()) :
             (abi.decode(_data, (uint256, bytes32)));
 
         // TODO: get order type from ripem160(haveToken)[:16] + ripem160(wantToken)[:16]
         bool orderType = getOrderType();
-        orderlib.Book storage book = books[orderType];
+        dex.Book storage book = books[orderType];
         require(book.getOrder(assistingID).isValid(), "assisting ID not exist");
 
         bytes32 newID = book.createOrder(maker, haveAmount, wantAmount);
         book.place(newID, assistingID);
         book.fill(newID, books[!orderType]);
+    }
+
+    // Cancel and refund the remaining order.haveAmount
+    function cancel(bool _orderType, bytes32 _id) public {
+        dex.Book storage book = books[_orderType];
+        dex.Order storage order = book.orders[_id];
+        require(msg.sender == order.maker, "only order maker");
+        book.refund(_id);
     }
 
     // orderToFill(BuyType, 123) returns an SellType order to fill enough buying orders to burn as much as 123 StableToken.
@@ -98,16 +152,16 @@ contract PairEx is OrderBook {
         bool _orderType,
         uint256 _stableTokenTarget
     )
-        public
+        internal
         view
         returns(uint256, uint256)
     {
-        orderlib.Book storage book = books[_orderType];
+        dex.Book storage book = books[_orderType];
         uint256 totalSTB;
         uint256 totalVOL;
-        bytes32 cursor = book.topID();
-        while(cursor != ZERO_ID && totalSTB < _stableTokenTarget) {
-            orderlib.Order storage order = book.orders[cursor];
+        bytes32 id = book.topID();
+        while(id != dex.zeroID() && totalSTB < _stableTokenTarget) {
+            dex.Order storage order = book.orders[id];
             uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
             uint256 vol = _orderType ? order.wantAmount : order.haveAmount;
             // break-point
@@ -118,7 +172,7 @@ contract PairEx is OrderBook {
             }
             totalVOL = totalVOL.add(vol);
             totalSTB = totalSTB.add(stb);
-            cursor = order.next;
+            id = order.next;
         }
         //  Not enough order, return all we have
         return (totalVOL, totalSTB);
@@ -133,7 +187,7 @@ contract PairEx is OrderBook {
     {
         require(msg.sender == address(this), "consensus only");
         bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell order
-        orderlib.Book storage book = books[orderType];
+        dex.Book storage book = books[orderType];
         return book.absorb(StablizeToken, stableTokenTarget);
     }
 }

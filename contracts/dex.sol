@@ -4,12 +4,16 @@ import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./interfaces/IOwnableERC223.sol";
 
-library orderlib {
+library dex {
     using SafeMath for uint256;
 
     bytes32 constant ZERO_ID = bytes32(0);
     address constant ZERO_ADDRESS = address(0x0);
     uint256 constant INPUTS_MAX = 2 ** 127;
+
+    function zeroID() internal pure returns (bytes32) {
+        return ZERO_ID;
+    }
 
     function calcID(
         address maker,
@@ -32,7 +36,7 @@ library orderlib {
         bytes32 prev;
         bytes32 next;
     }
-    using orderlib for Order;
+    using dex for Order;
 
     function isValid(
         Order storage _order
@@ -76,7 +80,19 @@ library orderlib {
         // bytes32 top;	// the highest priority (lowest sell or highest buy)
         // bytes32 bottom;	// the lowest priority (highest sell or lowest buy)
     }
-    using orderlib for Book;
+    using dex for Book;
+
+    function init(
+        Book storage book,
+        IOwnableERC223 haveToken,
+        IOwnableERC223 wantToken
+    )
+        internal
+    {
+        book.haveToken = haveToken;
+        book.wantToken = wantToken;
+        book.orders[dex.ZERO_ID].wantAmount = 1;
+    }
 
     // get the order token amount, it can be either have or want amount
     function getTokenAmount(
@@ -306,20 +322,20 @@ library orderlib {
         internal
         returns(uint256 totalTMA, uint256 totalAMT)
     {
-        bytes32 cursor = book.topID();
-        while(cursor != ZERO_ID && totalAMT < target) {
-            orderlib.Order storage order = book.getOrder(cursor);
+        bytes32 id = book.topID();
+        while(id != ZERO_ID && totalAMT < target) {
+            dex.Order storage order = book.getOrder(id);
             uint256 amt = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
             uint256 tma = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
             if (totalAMT.add(amt) <= target) {
                 // fill the order
-                book.haveToken.burnFromOwner(order.haveAmount);
-                book.wantToken.mintToOwner(order.wantAmount);
+                book.haveToken.dexBurn(order.haveAmount);
+                book.wantToken.dexMint(order.wantAmount);
                 // bytes32 cursorToPayout = cursor;
                 // cursor = order.next;
                 // book.payout(cursorToPayout);
-                book.payout(cursor);
-                cursor = order.next;
+                book.payout(id);
+                id = order.next;
                 // TODO: emit event for 'full order filled'
             } else {
                 // partial order fill
@@ -329,11 +345,11 @@ library orderlib {
                 uint256 fillableHave = (book.haveToken == token) ? amt : tma;
                 uint256 fillableWant = (book.wantToken == token) ? amt : tma;
                 // fill the partial order
-                book.haveToken.burnFromOwner(fillableHave);
-                book.wantToken.mintToOwner(fillableWant);
+                book.haveToken.dexBurn(fillableHave);
+                book.wantToken.dexMint(fillableWant);
                 book.payoutPartial(order, fillableHave, fillableWant);
                 // extra step to make sure the loop will stop after this
-                cursor = ZERO_ID;
+                id = ZERO_ID;
             }
             totalAMT = totalAMT.add(amt);
             totalTMA = totalTMA.add(tma);

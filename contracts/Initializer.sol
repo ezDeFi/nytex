@@ -4,7 +4,7 @@ import "./interfaces/IOwnableERC223.sol";
 
 contract Initializer {
     IOwnableERC223 VolatileToken;
-    IOwnableERC223 StablizeToken;
+    IOwnableERC223 StablizeToken; // intentional incorrect spelling
 
     bool public constant Ask = false;
     bool public constant Bid = true;
@@ -23,7 +23,7 @@ contract Initializer {
         VolatileToken = IOwnableERC223(_address);
     }
 
-    function stableTokenRegister(address _address)
+    function stablizeTokenRegister(address _address)
         public
     {
         // BuyType true
