@@ -36,7 +36,7 @@ export const CONTRACTS =
   }
 
 export const WEB3 = {
-  HTTP: 'http://108.61.148.72:8545', // testnet
+  HTTP: 'http://rpc.testnet.nexty.io:8545', // testnet
   // HTTP: 'http://13.228.68.50:8545', // mainnet
   // HTTP: 'http://localhost:8545', // localhost
   NETWORK_ID: NetId // testnet
@@ -46,7 +46,6 @@ export const WEB3 = {
 
 export const USER_LANGUAGE = {
   en: 'en',
-  zh: 'zh'
 }
 
 export const TEAM_ROLE = {

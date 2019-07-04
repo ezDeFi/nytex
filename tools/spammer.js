@@ -11,7 +11,7 @@ let spamType = args[3]
 if (!spamType) spamType = 'both'
 let noo = args[4]
 if (!noo) noo = 30
-let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
+let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://rpc.testnet.nexty.io:8545'
 const networkId = 111111
 
 let seed = 1
