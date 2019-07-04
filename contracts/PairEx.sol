@@ -29,16 +29,16 @@ contract PairEx is Initializer {
         books[Bid].init(StablizeToken, VolatileToken);
     }
 
-    function setup(
+    function registerTokens(
         address _volatileTokenAddress,
         address _stablizeTokenAddress
     )
-        public
+        external
     {
         volatileTokenRegister(_volatileTokenAddress);
         stablizeTokenRegister(_stablizeTokenAddress);
-        VolatileToken.setup(address(this));
-        StablizeToken.setup(address(this));
+        VolatileToken.registerDex(address(this));
+        StablizeToken.registerDex(address(this));
     }
 
     // iterator

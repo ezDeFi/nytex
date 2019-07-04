@@ -29,7 +29,7 @@ contract VolatileToken is ERC223 {
         initialize(address(_orderbook));
     }
 
-    function setup(
+    function registerDex(
         address _orderbook
     )
         external
@@ -40,7 +40,7 @@ contract VolatileToken is ERC223 {
 
     // deposit (MNTY <- NTY)
     function deposit()
-        public
+        external
         payable
         returns(bool)
     {
@@ -49,7 +49,7 @@ contract VolatileToken is ERC223 {
 
     // withdraw (MNTY -> NTY)
     function withdraw(uint256 _amount)
-        public
+        external
         returns(bool)
     {
         withdrawTo(_amount, msg.sender);
@@ -92,7 +92,7 @@ contract VolatileToken is ERC223 {
         public
         payable
     {
-        deposit();
+        depositTo(msg.sender);
         order(_haveAmount, _wantAmount, _assistingID);
     }
 

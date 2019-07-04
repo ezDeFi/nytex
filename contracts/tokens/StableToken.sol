@@ -28,7 +28,7 @@ contract StableToken is ERC223{
         initialize(address(_orderbook));
     }
 
-    function setup(
+    function registerDex(
         address _orderbook
     )
         external
