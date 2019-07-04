@@ -108,6 +108,28 @@ contract PairEx is Initializer {
         return (order.maker, order.haveAmount, order.wantAmount, order.prev, order.next);
     }
 
+    // find the next assisting id for an order
+    function findAssistingID(
+        bool orderType,
+        address maker,
+        uint256 haveAmount,
+        uint256 wantAmount,
+        bytes32 assistingID
+    )
+        public
+        view
+ 	    returns (bytes32)
+    {
+        dex.Book storage book = books[orderType];
+        dex.Order memory newOrder = dex.Order(
+            maker,
+            haveAmount,
+            wantAmount,
+            dex.zeroID(),
+            dex.zeroID());
+        return book.m_find(newOrder, assistingID);
+    }
+
     // Token transfer's fallback
     // bytes _data = uint256[2] = (wantAmount, assistingID)
     // RULE : delegateCall never used

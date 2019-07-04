@@ -72,6 +72,20 @@ library dex {
         return a > b;
     }
 
+    // memory version of betterThan
+    function m_betterThan(
+        Order memory order,
+        Order storage redro
+    )
+        internal
+        view
+        returns (bool)
+    {
+        uint256 a = order.haveAmount.mul(redro.wantAmount);
+        uint256 b = redro.haveAmount.mul(order.wantAmount);
+        return a > b;
+    }
+
 
     struct Book {
         IOwnableERC223 haveToken;
@@ -201,6 +215,35 @@ library dex {
             order = book.getOrder(id = order.next);
             // top -> bottom: while (id >= newID)
             while (!newOrder.betterThan(order)) {
+                order = book.getOrder(id = book.orders[id].next);
+            }
+        }
+        return id;
+    }
+
+    // memory version of find
+    function m_find(
+        Book storage book,
+        Order memory newOrder,
+        bytes32 assistingID
+    )
+        internal
+        view
+ 	    returns (bytes32)
+    {
+        bytes32 id = assistingID == ZERO_ID ? book.topID() : assistingID;
+        Order storage order = book.getOrder(id);
+        // if the list is not empty and new order is not better than the top,
+        // search for the correct order
+        if (!newOrder.m_betterThan(order)) {
+            order = book.getOrder(id = assistingID); // should this be outside
+            // top <- bottom: while (newID > id)
+            while (newOrder.m_betterThan(order)) {
+                order = book.getOrder(id = order.prev);
+            }
+            order = book.getOrder(id = order.next);
+            // top -> bottom: while (id >= newID)
+            while (!newOrder.m_betterThan(order)) {
                 order = book.getOrder(id = book.orders[id].next);
             }
         }
