@@ -11,7 +11,7 @@ module.exports = async function(deployer) {
             await deployer.deploy(StableToken, PairEx.address, truffleAddress, 1000).then(async function() {
                 let pairExInst = await PairEx.deployed()
                 //await console.log('pairExInst', pairExInst)
-                await pairExInst.setup(VolatileToken.address, StableToken.address)
+                await pairExInst.registerTokens(VolatileToken.address, StableToken.address)
             })
         })
     });
