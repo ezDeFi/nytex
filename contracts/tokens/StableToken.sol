@@ -38,7 +38,7 @@ contract StableToken is ERC223{
     }
 
     // order USD -> MNTY
-    function order(
+    function trade(
         uint256 _haveAmount,
         uint256 _wantAmount,
         bytes32 _assistingID

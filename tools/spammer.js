@@ -101,7 +101,7 @@ async function getNonce (_address) {
   return await web3.eth.getTransactionCount(_address)
 }
 
-async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
+async function trade(nonce, _orderType, _haveAmount, _wantAmount) {
   console.log('new order', _orderType, _haveAmount, _wantAmount)
   let contractAddress = _orderType === 'sell' ? VolatileToken._address : StableToken._address
   let methods = _orderType === 'sell' ? VolatileToken.methods : StableToken.methods
@@ -119,7 +119,7 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
     'gasLimit': web3.utils.toHex(780000),
     'to': contractAddress,
     'value': web3.utils.toHex(toDeposit),
-    'data': methods.simpleBuy(_haveAmount, _wantAmount, [0]).encodeABI(),
+    'data': methods.trade(_haveAmount, _wantAmount, [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
   console.log(rawTransaction)
@@ -192,7 +192,7 @@ function createRandomOrder () {
 
 async function randomOrder (nonce) {
   let order = createRandomOrder()
-  await simpleBuy(nonce, order.orderType, order.haveAmount, order.wantAmount)
+  await trade(nonce, order.orderType, order.haveAmount, order.wantAmount)
 }
 
 async function getOrder(_orderType, _id) {

@@ -54,10 +54,10 @@ export default createContainer(Component, (state) => {
       stableTokenService.transfer(toWallet, amount)
     },
     async sellVolatileToken(haveAmount, wantAmount) {
-      return await volatileTokenService.simpleBuy(haveAmount, wantAmount)
+      return await volatileTokenService.trade(haveAmount, wantAmount)
     },
     async sellStableToken(haveAmount, wantAmount) {
-      return await stableTokenService.simpleBuy(haveAmount, wantAmount)
+      return await stableTokenService.trade(haveAmount, wantAmount)
     },
     // TEST
     async reload() {

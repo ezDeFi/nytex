@@ -84,7 +84,7 @@ contract VolatileToken is ERC223 {
     }
 
     // deposit and order (NTY -> MNTY -> USD)
-    function depositAndOrder(
+    function depositAndTrade(
         uint256 _haveAmount,
         uint256 _wantAmount,
         bytes32 _assistingID
@@ -93,12 +93,12 @@ contract VolatileToken is ERC223 {
         payable
     {
         depositTo(msg.sender);
-        order(_haveAmount, _wantAmount, _assistingID);
+        trade(_haveAmount, _wantAmount, _assistingID);
     }
 
     // create selling order (NTY -> MNTY -> USD)
     // with verbose data = (wantAmount, assistingID)
-    function order(
+    function trade(
         uint256 _haveAmount,
         uint256 _wantAmount,
         bytes32 _assistingID
@@ -106,14 +106,6 @@ contract VolatileToken is ERC223 {
         public
     {
         bytes memory data = abi.encode(_wantAmount, _assistingID);
-        transfer(exchange(), _haveAmount, data);
-    }
-
-    function exchange()
-        internal
-        view
-        returns(address)
-    {
-        return owner();
+        transfer(dex(), _haveAmount, data);
     }
 }

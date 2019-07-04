@@ -14,7 +14,7 @@ export default class extends BaseService {
         return await _stableTokenBalance
     }
 
-    async simpleBuy(_haveAmount, _wantAmount) {
+    async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
         let wallet = store.user.wallet
         let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
@@ -24,7 +24,7 @@ export default class extends BaseService {
         let owner = await methods.owner().call()
         await console.log('owner = ', owner)
         console.log('buy MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
-        await methods.simpleBuy(_haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet})
+        await methods.trade(_haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet})
     }
 
     async transfer(_toWallet, _amount) {
