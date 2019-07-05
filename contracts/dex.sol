@@ -35,7 +35,7 @@ library dex {
     }
     using dex for Order;
 
-    function isValid(Order storage order) internal view returns(bool)
+    function exists(Order storage order) internal view returns(bool)
     {
         // including meta orders [0] and [FF..FF]
         return order.maker != ZERO_ADDRESS;
@@ -129,7 +129,7 @@ library dex {
         require(_haveAmount < INPUTS_MAX && _wantAmount < INPUTS_MAX, "input over limit");
         bytes32 id = calcID(_maker, _haveAmount, _wantAmount);
         Order storage order = book.orders[id];
-        if (!order.isValid()) {
+        if (!order.exists()) {
             // create new order
             book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
             return id;
@@ -272,7 +272,7 @@ library dex {
         internal
     {
         Order storage order = book.orders[id];
-        require(order.isValid(), "order not exist");
+        require(order.exists(), "order not exist");
         require(fillableHave <= order.haveAmount, "fill more than have amount");
         order.haveAmount = order.haveAmount.sub(fillableHave);
         if (fillableWant < order.wantAmount) {
