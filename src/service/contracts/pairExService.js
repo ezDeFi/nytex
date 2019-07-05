@@ -50,13 +50,14 @@ export default class extends BaseService {
     async loadOrders(_orderType) {
         const pairExRedux = this.store.getRedux('pairEx')
         let orders = []
-        let byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
+        const byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
+        const byteFFFF = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
         let _id = byteZero
         let order = await this.getOrder(_orderType, _id)
         let next = order.next
         let loop = 10
         for (let i = 0; i < loop; ++i) {
-            if (next === byteZero) {
+            if (next === byteFFFF) {
               break;
             }
             // await console.log('orderId', _id, 'next', next)

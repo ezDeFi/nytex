@@ -117,8 +117,8 @@ contract PairEx is Initializer {
             maker,
             haveAmount,
             wantAmount,
-            dex.zeroID(),
-            dex.zeroID());
+            bytes32(0),
+            bytes32(0));
         return book.m_find(newOrder, assistingID);
     }
 
@@ -139,15 +139,14 @@ contract PairEx is Initializer {
         uint256 wantAmount;
         bytes32 assistingID;
         (wantAmount, assistingID) = _data.length == 32 ?
-            (abi.decode(_data, (uint256)), dex.zeroID()) :
+            (abi.decode(_data, (uint256)), bytes32(0)) :
             (abi.decode(_data, (uint256, bytes32)));
 
         // TODO: get order type from ripem160(haveToken)[:16] + ripem160(wantToken)[:16]
         dex.Book storage book = bookHave(msg.sender);
-        require(book.getOrder(assistingID).isValid(), "assisting ID not exist");
 
         bytes32 newID = book.createOrder(maker, haveAmount, wantAmount);
-        if (newID == dex.zeroID()) {
+        if (newID == bytes32(0)) {
             // no new order
             return;
         }
@@ -209,7 +208,7 @@ contract PairEx is Initializer {
         uint256 totalSTB;
         uint256 totalVOL;
         bytes32 id = book.topID();
-        while(id != dex.zeroID() && totalSTB < _stableTokenTarget) {
+        while(id != bytes32(0) && totalSTB < _stableTokenTarget) {
             dex.Order storage order = book.orders[id];
             uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
             uint256 vol = _orderType ? order.wantAmount : order.haveAmount;

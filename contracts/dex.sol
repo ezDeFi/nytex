@@ -7,13 +7,10 @@ import "./interfaces/IOwnableERC223.sol";
 library dex {
     using SafeMath for uint256;
 
-    bytes32 constant ZERO_ID = bytes32(0);
+    bytes32 constant ZERO_ID = bytes32(0x0);
+    bytes32 constant FFFF_ID = bytes32(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     address constant ZERO_ADDRESS = address(0x0);
     uint256 constant INPUTS_MAX = 2 ** 128;
-
-    function zeroID() internal pure returns (bytes32) {
-        return ZERO_ID;
-    }
 
     function calcID(
         address maker,
@@ -49,31 +46,21 @@ library dex {
         return order.haveAmount == 0 || order.wantAmount == 0;
     }
 
-    function betterThan(
-        Order storage order,
-        Order storage redro
-    )
+    function betterThan(Order storage o, Order storage p)
         internal
         view
         returns (bool)
     {
-        uint256 a = order.haveAmount.mul(redro.wantAmount);
-        uint256 b = redro.haveAmount.mul(order.wantAmount);
-        return a > b;
+        return o.haveAmount * p.wantAmount > p.haveAmount * o.wantAmount;
     }
 
     // memory version of betterThan
-    function m_betterThan(
-        Order memory order,
-        Order storage redro
-    )
+    function m_betterThan(Order memory o, Order storage p)
         internal
         view
         returns (bool)
     {
-        uint256 a = order.haveAmount.mul(redro.wantAmount);
-        uint256 b = redro.haveAmount.mul(order.wantAmount);
-        return a > b;
+        return o.haveAmount * p.wantAmount > p.haveAmount * o.wantAmount;
     }
 
     function fillableBy(
@@ -108,27 +95,8 @@ library dex {
     {
         book.haveToken = haveToken;
         book.wantToken = wantToken;
-        book.orders[dex.ZERO_ID].maker = address(this);
-        book.orders[dex.ZERO_ID].wantAmount = 1;
-    }
-
-    // get the order token amount, it can be either have or want amount
-    function getTokenAmount(
-        Book storage book,
-        Order storage order,
-        IOwnableERC223 token
-    )
-        internal
-        view
-        returns (uint256)
-    {
-        if (token == book.haveToken) {
-            return order.haveAmount;
-        }
-        if (token == book.wantToken) {
-            return order.wantAmount;
-        }
-        return 0;
+        book.orders[ZERO_ID] = Order(address(this), 0, 0, ZERO_ID, FFFF_ID); // [0] meta order
+        book.orders[FFFF_ID] = Order(address(this), 0, 1, ZERO_ID, FFFF_ID); // worst order meta
     }
 
     // read functions
@@ -149,7 +117,7 @@ library dex {
         view
         returns (bytes32)
     {
-        return book.orders[ZERO_ID].prev;
+        return book.orders[FFFF_ID].prev;
     }
 
     function createOrder(
@@ -191,48 +159,43 @@ library dex {
         return book.orders[id];
     }
 
-    // inseter _id as prev element of _next
-    function insertBefore(
+    // insert [id] as [prev].next
+    function insertAfter(
         Book storage book,
         bytes32 id,
-        bytes32 next
+        bytes32 prev
     )
         internal
     {
         // prev => [id] => next
-        bytes32 prev = book.orders[next].prev;
+        bytes32 next = book.orders[prev].next;
         book.orders[id].prev = prev;
         book.orders[id].next = next;
         book.orders[next].prev = id;
         book.orders[prev].next = id;
     }
 
-    // find the next id (position) to insertBefore
+    // find the next id (position) to insertAfter
     function find(
         Book storage book,
         Order storage newOrder,
-        bytes32 assistingID
+        bytes32 id // [id] => newOrder
     )
         internal
         view
  	    returns (bytes32)
     {
-        bytes32 id = assistingID == ZERO_ID ? book.topID() : assistingID;
+        // [junk] => [0] => order => [FF]
         Order storage order = book.getOrder(id);
-        // if the list is not empty and new order is not better than the top,
-        // search for the correct order
-        if (!newOrder.betterThan(order)) {
-            order = book.getOrder(id = assistingID); // should this be outside
-            // top <- bottom: while (newID > id)
-            while (newOrder.betterThan(order)) {
-                order = book.getOrder(id = order.prev);
-            }
+        do {
             order = book.getOrder(id = order.next);
-            // top -> bottom: while (id >= newID)
-            while (!newOrder.betterThan(order)) {
-                order = book.getOrder(id = book.orders[id].next);
-            }
-        }
+        } while(!newOrder.betterThan(order));
+
+        // [0] <= order <= [FF]
+        do {
+            order = book.getOrder(id = order.prev);
+        } while(newOrder.betterThan(order));
+
         return id;
     }
 
@@ -240,28 +203,23 @@ library dex {
     function m_find(
         Book storage book,
         Order memory newOrder,
-        bytes32 assistingID
+        bytes32 id // [id] => newOrder
     )
         internal
         view
  	    returns (bytes32)
     {
-        bytes32 id = assistingID == ZERO_ID ? book.topID() : assistingID;
+        // [junk] => [0] => order => [FF]
         Order storage order = book.getOrder(id);
-        // if the list is not empty and new order is not better than the top,
-        // search for the correct order
-        if (!newOrder.m_betterThan(order)) {
-            order = book.getOrder(id = assistingID); // should this be outside
-            // top <- bottom: while (newID > id)
-            while (newOrder.m_betterThan(order)) {
-                order = book.getOrder(id = order.prev);
-            }
+        do {
             order = book.getOrder(id = order.next);
-            // top -> bottom: while (id >= newID)
-            while (!newOrder.m_betterThan(order)) {
-                order = book.getOrder(id = book.orders[id].next);
-            }
-        }
+        } while(!newOrder.m_betterThan(order));
+
+        // [0] <= order <= [FF]
+        do {
+            order = book.getOrder(id = order.prev);
+        } while(newOrder.m_betterThan(order));
+
         return id;
     }
 
@@ -276,7 +234,7 @@ library dex {
     {
         Order storage newOrder = book.getOrder(newID);
         bytes32 id = book.find(newOrder, assistingID);
-        book.insertBefore(newID, id);
+        book.insertAfter(newID, id);
         return id;
     }
 
@@ -359,7 +317,7 @@ library dex {
         Order storage order = orderBook.getOrder(orderID);
         bytes32 redroID = redroBook.topID();
 
-        while (redroID != ZERO_ID) {
+        while (redroID != FFFF_ID) {
             if (order.isEmpty()) {
                 break;
             }
