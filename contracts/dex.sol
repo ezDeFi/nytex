@@ -128,7 +128,7 @@ library dex {
         require(_haveAmount > 0 && _wantAmount > 0, "zero input");
         require(_haveAmount < INPUTS_MAX && _wantAmount < INPUTS_MAX, "input over limit");
         bytes32 id = calcID(_maker, _haveAmount, _wantAmount);
-        Order storage order = book.getOrder(id);
+        Order storage order = book.orders[id];
         if (!order.isValid()) {
             // create new order
             book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
@@ -141,17 +141,6 @@ library dex {
         require(order.haveAmount < INPUTS_MAX && order.wantAmount < INPUTS_MAX, "combined input over limit");
         // caller should take no further action
         return ZERO_ID;
-    }
-
-    function getOrder(
-        Book storage book,
-        bytes32 id
-    )
-        internal
-        view
-        returns (Order storage)
-    {
-        return book.orders[id];
     }
 
     // insert [id] as [prev].next
@@ -181,14 +170,14 @@ library dex {
  	    returns (bytes32)
     {
         // [junk] => [0] => order => [FF]
-        Order storage order = book.getOrder(id);
+        Order storage order = book.orders[id];
         do {
-            order = book.getOrder(id = order.next);
+            order = book.orders[id = order.next];
         } while(!newOrder.betterThan(order));
 
         // [0] <= order <= [FF]
         do {
-            order = book.getOrder(id = order.prev);
+            order = book.orders[id = order.prev];
         } while(newOrder.betterThan(order));
 
         return id;
@@ -205,14 +194,14 @@ library dex {
  	    returns (bytes32)
     {
         // [junk] => [0] => order => [FF]
-        Order storage order = book.getOrder(id);
+        Order storage order = book.orders[id];
         do {
-            order = book.getOrder(id = order.next);
+            order = book.orders[id = order.next];
         } while(!newOrder.m_betterThan(order));
 
         // [0] <= order <= [FF]
         do {
-            order = book.getOrder(id = order.prev);
+            order = book.orders[id = order.prev];
         } while(newOrder.m_betterThan(order));
 
         return id;
@@ -227,7 +216,7 @@ library dex {
         internal
  	    returns (bytes32)
     {
-        Order storage newOrder = book.getOrder(newID);
+        Order storage newOrder = book.orders[newID];
         bytes32 id = book.find(newOrder, assistingID);
         book.insertAfter(newID, id);
         return id;
@@ -282,7 +271,7 @@ library dex {
     )
         internal
     {
-        Order storage order = book.getOrder(id);
+        Order storage order = book.orders[id];
         require(order.isValid(), "order not exist");
         require(fillableHave <= order.haveAmount, "fill more than have amount");
         order.haveAmount = order.haveAmount.sub(fillableHave);
@@ -309,14 +298,14 @@ library dex {
         internal
         returns (bytes32 nextID)
     {
-        Order storage order = orderBook.getOrder(orderID);
+        Order storage order = orderBook.orders[orderID];
         bytes32 redroID = redroBook.topID();
 
         while (redroID != FFFF_ID) {
             if (order.isEmpty()) {
                 break;
             }
-            Order storage redro = redroBook.getOrder(redroID);
+            Order storage redro = redroBook.orders[redroID];
             if (!order.fillableBy(redro)) {
                 break;
             }
@@ -347,7 +336,7 @@ library dex {
     {
         bytes32 id = book.topID();
         while(id != FFFF_ID && totalAMT < target) {
-            dex.Order storage order = book.getOrder(id);
+            dex.Order storage order = book.orders[id];
             uint256 amt = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
             uint256 tma = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
             if (totalAMT.add(amt) <= target) {
