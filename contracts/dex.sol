@@ -165,7 +165,16 @@ library dex {
         require(_haveAmount > 0 && _wantAmount > 0, "save your time");
         require((_haveAmount < INPUTS_MAX) && (_wantAmount < INPUTS_MAX), "greater than supply?");
         bytes32 id = calcID(_maker, _haveAmount, _wantAmount);
-        require(!book.orders[id].isValid(), "duplicate order"); // TODO: merge it
+        Order storage order = book.getOrder(id);
+        if (order.isValid()) {
+            require(order.maker == _maker, "hash collision");
+            // duplicate orders, combine them into one
+            order.haveAmount = order.haveAmount.add(_haveAmount);
+            order.wantAmount = order.wantAmount.add(_wantAmount);
+            // no further action required
+            return ZERO_ID;
+        }
+        // create new order
         book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
         return id;
     }

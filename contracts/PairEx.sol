@@ -147,6 +147,10 @@ contract PairEx is Initializer {
         require(book.getOrder(assistingID).isValid(), "assisting ID not exist");
 
         bytes32 newID = book.createOrder(maker, haveAmount, wantAmount);
+        if (newID == dex.zeroID()) {
+            // no new order
+            return;
+        }
         book.place(newID, assistingID);
         book.fill(newID, bookWant(msg.sender));
     }
