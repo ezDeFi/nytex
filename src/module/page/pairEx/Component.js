@@ -25,8 +25,6 @@ export default class extends LoggedInPage {
   state = {
     data: [],
     copied: false,
-    amount: 0,
-    price: 0
   }
 
   async componentDidMount() {
@@ -316,27 +314,25 @@ transferStableToken() {
 }
 
 sellVolatileToken() {
-    let zoomExpo = 10
-    let zoom = 10 ** (zoomExpo)
     let haveAmount = Number(this.state.amount)
     let price = Number(this.state.price)
-    let wantAmount = BigNumber((Math.floor(haveAmount * price * (10 ** DECIMALS.nusd))).toFixed(0))
-    // console.log('wantA= ', wantAmount.toString())
-    haveAmount = BigNumber(Math.floor(haveAmount * zoom)).multiply(BigNumber(10).pow(DECIMALS.mnty - zoomExpo))
-    // console.log('haveAmount', haveAmount.toString())
+    let wantAmount = haveAmount * price;
+    console.log(wantAmount);
+    haveAmount = BigNumber(Math.round(haveAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.mnty-6))
+    wantAmount = BigNumber(Math.round(wantAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.nusd-6))
+    console.log('*** have NTY: ', haveAmount.toString().slice(0, 3-DECIMALS.mnty))
+    console.log('*** want USD: ', wantAmount.toString().slice(0, 3-DECIMALS.nusd))
     this.props.sellVolatileToken(haveAmount, wantAmount)
 }
 
 buyVolatileToken() {
-    let zoomExpo = 10
-    let zoom = 10 ** (zoomExpo)
     let wantAmount = Number(this.state.amount)
     let price = Number(this.state.price)
-
-    let haveAmount = BigNumber((Math.floor(wantAmount * price * (10 ** DECIMALS.nusd))).toFixed(0))
-    console.log('***', haveAmount.toString())
-    wantAmount = BigNumber(Math.floor(wantAmount * zoom)).multiply(BigNumber(10).pow(DECIMALS.mnty - zoomExpo))
-    console.log('***', wantAmount.toString())
+    let haveAmount = wantAmount * price
+    haveAmount = BigNumber(Math.round(haveAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.nusd-6))
+    wantAmount = BigNumber(Math.round(wantAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.mnty-6))
+    console.log('*** have USD: ', haveAmount.toString().slice(0, 3-DECIMALS.nusd))
+    console.log('*** want NTY: ', wantAmount.toString().slice(0, 3-DECIMALS.mnty))
     this.props.sellStableToken(haveAmount, wantAmount)
 }
 

@@ -14,7 +14,8 @@ export default class extends BaseService {
     }
 
     async sellStableToken(haveAmount, wantAmount) {
-    return
+        console.log(haveAmount.toString(), wantAmount.toString())
+        return
     }
 
     async getOrder(_orderType, _id) {

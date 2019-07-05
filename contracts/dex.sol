@@ -38,25 +38,15 @@ library dex {
     }
     using dex for Order;
 
-    function isValid(
-        Order storage _order
-    )
-        internal
-        view
-        returns(bool)
+    function isValid(Order storage order) internal view returns(bool)
     {
         // including meta order (null, 0, 1)
-        return _order.wantAmount > 0;
+        return order.maker != ZERO_ADDRESS;
     }
 
-    function getID(
-        Order storage _order
-    )
-        internal
-        view
-        returns(bytes32)
+    function isEmpty(Order storage order) internal view returns(bool)
     {
-        return calcID(_order.maker, _order.haveAmount, _order.wantAmount);
+        return order.haveAmount == 0 || order.wantAmount == 0;
     }
 
     function betterThan(
@@ -70,6 +60,19 @@ library dex {
         uint256 a = order.haveAmount.mul(redro.wantAmount);
         uint256 b = redro.haveAmount.mul(order.wantAmount);
         return a > b;
+    }
+
+    function fillableBy(
+        Order storage order,
+        Order storage redro
+    )
+        internal
+        view
+        returns (bool)
+    {
+        uint256 a = order.haveAmount.mul(redro.haveAmount);
+        uint256 b = redro.wantAmount.mul(order.wantAmount);
+        return a >= b;
     }
 
     // memory version of betterThan
@@ -105,6 +108,7 @@ library dex {
     {
         book.haveToken = haveToken;
         book.wantToken = wantToken;
+        book.orders[dex.ZERO_ID].maker = address(this);
         book.orders[dex.ZERO_ID].wantAmount = 1;
     }
 
@@ -161,6 +165,7 @@ library dex {
         require(_haveAmount > 0 && _wantAmount > 0, "save your time");
         require((_haveAmount < INPUTS_MAX) && (_wantAmount < INPUTS_MAX), "greater than supply?");
         bytes32 id = calcID(_maker, _haveAmount, _wantAmount);
+        require(!book.orders[id].isValid(), "duplicate order"); // TODO: merge it
         book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
         return id;
     }
@@ -202,7 +207,7 @@ library dex {
         view
  	    returns (bytes32)
     {
-        bytes32 id = book.topID(); // TODO: should this be assistingID?
+        bytes32 id = assistingID == ZERO_ID ? book.topID() : assistingID;
         Order storage order = book.getOrder(id);
         // if the list is not empty and new order is not better than the top,
         // search for the correct order
@@ -273,6 +278,7 @@ library dex {
     )
         internal
     {
+        // TODO: handle order outside of the book, where next or prev is nil
         Order storage order = book.orders[id];
         // before: prev => order => next
         // after:  prev ==========> next
@@ -287,7 +293,9 @@ library dex {
     )
         internal
     {
-        book.wantToken.transfer(book.orders[id].maker, book.orders[id].wantAmount);
+        if (book.orders[id].wantAmount > 0) {
+            book.wantToken.transfer(book.orders[id].maker, book.orders[id].wantAmount);
+        }
         book._remove(id);
     }
 
@@ -297,24 +305,35 @@ library dex {
     )
         internal
     {
-        book.haveToken.transfer(book.orders[id].maker, book.orders[id].haveAmount);
+        if (book.orders[id].haveAmount > 0) {
+            book.haveToken.transfer(book.orders[id].maker, book.orders[id].haveAmount);
+        }
         book._remove(id);
     }
 
     function payoutPartial(
         Book storage book,
-        Order storage order,
+        bytes32 id,
         uint256 fillableHave,
         uint256 fillableWant
     )
         internal
     {
-        book.wantToken.transfer(order.maker, fillableWant);
+        Order storage order = book.getOrder(id);
+        require(order.isValid(), "order not exist");
+        require(fillableHave <= order.haveAmount, "fill more than have amount");
         order.haveAmount = order.haveAmount.sub(fillableHave);
-        order.wantAmount = order.wantAmount.sub(fillableWant);
+        if (fillableWant < order.wantAmount) {
+            // no need for SafeMath here
+            order.wantAmount -= fillableWant;
+        } else {
+            // possibly profit from price diffirent
+            order.wantAmount = 0;
+        }
+        book.wantToken.transfer(order.maker, fillableWant);
         // TODO: emit event for 'partial order filled'
-        if (order.haveAmount == 0 || order.wantAmount == 0) {
-            book.refund(order.getID());
+        if (order.isEmpty()) {
+            book.refund(id);
             // TODO: emit event for 'remain order rejected'
         }
     }
@@ -325,36 +344,34 @@ library dex {
         Book storage redroBook
     )
         internal
+        returns (bytes32 nextID)
     {
         Order storage order = orderBook.getOrder(orderID);
-        bytes32 redroTopID = redroBook.topID();
+        bytes32 redroID = redroBook.topID();
 
-        while (redroTopID != ZERO_ID) {
-            Order storage redro = redroBook.getOrder(redroTopID);
-            if (order.haveAmount.mul(redro.haveAmount) < order.wantAmount.mul(redro.wantAmount)) {
-                // not pairable
-                return;
+        while (redroID != ZERO_ID) {
+            if (order.isEmpty()) {
+                break;
             }
-            uint256 orderPairableAmount = Math.min(order.haveAmount, redro.wantAmount);
-            order.wantAmount = order.wantAmount.mul(order.haveAmount.sub(orderPairableAmount)).div(order.haveAmount);
-            order.haveAmount = order.haveAmount.sub(orderPairableAmount);
-
-            uint256 redroPairableAmount = redro.haveAmount.mul(orderPairableAmount).div(redro.wantAmount);
-            redro.wantAmount = redro.wantAmount.mul(redro.haveAmount.sub(redroPairableAmount)).div(redro.haveAmount);
-            redro.haveAmount = redro.haveAmount.sub(redroPairableAmount);
-
-            orderBook.wantToken.transfer(order.maker, redroPairableAmount);
-            redroBook.wantToken.transfer(redro.maker, orderPairableAmount);
-            if (redro.haveAmount == 0 || redro.wantAmount == 0) {
-                redroBook.refund(redroTopID);
+            Order storage redro = redroBook.getOrder(redroID);
+            if (!order.fillableBy(redro)) {
+                break;
             }
-            redroTopID = redroBook.topID();
-            if (order.haveAmount == 0 || order.wantAmount == 0) {
-                orderBook.refund(orderID);
-                return;
+            if (order.haveAmount < redro.wantAmount) {
+                uint256 fillable = order.haveAmount.mul(redro.haveAmount).div(redro.wantAmount);
+                require(fillable <= redro.haveAmount, "fillable > have");
+                // partially payout the redro and stop
+                redroBook.payoutPartial(redroID, fillable, order.haveAmount);
+                orderBook.payoutPartial(orderID, order.haveAmount, fillable);
+                break;
             }
+            // fully payout the redro
+            orderBook.payoutPartial(orderID, redro.wantAmount, redro.haveAmount);
+            bytes32 next = redro.next;
+            redroBook.payout(redroID);
+            redroID = next;
         }
-        return;
+        return redroID;
     }
 
     function absorb(
@@ -374,11 +391,11 @@ library dex {
                 // fill the order
                 book.haveToken.dexBurn(order.haveAmount);
                 book.wantToken.dexMint(order.wantAmount);
-                // bytes32 cursorToPayout = cursor;
-                // cursor = order.next;
-                // book.payout(cursorToPayout);
+                bytes32 next = order.next;
                 book.payout(id);
-                id = order.next;
+                id = next;
+                // book.payout(id);
+                // id = order.next;
                 // TODO: emit event for 'full order filled'
             } else {
                 // partial order fill
@@ -390,7 +407,7 @@ library dex {
                 // fill the partial order
                 book.haveToken.dexBurn(fillableHave);
                 book.wantToken.dexMint(fillableWant);
-                book.payoutPartial(order, fillableHave, fillableWant);
+                book.payoutPartial(id, fillableHave, fillableWant);
                 // extra step to make sure the loop will stop after this
                 id = ZERO_ID;
             }
