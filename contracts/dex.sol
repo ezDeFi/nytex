@@ -9,7 +9,7 @@ library dex {
 
     bytes32 constant ZERO_ID = bytes32(0);
     address constant ZERO_ADDRESS = address(0x0);
-    uint256 constant INPUTS_MAX = 2 ** 127;
+    uint256 constant INPUTS_MAX = 2 ** 128;
 
     function zeroID() internal pure returns (bytes32) {
         return ZERO_ID;
@@ -62,19 +62,6 @@ library dex {
         return a > b;
     }
 
-    function fillableBy(
-        Order storage order,
-        Order storage redro
-    )
-        internal
-        view
-        returns (bool)
-    {
-        uint256 a = order.haveAmount.mul(redro.haveAmount);
-        uint256 b = redro.wantAmount.mul(order.wantAmount);
-        return a >= b;
-    }
-
     // memory version of betterThan
     function m_betterThan(
         Order memory order,
@@ -87,6 +74,19 @@ library dex {
         uint256 a = order.haveAmount.mul(redro.wantAmount);
         uint256 b = redro.haveAmount.mul(order.wantAmount);
         return a > b;
+    }
+
+    function fillableBy(
+        Order storage order,
+        Order storage redro
+    )
+        internal
+        view
+        returns (bool)
+    {
+        uint256 a = order.haveAmount.mul(redro.haveAmount);
+        uint256 b = redro.wantAmount.mul(order.wantAmount);
+        return a >= b;
     }
 
 
@@ -162,21 +162,22 @@ library dex {
         returns (bytes32)
     {
         // TODO move require check to API
-        require(_haveAmount > 0 && _wantAmount > 0, "save your time");
-        require((_haveAmount < INPUTS_MAX) && (_wantAmount < INPUTS_MAX), "greater than supply?");
+        require(_haveAmount > 0 && _wantAmount > 0, "zero input");
+        require(_haveAmount < INPUTS_MAX && _wantAmount < INPUTS_MAX, "input over limit");
         bytes32 id = calcID(_maker, _haveAmount, _wantAmount);
         Order storage order = book.getOrder(id);
-        if (order.isValid()) {
-            require(order.maker == _maker, "hash collision");
-            // duplicate orders, combine them into one
-            order.haveAmount = order.haveAmount.add(_haveAmount);
-            order.wantAmount = order.wantAmount.add(_wantAmount);
-            // no further action required
-            return ZERO_ID;
+        if (!order.isValid()) {
+            // create new order
+            book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
+            return id;
         }
-        // create new order
-        book.orders[id] = Order(_maker, _haveAmount, _wantAmount, 0, 0);
-        return id;
+        require(order.maker == _maker, "hash collision");
+        // duplicate orders, combine them into one
+        order.haveAmount = order.haveAmount.add(_haveAmount);
+        order.wantAmount = order.wantAmount.add(_wantAmount);
+        require(order.haveAmount < INPUTS_MAX && order.wantAmount < INPUTS_MAX, "combined input over limit");
+        // caller should take no further action
+        return ZERO_ID;
     }
 
     function getOrder(
