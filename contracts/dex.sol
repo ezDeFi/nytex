@@ -37,7 +37,7 @@ library dex {
 
     function isValid(Order storage order) internal view returns(bool)
     {
-        // including meta order (null, 0, 1)
+        // including meta orders [0] and [FF..FF]
         return order.maker != ZERO_ADDRESS;
     }
 
@@ -63,17 +63,12 @@ library dex {
         return o.haveAmount * p.wantAmount > p.haveAmount * o.wantAmount;
     }
 
-    function fillableBy(
-        Order storage order,
-        Order storage redro
-    )
+    function fillableBy(Order memory o, Order storage p)
         internal
         view
         returns (bool)
     {
-        uint256 a = order.haveAmount.mul(redro.haveAmount);
-        uint256 b = redro.wantAmount.mul(order.wantAmount);
-        return a >= b;
+        return o.haveAmount * p.haveAmount >= p.wantAmount * o.wantAmount;
     }
 
 
@@ -326,7 +321,7 @@ library dex {
                 break;
             }
             if (order.haveAmount < redro.wantAmount) {
-                uint256 fillable = order.haveAmount.mul(redro.haveAmount).div(redro.wantAmount);
+                uint256 fillable = order.haveAmount * redro.haveAmount / redro.wantAmount;
                 require(fillable <= redro.haveAmount, "fillable > have");
                 // partially payout the redro and stop
                 redroBook.payoutPartial(redroID, fillable, order.haveAmount);
@@ -351,7 +346,7 @@ library dex {
         returns(uint256 totalTMA, uint256 totalAMT)
     {
         bytes32 id = book.topID();
-        while(id != ZERO_ID && totalAMT < target) {
+        while(id != FFFF_ID && totalAMT < target) {
             dex.Order storage order = book.getOrder(id);
             uint256 amt = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
             uint256 tma = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
@@ -362,13 +357,11 @@ library dex {
                 bytes32 next = order.next;
                 book.payout(id);
                 id = next;
-                // book.payout(id);
-                // id = order.next;
                 // TODO: emit event for 'full order filled'
             } else {
                 // partial order fill
                 uint256 fillableAMT = target.sub(totalAMT);
-                tma = tma.mul(fillableAMT).div(amt);
+                tma = tma * fillableAMT / amt;
                 amt = fillableAMT;
                 uint256 fillableHave = (book.haveToken == token) ? amt : tma;
                 uint256 fillableWant = (book.wantToken == token) ? amt : tma;
@@ -377,7 +370,7 @@ library dex {
                 book.wantToken.dexMint(fillableWant);
                 book.payoutPartial(id, fillableHave, fillableWant);
                 // extra step to make sure the loop will stop after this
-                id = ZERO_ID;
+                id = FFFF_ID;
             }
             totalAMT = totalAMT.add(amt);
             totalTMA = totalTMA.add(tma);

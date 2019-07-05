@@ -215,7 +215,7 @@ contract PairEx is Initializer {
             // break-point
             if (totalSTB.add(stb) > _stableTokenTarget) {
                 uint256 remainSTB = _stableTokenTarget.sub(totalSTB);
-                uint256 remainVOL = vol.mul(remainSTB).div(stb);
+                uint256 remainVOL = vol * remainSTB / stb;
                 return (totalVOL.add(remainVOL), totalSTB.add(remainSTB));
             }
             totalVOL = totalVOL.add(vol);
