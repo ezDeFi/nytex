@@ -8,7 +8,7 @@ library dex {
     using SafeMath for uint256;
 
     bytes32 constant ZERO_ID = bytes32(0x0);
-    bytes32 constant FFFF_ID = bytes32(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    bytes32 constant LAST_ID = bytes32(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     address constant ZERO_ADDRESS = address(0x0);
     uint256 constant INPUTS_MAX = 2 ** 128;
 
@@ -90,8 +90,8 @@ library dex {
     {
         book.haveToken = haveToken;
         book.wantToken = wantToken;
-        book.orders[ZERO_ID] = Order(address(this), 0, 0, ZERO_ID, FFFF_ID); // [0] meta order
-        book.orders[FFFF_ID] = Order(address(this), 0, 1, ZERO_ID, FFFF_ID); // worst order meta
+        book.orders[ZERO_ID] = Order(address(this), 0, 0, ZERO_ID, LAST_ID); // [0] meta order
+        book.orders[LAST_ID] = Order(address(this), 0, 1, ZERO_ID, LAST_ID); // worst order meta
     }
 
     // read functions
@@ -112,7 +112,7 @@ library dex {
         view
         returns (bytes32)
     {
-        return book.orders[FFFF_ID].prev;
+        return book.orders[LAST_ID].prev;
     }
 
     function createOrder(
@@ -301,7 +301,7 @@ library dex {
         Order storage order = orderBook.orders[orderID];
         bytes32 redroID = redroBook.topID();
 
-        while (redroID != FFFF_ID) {
+        while (redroID != LAST_ID) {
             if (order.isEmpty()) {
                 break;
             }
@@ -335,7 +335,7 @@ library dex {
         returns(uint256 totalTMA, uint256 totalAMT)
     {
         bytes32 id = book.topID();
-        while(id != FFFF_ID && totalAMT < target) {
+        while(id != LAST_ID && totalAMT < target) {
             dex.Order storage order = book.orders[id];
             uint256 amt = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
             uint256 tma = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
@@ -359,7 +359,7 @@ library dex {
                 book.wantToken.dexMint(fillableWant);
                 book.payoutPartial(id, fillableHave, fillableWant);
                 // extra step to make sure the loop will stop after this
-                id = FFFF_ID;
+                id = LAST_ID;
             }
             totalAMT = totalAMT.add(amt);
             totalTMA = totalTMA.add(tma);
