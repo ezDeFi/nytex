@@ -230,11 +230,11 @@ contract PairEx is Initializer {
         bool inflate,
         uint256 stableTokenTarget
     )
-        public
+        external
         returns(uint256 totalVOL, uint256 totalSTB)
     {
-        require(msg.sender == address(this), "consensus only");
-        bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell order
+        require(msg.sender == address(0x0), "consensus only");
+        bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell orders
         dex.Book storage book = books[orderType];
         return book.absorb(StablizeToken, stableTokenTarget);
     }
