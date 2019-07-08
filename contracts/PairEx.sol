@@ -236,6 +236,7 @@ contract PairEx is Initializer {
         require(msg.sender == address(0x0), "consensus only");
         bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell orders
         dex.Book storage book = books[orderType];
-        return book.absorb(StablizeToken, stableTokenTarget);
+        bool useHaveAmount = book.haveToken == StablizeToken;
+        return book.absorb(useHaveAmount, stableTokenTarget);
     }
 }

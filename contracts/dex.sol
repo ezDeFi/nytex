@@ -328,17 +328,17 @@ library dex {
 
     function absorb(
         Book storage book,
-        IOwnableERC223 token,
+        bool useHaveAmount,
         uint256 target
     )
         internal
-        returns(uint256 totalTMA, uint256 totalAMT)
+        returns(uint256 totalBMT, uint256 totalAMT)
     {
         bytes32 id = book.topID();
         while(id != LAST_ID && totalAMT < target) {
             dex.Order storage order = book.orders[id];
-            uint256 amt = (book.haveToken == token) ? order.haveAmount : order.wantAmount;
-            uint256 tma = (book.haveToken == token) ? order.wantAmount : order.haveAmount;
+            uint256 amt = useHaveAmount ? order.haveAmount : order.wantAmount;
+            uint256 bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
             if (totalAMT.add(amt) <= target) {
                 // fill the order
                 book.haveToken.dexBurn(order.haveAmount);
@@ -350,10 +350,10 @@ library dex {
             } else {
                 // partial order fill
                 uint256 fillableAMT = target.sub(totalAMT);
-                tma = tma * fillableAMT / amt;
+                bmt = bmt * fillableAMT / amt;
                 amt = fillableAMT;
-                uint256 fillableHave = (book.haveToken == token) ? amt : tma;
-                uint256 fillableWant = (book.wantToken == token) ? amt : tma;
+                uint256 fillableHave = useHaveAmount ? amt : bmt;
+                uint256 fillableWant = useHaveAmount ? amt : bmt;
                 // fill the partial order
                 book.haveToken.dexBurn(fillableHave);
                 book.wantToken.dexMint(fillableWant);
@@ -362,9 +362,9 @@ library dex {
                 id = LAST_ID;
             }
             totalAMT = totalAMT.add(amt);
-            totalTMA = totalTMA.add(tma);
+            totalBMT = totalBMT.add(bmt);
         }
         // not enough order, return all we have
-        return (totalTMA, totalAMT);
+        return (totalBMT, totalAMT);
     }
 }
