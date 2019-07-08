@@ -2,10 +2,10 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./Initializer.sol";
 import "./dex.sol";
+import "./Preemptive.sol";
 
-contract PairEx is Initializer {
+contract PairEx is Preemptive {
     using dex for dex.Order;
     using dex for dex.Book;
     using SafeMath for uint256;
