@@ -389,4 +389,37 @@ library dex {
         // not enough order, return all we have
         return (totalBMT, totalAMT);
     }
+
+    // amountToAbsorb calculates the amount will be absorbed by absorb()
+    // always be updated with absorb() logic
+    function amountToAbsorb(
+        Book storage book,
+        bool useHaveAmount,
+        uint256 target
+    )
+        internal
+        view
+        returns(uint256 totalBMT, uint256 totalAMT)
+    {
+        bytes32 id = book.topID();
+        while(id != LAST_ID && totalAMT < target) {
+            dex.Order storage order = book.orders[id];
+            uint256 amt = useHaveAmount ? order.haveAmount : order.wantAmount;
+            uint256 bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
+            if (totalAMT.add(amt) <= target) {
+                id = order.next;
+            } else {
+                // partial order fill
+                uint256 fillableAMT = target.sub(totalAMT);
+                bmt = bmt * fillableAMT / amt;
+                amt = fillableAMT;
+                // extra step to make sure the loop will stop after this
+                id = LAST_ID;
+            }
+            totalAMT = totalAMT.add(amt);
+            totalBMT = totalBMT.add(bmt);
+        }
+        // not enough order, return all we have
+        return (totalBMT, totalAMT);
+    }
 }
