@@ -10,9 +10,6 @@ contract PairEx is Preemptive {
     using dex for dex.Book;
     using SafeMath for uint256;
 
-    // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => dex.Book)
-    mapping(bool => dex.Book) internal books;
-
     constructor (
         address _volatileTokenAddress,
         address _stablizeTokenAddress

@@ -8,6 +8,9 @@ contract Preemptive is Initializer {
     using dex for dex.Order;
     using dex for dex.Book;
 
+    // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => dex.Book)
+    mapping(bool => dex.Book) internal books;
+
     // Minimum amount bump percentage to overwrite the current non-active premptive
     uint256 constant AMOUNT_BUMP = 10;
     uint256 constant LOCK_DURATION = 2 weeks;
@@ -175,19 +178,18 @@ contract Preemptive is Initializer {
     /**
      * @dev perform an equivalent premptive absorption (if any) whenever an active/passive absorbs occurs.
      */
-    function premptiveAbsorb(
+    function absorbPreemptive(
         bool inflate,
-        uint256 _totalSTB,
-        uint256 _totalVOL
-    ) external {
+        uint256 stableTokenTarget
+    )
+        external
+        returns(uint256 totalVOL, uint256 totalSTB)
+    {
         require(msg.sender == address(0x0), "consensus only");
-        if (!hasActiveAbsorption()) {
-            revert("no on-going premptive");
-        }
-        token[_inflate].mintToOwner(_totalSTB);
-        token[!_inflate].burnFromOwner(_totalVOL);
-        token[_inflate].transfer(currentAbsorption.initiator, _totalSTB);
-        emit AbsorptionAbsorption(currentAbsorption.initiator, _totalSTB, _totalVOL);
+        bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell orders
+        dex.Book storage book = books[orderType];
+        bool useHaveAmount = book.haveToken == StablizeToken;
+        return book.absorbPreemptive(useHaveAmount, stableTokenTarget);
     }
 
     /**

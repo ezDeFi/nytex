@@ -326,6 +326,28 @@ library dex {
         return redroID;
     }
 
+    // absorb and duplicate the effect to initiator
+    function absorbPreemptive(
+        Book storage book,
+        bool useHaveAmount,
+        uint256 target,
+        address payable initiator
+    )
+        internal
+        returns (uint256 totalBMT, uint256 totalAMT)
+    {
+        (totalBMT, totalAMT) = book.absorb(useHaveAmount, target);
+        (uint256 haveAMT, uint256 wantAMT) = useHaveAmount ? (totalAMT, totalBMT) : (totalBMT, totalAMT);
+        // if (book.haveToken.allowance(initiator, address(this)) < haveAMT) {
+        //     return (0, 0);
+        // }
+        book.haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
+        book.haveToken.dexBurn(haveAMT);
+        book.wantToken.dexMint(wantAMT);
+        book.wantToken.transfer(initiator, wantAMT);
+        return (totalBMT, totalAMT);
+    }
+
     function absorb(
         Book storage book,
         bool useHaveAmount,
