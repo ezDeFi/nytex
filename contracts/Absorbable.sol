@@ -37,8 +37,8 @@ contract Absorbable is Orderbook {
         // dummy absorption
         last = absn.Absorption(
             block.number,
-            IERC20(address(StablizeToken)).totalSupply(),
-            IERC20(address(StablizeToken)).totalSupply(),
+            StablizeToken.totalSupply(),
+            StablizeToken.totalSupply(),
             false
         );
     }
@@ -69,15 +69,15 @@ contract Absorbable is Orderbook {
             return;
         }
         // TODO: check pre-emptive
-        if (passivable() || activable(IERC20(address(StablizeToken)).totalSupply(), target)) {
-            last = absn.Absorption(block.number, IERC20(address(StablizeToken)).totalSupply(), target, false);
+        if (passivable() || activable(StablizeToken.totalSupply(), target)) {
+            last = absn.Absorption(block.number, StablizeToken.totalSupply(), target, false);
             return;
         }
     }
 
     function calcNextAbsorption() internal view returns(int) {
         int total = math.sub(last.target, last.supply);
-        int remain = math.sub(last.target, IERC20(address(StablizeToken)).totalSupply());
+        int remain = math.sub(last.target, StablizeToken.totalSupply());
         if (total == 0 || remain == 0) {
             // no absorption require or target reached
             return 0;

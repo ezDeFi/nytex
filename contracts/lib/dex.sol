@@ -253,7 +253,7 @@ library dex {
         internal
     {
         if (book.orders[id].wantAmount > 0) {
-            IERC20(address(book.wantToken)).transfer(book.orders[id].maker, book.orders[id].wantAmount);
+            book.wantToken.transfer(book.orders[id].maker, book.orders[id].wantAmount);
         }
         book._remove(id);
     }
@@ -265,7 +265,7 @@ library dex {
         internal
     {
         if (book.orders[id].haveAmount > 0) {
-            IERC20(address(book.haveToken)).transfer(book.orders[id].maker, book.orders[id].haveAmount);
+            book.haveToken.transfer(book.orders[id].maker, book.orders[id].haveAmount);
         }
         book._remove(id);
     }
@@ -289,7 +289,7 @@ library dex {
             // possibly profit from price diffirent
             order.wantAmount = 0;
         }
-        IERC20(address(book.wantToken)).transfer(order.maker, fillableWant);
+        book.wantToken.transfer(order.maker, fillableWant);
         // TODO: emit event for 'partial order filled'
         if (order.isEmpty()) {
             book.refund(id);
@@ -345,16 +345,15 @@ library dex {
     {
         (totalBMT, totalAMT) = book.absorb(useHaveAmount, target);
         (uint haveAMT, uint wantAMT) = useHaveAmount ? (totalAMT, totalBMT) : (totalBMT, totalAMT);
-        IERC20 haveToken = IERC20(address(book.haveToken));
-        if (haveToken.allowance(initiator, address(this)) < haveAMT ||
-            haveToken.balanceOf(initiator) < haveAMT) {
+        if (book.haveToken.allowance(initiator, address(this)) < haveAMT ||
+            book.haveToken.balanceOf(initiator) < haveAMT) {
             // not enough alowance to side-absorb, halt the absorption for this call
             return (0, 0);
         }
-        haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
+        book.haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
         book.haveToken.dexBurn(haveAMT);
         book.wantToken.dexMint(wantAMT);
-        IERC20(address(book.wantToken)).transfer(initiator, wantAMT);
+        book.wantToken.transfer(initiator, wantAMT);
         return (totalBMT, totalAMT);
     }
 

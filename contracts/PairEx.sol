@@ -164,11 +164,11 @@ contract PairEx is Absorbable {
         uint vote = 0;
         for (uint i = 0; i < proposal.upVoters.count(); ++i) {
             address voter = proposal.upVoters.get(i);
-            vote += voter.balance + IERC20(address(VolatileToken)).balanceOf(voter);
+            vote += voter.balance + VolatileToken.balanceOf(voter);
         }
         for (uint i = 0; i < proposal.downVoters.count(); ++i) {
             address voter = proposal.downVoters.get(i);
-            vote -= voter.balance + IERC20(address(VolatileToken)).balanceOf(voter);
+            vote -= voter.balance + VolatileToken.balanceOf(voter);
         }
         if (vote <= 0) {
             return 0;
