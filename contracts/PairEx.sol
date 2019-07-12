@@ -2,238 +2,196 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./dex.sol";
-import "./Preemptive.sol";
+import "./lib/set.sol";
+import "./lib/map.sol";
+import "./lib/dex.sol";
+import "./lib/absn.sol";
+import "./Absorbable.sol";
 
-contract PairEx is Preemptive {
+contract PairEx is Absorbable {
+    using SafeMath for uint;
     using dex for dex.Order;
     using dex for dex.Book;
-    using SafeMath for uint256;
+    using absn for absn.Proposal;
+    using absn for absn.Preemptive;
+    using map for map.ProposalMap;
+    using set for set.AddressSet;
+
+    address constant ZERO_ADDRESS = address(0x0);
+
+    // adapting global default parameters, only used if proposal maker doesn't specify them
+    uint internal globalLockdownDuration;
+    uint internal globalSlashingRate;
+
+    // proposal params must not lower than 1/3 of global params
+    uint constant PARAM_TOLERANCE = 3;
+
+    // proposal must have atleast globalLockdownDuration/4 block to be voted
+    // note: using globalLockdownDuration instead of proposal's value for safety
+    uint constant MIN_VOTING_DURATION = 4;
+
+    // map (maker => Proposal)
+    map.ProposalMap internal proposals;
 
     constructor (
-        address _volatileTokenAddress,
-        address _stablizeTokenAddress
+        address volatileTokenAddress,
+        address stablizeTokenAddress,
+        uint initialLockdownDuration,
+        uint initialSlashingRate,
+        uint maxDuration,
+        uint minDuration
     )
+        Absorbable(volatileTokenAddress, stablizeTokenAddress, maxDuration, minDuration)
         public
     {
-        if (_volatileTokenAddress != address(0)) {
-            volatileTokenRegister(_volatileTokenAddress);
-        }
-        if (_stablizeTokenAddress != address(0)) {
-            stablizeTokenRegister(_stablizeTokenAddress);
-        }
-        books[Ask].init(VolatileToken, StablizeToken);
-        books[Bid].init(StablizeToken, VolatileToken);
-    }
-
-    function registerTokens(
-        address _volatileTokenAddress,
-        address _stablizeTokenAddress
-    )
-        external
-    {
-        volatileTokenRegister(_volatileTokenAddress);
-        stablizeTokenRegister(_stablizeTokenAddress);
-        VolatileToken.registerDex(address(this));
-        StablizeToken.registerDex(address(this));
-        books[Ask].init(VolatileToken, StablizeToken);
-        books[Bid].init(StablizeToken, VolatileToken);
-    }
-
-    // iterator
-    function top(
-        bool orderType
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        dex.Book storage book = books[orderType];
-        return book.topID();
-    }
-
-    // iterator
-    function next(
-        bool orderType,
-        bytes32 id
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        dex.Book storage book = books[orderType];
-        return book.orders[id].next;
-    }
-
-    // iterator
-    function prev(
-        bool orderType,
-        bytes32 id
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        dex.Book storage book = books[orderType];
-        return book.orders[id].prev;
-    }
-
-    function getOrder(
-        bool _orderType,
-        bytes32 _id
-    )
-        public
-        view
-        returns (
-            address,
-            uint256,
-            uint256,
-            bytes32,
-            bytes32
-        )
-    {
-        dex.Book storage book = books[_orderType];
-        dex.Order storage order = book.orders[_id];
-        return (order.maker, order.haveAmount, order.wantAmount, order.prev, order.next);
-    }
-
-    // find the next assisting id for an order
-    function findAssistingID(
-        bool orderType,
-        address maker,
-        uint256 haveAmount,
-        uint256 wantAmount,
-        bytes32 assistingID
-    )
-        public
-        view
- 	    returns (bytes32)
-    {
-        dex.Book storage book = books[orderType];
-        dex.Order memory newOrder = dex.Order(
-            maker,
-            haveAmount,
-            wantAmount,
-            bytes32(0),
-            bytes32(0));
-        return book.m_find(newOrder, assistingID);
+        globalLockdownDuration = initialLockdownDuration;
+        globalSlashingRate = initialSlashingRate;
     }
 
     // Token transfer's fallback
-    // bytes _data = uint256[2] = (wantAmount, assistingID)
+    // bytes _data = uint[2] = (wantAmount, assistingID)
     // RULE : delegateCall never used
     //
     // buy/sell order is created by sending token to this address,
     // with extra data = (wantAmount, assistingID)
     function tokenFallback(
-        address _from,
-        uint _value,
-        bytes calldata _data)
+        address maker,  // actual tx sender
+        uint value,     // amount of ERC223(msg.sender) received
+        bytes calldata data)
         external
     {
-        address maker = _from;
-        uint256 haveAmount = _value;
-        uint256 wantAmount;
-        bytes32 assistingID;
-        (wantAmount, assistingID) = _data.length == 32 ?
-            (abi.decode(_data, (uint256)), bytes32(0)) :
-            (abi.decode(_data, (uint256, bytes32)));
+        // if MNTY is received and data contains 3 params
+        if (data.length == 32*3 && msg.sender == address(VolatileToken)) {
+            // pre-emptive absorption proposal
+            require(!proposals.has(maker), "already has a proposal");
 
-        // TODO: get order type from ripem160(haveToken)[:16] + ripem160(wantToken)[:16]
-        dex.Book storage book = bookHave(msg.sender);
+            (   int amount,
+                uint lockdownDuration,
+                uint slashingRate
+            ) = abi.decode(data, (int, uint, uint));
 
-        bytes32 newID = book.createOrder(maker, haveAmount, wantAmount);
-        if (newID == bytes32(0)) {
-            // no new order
+            propose(maker, value, amount, lockdownDuration, slashingRate);
             return;
         }
-        book.place(newID, assistingID);
-        book.fill(newID, bookWant(msg.sender));
+
+        // not a pre-emptive proposal, fallback to Orderbook trader order
+        (uint wantAmount, bytes32 assistingID) = (data.length == 32) ?
+            (abi.decode(data, (uint         )), bytes32(0)) :
+            (abi.decode(data, (uint, bytes32))            );
+
+        super.trade(maker, value, wantAmount, assistingID);
     }
 
-    function bookHave(
-        address haveToken
+    function propose(
+        address maker,
+        uint stake,
+        int amount,
+        uint lockdownDuration,
+        uint slashingRate
     )
         internal
-        view
-        returns(dex.Book storage)
     {
-        if (haveToken == address(books[false].haveToken)) {
-            return books[false];
+        absn.Proposal memory proposal;
+        proposal.maker = maker;
+        proposal.stake = stake;
+        proposal.amount = amount;
+        proposal.number = block.number;
+
+        if (lockdownDuration > 0) {
+            require(
+                lockdownDuration >=
+                globalLockdownDuration - globalLockdownDuration / PARAM_TOLERANCE,
+                "lockdown duration param too short");
+        } else {
+            proposal.lockdownDuration = globalLockdownDuration;
         }
-        if (haveToken == address(books[true].haveToken)) {
-            return books[true];
+
+        if (slashingRate > 0) {
+            require(
+                slashingRate >=
+                globalSlashingRate - globalSlashingRate / PARAM_TOLERANCE,
+                "slashing rate param too low");
+        } else {
+            proposal.slashingRate = globalSlashingRate;
         }
-        revert("no order book for token");
+
+        proposals.push(proposal);
     }
 
-    function bookWant(
-        address wantToken
-    )
-        internal
-        view
-        returns(dex.Book storage)
-    {
-        if (wantToken == address(books[false].wantToken)) {
-            return books[false];
-        }
-        if (wantToken == address(books[true].wantToken)) {
-            return books[true];
-        }
-        revert("no order book for token");
-    }
-
-    // Cancel and refund the remaining order.haveAmount
-    function cancel(bool _orderType, bytes32 _id) public {
-        dex.Book storage book = books[_orderType];
-        dex.Order storage order = book.orders[_id];
-        require(msg.sender == order.maker, "only order maker");
-        book.refund(_id);
-    }
-
-    // orderToFill(BuyType, 123) returns an SellType order to fill enough buying orders to burn as much as 123 StableToken.
-    // orderToFill(SellType, 456) returns an BuyType order to fill enough selling orders to create as much as 456 StableToken.
-    function orderToFill(
-        bool _orderType,
-        uint256 _stableTokenTarget
-    )
-        internal
-        view
-        returns(uint256, uint256)
-    {
-        dex.Book storage book = books[_orderType];
-        uint256 totalSTB;
-        uint256 totalVOL;
-        bytes32 id = book.topID();
-        while(id != bytes32(0) && totalSTB < _stableTokenTarget) {
-            dex.Order storage order = book.orders[id];
-            uint256 stb = _orderType ? order.haveAmount : order.wantAmount;
-            uint256 vol = _orderType ? order.wantAmount : order.haveAmount;
-            // break-point
-            if (totalSTB.add(stb) > _stableTokenTarget) {
-                uint256 remainSTB = _stableTokenTarget.sub(totalSTB);
-                uint256 remainVOL = vol * remainSTB / stb;
-                return (totalVOL.add(remainVOL), totalSTB.add(remainSTB));
-            }
-            totalVOL = totalVOL.add(vol);
-            totalSTB = totalSTB.add(stb);
-            id = order.next;
-        }
-        //  Not enough order, return all we have
-        return (totalVOL, totalSTB);
-    }
-
-    function absorb(
-        bool inflate,
-        uint256 stableTokenTarget
-    )
-        external
-        returns(uint256 totalVOL, uint256 totalSTB)
-    {
+    // check and active a new Preemptive when one is eligible
+    // only called by consensus every price block after the last lockdown is finished
+    // return the activated proposal maker, if it is
+    function checkNewPreemptyAbsorption() public returns (address) {
         require(msg.sender == address(0x0), "consensus only");
-        bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell orders
-        dex.Book storage book = books[orderType];
-        bool useHaveAmount = book.haveToken == StablizeToken;
-        return book.absorb(useHaveAmount, stableTokenTarget);
+        if (lockdown.isLocked()) {
+            // there's current active or lockdown absorption
+            return ZERO_ADDRESS;
+        }
+        address bestMaker = calcBestProposal();
+        if (bestMaker == ZERO_ADDRESS) {
+            // no eligible proposals
+            return ZERO_ADDRESS;
+        }
+        activate(bestMaker);
+        return bestMaker;
+    }
+
+    // activate an absorption from a maker's proposal
+    function activate(address maker) internal {
+        absn.Proposal storage proposal = proposals.get(maker);
+        lockdown = absn.Preemptive(
+            proposal.maker,
+            proposal.amount,
+            proposal.stake,
+            proposal.slashingRate,
+            block.number + proposal.lockdownDuration
+        );
+        proposals.remove(maker);
+    }
+
+    // deactive the current absorption
+    function deactivate() internal {
+        // ...
+    }
+
+    // unlock the lockdown absorption
+    function unlock() internal {
+        // ...
+    }
+
+    // expensive calculation, only consensus can affort this
+    function calcRank(absn.Proposal storage proposal) internal view returns (uint) {
+        uint vote = 0;
+        for (uint i = 0; i < proposal.upVoters.count(); ++i) {
+            address voter = proposal.upVoters.get(i);
+            vote += voter.balance + IERC20(address(VolatileToken)).balanceOf(voter);
+        }
+        for (uint i = 0; i < proposal.downVoters.count(); ++i) {
+            address voter = proposal.downVoters.get(i);
+            vote -= voter.balance + IERC20(address(VolatileToken)).balanceOf(voter);
+        }
+        if (vote <= 0) {
+            return 0;
+        }
+        return proposal.stake * vote;
+    }
+
+    // expensive calculation, only consensus can affort this
+    function calcBestProposal() internal view returns (address) {
+        uint bestRank = 0;
+        address bestMaker = ZERO_ADDRESS;
+        for (uint i = 0; i < proposals.count(); ++i) {
+            absn.Proposal storage proposal = proposals.get(i);
+            if (block.number - proposal.number < globalLockdownDuration / MIN_VOTING_DURATION) {
+                // not enough time for voting
+                continue;
+            }
+            uint rank = calcRank(proposal);
+            if (rank > bestRank) {
+                bestRank = rank;
+                bestMaker = proposal.maker;
+            }
+        }
+        return bestMaker;
     }
 }

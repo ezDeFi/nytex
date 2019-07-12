@@ -11,14 +11,14 @@ import "../interfaces/IPairEx.sol";
 contract StableToken is ERC223{
     string public constant symbol = "NEWSD";
     string public constant name = "New Stable Dollar";
-    uint256 public constant decimals = 6;
+    uint public constant decimals = 6;
 
     IPairEx internal orderbook;
 
     constructor (
         address _orderbook,      // mandatory
         address _prefundAddress, // optional
-        uint256 _prefundAmount   // optional
+        uint _prefundAmount   // optional
     )
         public
     {
@@ -39,8 +39,8 @@ contract StableToken is ERC223{
 
     // order USD -> MNTY
     function trade(
-        uint256 _haveAmount,
-        uint256 _wantAmount,
+        uint _haveAmount,
+        uint _wantAmount,
         bytes32 _assistingID
     )
         public

@@ -12,14 +12,14 @@ import "../interfaces/IPairEx.sol";
 contract VolatileToken is ERC223 {
     string public constant symbol = "MNTY";
     string public constant name = "Mega NTY";
-    uint256 public constant decimals = 24;
+    uint public constant decimals = 24;
 
     IPairEx internal orderbook;
 
     constructor (
         address _orderbook,      // mandatory
         address _prefundAddress, // optional
-        uint256 _prefundAmount   // optional
+        uint _prefundAmount   // optional
     )
         public
     {
@@ -48,7 +48,7 @@ contract VolatileToken is ERC223 {
     }
 
     // withdraw (MNTY -> NTY)
-    function withdraw(uint256 _amount)
+    function withdraw(uint _amount)
         external
         returns(bool)
     {
@@ -56,7 +56,7 @@ contract VolatileToken is ERC223 {
     }
 
     // withdrawTo (MNTY -> NTY -> address)
-    function withdrawTo(uint256 _amount, address payable _to)
+    function withdrawTo(uint _amount, address payable _to)
         public
         returns(bool)
     {
@@ -78,15 +78,15 @@ contract VolatileToken is ERC223 {
         payable
         returns(bool)
     {
-        uint256 _amount = msg.value;
+        uint _amount = msg.value;
         _mint(_to, _amount);
         return true;
     }
 
     // deposit and order (NTY -> MNTY -> USD)
     function depositAndTrade(
-        uint256 _haveAmount,
-        uint256 _wantAmount,
+        uint _haveAmount,
+        uint _wantAmount,
         bytes32 _assistingID
     )
         public
@@ -96,16 +96,40 @@ contract VolatileToken is ERC223 {
         trade(_haveAmount, _wantAmount, _assistingID);
     }
 
-    // create selling order (NTY -> MNTY -> USD)
+    // create selling order (MNTY -> USD)
     // with verbose data = (wantAmount, assistingID)
     function trade(
-        uint256 _haveAmount,
-        uint256 _wantAmount,
+        uint _haveAmount,
+        uint _wantAmount,
         bytes32 _assistingID
     )
         public
     {
         bytes memory data = abi.encode(_wantAmount, _assistingID);
         transfer(dex(), _haveAmount, data);
+    }
+
+    // deposit and propose()
+    function depositAndPropose(
+        int absorption,  // absorption amount of StablizeToken
+        uint stake       // staked amount of VolatileToken
+    )
+        public
+        payable
+    {
+        depositTo(msg.sender);
+        propose(absorption, stake);
+    }
+
+    // propose a new pre-emptive absorption
+    // with verbose data = (absorption, stake);
+    function propose(
+        int absorption,  // absorption amount of StablizeToken
+        uint stake       // staked amount of VolatileToken
+    )
+        public
+    {
+        bytes memory data = abi.encode(absorption);
+        transfer(dex(), stake, data);
     }
 }

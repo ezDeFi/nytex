@@ -2,20 +2,27 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./interfaces/IOwnableERC223.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "../interfaces/IOwnableERC223.sol";
 
+/**
+ * Library for token pair exchange.
+ *
+ * Has no knownledge about what the token does. Any logic deal with stable or
+ * volatile nature of the token must put in the contract level.
+ */
 library dex {
-    using SafeMath for uint256;
+    using SafeMath for uint;
 
     bytes32 constant ZERO_ID = bytes32(0x0);
     bytes32 constant LAST_ID = bytes32(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     address constant ZERO_ADDRESS = address(0x0);
-    uint256 constant INPUTS_MAX = 2 ** 128;
+    uint constant INPUTS_MAX = 2 ** 128;
 
     function calcID(
         address maker,
-        uint256 haveAmount,
-        uint256 wantAmount
+        uint haveAmount,
+        uint wantAmount
     )
         internal
         pure
@@ -26,8 +33,8 @@ library dex {
 
     struct Order {
         address maker;
-        uint256 haveAmount;
-        uint256 wantAmount;
+        uint haveAmount;
+        uint wantAmount;
 
         // linked list
         bytes32 prev;
@@ -118,8 +125,8 @@ library dex {
     function createOrder(
         Book storage book,
         address _maker,
-        uint256 _haveAmount,
-        uint256 _wantAmount
+        uint _haveAmount,
+        uint _wantAmount
     )
         internal
         returns (bytes32)
@@ -246,7 +253,7 @@ library dex {
         internal
     {
         if (book.orders[id].wantAmount > 0) {
-            book.wantToken.transfer(book.orders[id].maker, book.orders[id].wantAmount);
+            IERC20(address(book.wantToken)).transfer(book.orders[id].maker, book.orders[id].wantAmount);
         }
         book._remove(id);
     }
@@ -258,7 +265,7 @@ library dex {
         internal
     {
         if (book.orders[id].haveAmount > 0) {
-            book.haveToken.transfer(book.orders[id].maker, book.orders[id].haveAmount);
+            IERC20(address(book.haveToken)).transfer(book.orders[id].maker, book.orders[id].haveAmount);
         }
         book._remove(id);
     }
@@ -266,8 +273,8 @@ library dex {
     function payoutPartial(
         Book storage book,
         bytes32 id,
-        uint256 fillableHave,
-        uint256 fillableWant
+        uint fillableHave,
+        uint fillableWant
     )
         internal
     {
@@ -282,7 +289,7 @@ library dex {
             // possibly profit from price diffirent
             order.wantAmount = 0;
         }
-        book.wantToken.transfer(order.maker, fillableWant);
+        IERC20(address(book.wantToken)).transfer(order.maker, fillableWant);
         // TODO: emit event for 'partial order filled'
         if (order.isEmpty()) {
             book.refund(id);
@@ -310,7 +317,7 @@ library dex {
                 break;
             }
             if (order.haveAmount < redro.wantAmount) {
-                uint256 fillable = order.haveAmount * redro.haveAmount / redro.wantAmount;
+                uint fillable = order.haveAmount * redro.haveAmount / redro.wantAmount;
                 require(fillable <= redro.haveAmount, "fillable > have");
                 // partially payout the redro and stop
                 redroBook.payoutPartial(redroID, fillable, order.haveAmount);
@@ -330,37 +337,40 @@ library dex {
     function absorbPreemptive(
         Book storage book,
         bool useHaveAmount,
-        uint256 target,
+        uint target,
         address payable initiator
     )
         internal
-        returns (uint256 totalBMT, uint256 totalAMT)
+        returns (uint totalBMT, uint totalAMT)
     {
         (totalBMT, totalAMT) = book.absorb(useHaveAmount, target);
-        (uint256 haveAMT, uint256 wantAMT) = useHaveAmount ? (totalAMT, totalBMT) : (totalBMT, totalAMT);
-        // if (book.haveToken.allowance(initiator, address(this)) < haveAMT) {
-        //     return (0, 0);
-        // }
-        book.haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
+        (uint haveAMT, uint wantAMT) = useHaveAmount ? (totalAMT, totalBMT) : (totalBMT, totalAMT);
+        IERC20 haveToken = IERC20(address(book.haveToken));
+        if (haveToken.allowance(initiator, address(this)) < haveAMT ||
+            haveToken.balanceOf(initiator) < haveAMT) {
+            // not enough alowance to side-absorb, halt the absorption for this call
+            return (0, 0);
+        }
+        haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
         book.haveToken.dexBurn(haveAMT);
         book.wantToken.dexMint(wantAMT);
-        book.wantToken.transfer(initiator, wantAMT);
+        IERC20(address(book.wantToken)).transfer(initiator, wantAMT);
         return (totalBMT, totalAMT);
     }
 
     function absorb(
         Book storage book,
         bool useHaveAmount,
-        uint256 target
+        uint target
     )
         internal
-        returns(uint256 totalBMT, uint256 totalAMT)
+        returns(uint totalBMT, uint totalAMT)
     {
         bytes32 id = book.topID();
         while(id != LAST_ID && totalAMT < target) {
             dex.Order storage order = book.orders[id];
-            uint256 amt = useHaveAmount ? order.haveAmount : order.wantAmount;
-            uint256 bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
+            uint amt = useHaveAmount ? order.haveAmount : order.wantAmount;
+            uint bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
             if (totalAMT.add(amt) <= target) {
                 // fill the order
                 book.haveToken.dexBurn(order.haveAmount);
@@ -371,11 +381,11 @@ library dex {
                 // TODO: emit event for 'full order filled'
             } else {
                 // partial order fill
-                uint256 fillableAMT = target.sub(totalAMT);
+                uint fillableAMT = target.sub(totalAMT);
                 bmt = bmt * fillableAMT / amt;
                 amt = fillableAMT;
-                uint256 fillableHave = useHaveAmount ? amt : bmt;
-                uint256 fillableWant = useHaveAmount ? amt : bmt;
+                uint fillableHave = useHaveAmount ? amt : bmt;
+                uint fillableWant = useHaveAmount ? amt : bmt;
                 // fill the partial order
                 book.haveToken.dexBurn(fillableHave);
                 book.wantToken.dexMint(fillableWant);
@@ -395,22 +405,22 @@ library dex {
     function amountToAbsorb(
         Book storage book,
         bool useHaveAmount,
-        uint256 target
+        uint target
     )
         internal
         view
-        returns(uint256 totalBMT, uint256 totalAMT)
+        returns(uint totalBMT, uint totalAMT)
     {
         bytes32 id = book.topID();
         while(id != LAST_ID && totalAMT < target) {
             dex.Order storage order = book.orders[id];
-            uint256 amt = useHaveAmount ? order.haveAmount : order.wantAmount;
-            uint256 bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
+            uint amt = useHaveAmount ? order.haveAmount : order.wantAmount;
+            uint bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
             if (totalAMT.add(amt) <= target) {
                 id = order.next;
             } else {
                 // partial order fill
-                uint256 fillableAMT = target.sub(totalAMT);
+                uint fillableAMT = target.sub(totalAMT);
                 bmt = bmt * fillableAMT / amt;
                 amt = fillableAMT;
                 // extra step to make sure the loop will stop after this

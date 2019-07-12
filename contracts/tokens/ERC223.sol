@@ -14,21 +14,21 @@ interface ContractReceiver {
 
 contract ERC223 is ERC20, Ownable {
 
-    event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
+    event Transfer(address indexed _from, address indexed _to, uint _value, bytes _data);
 
     function dex() public view returns(address)
     {
         return owner();
     }
 
-    function dexMint(uint256 _amount)
+    function dexMint(uint _amount)
         public
         onlyOwner()
     {
         _mint(dex(), _amount);
     }
 
-    function dexBurn(uint256 _amount)
+    function dexBurn(uint _amount)
         public
         onlyOwner()
     {
