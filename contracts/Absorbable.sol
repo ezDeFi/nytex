@@ -61,9 +61,7 @@ contract Absorbable is Orderbook {
         }
     }
 
-    function onMedianPriceFed(uint target)
-        internal
-    {
+    function onMedianPriceFed(uint target) internal {
         if (block.number < ENDURIO_BLOCK + MAX_DURATION) {
             // no absorption in the first duration
             return;
@@ -92,7 +90,7 @@ contract Absorbable is Orderbook {
     // passivable returns whether a new passive absorption can be activated
     // passive condition: 1 duration without any active absorption or absorption never occurs
     function passivable() internal view returns (bool) {
-        return !isAbsorbing() || last.number + MAX_DURATION <= block.number;
+        return !isAbsorbing();
     }
 
     // activable returns whether the new target is sufficient to trigger a new active absorption
