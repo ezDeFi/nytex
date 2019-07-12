@@ -140,7 +140,8 @@ contract Absorbable is Orderbook {
     }
 
     function isExpired() public view returns(bool) {
-        return last.number + MAX_DURATION < block.number;
+        return last.number > 0 &&
+            last.number + MAX_DURATION < block.number;
     }
 
     function getLastAbsorption() public view
