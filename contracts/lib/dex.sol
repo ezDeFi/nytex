@@ -338,7 +338,7 @@ library dex {
         Book storage book,
         bool useHaveAmount,
         uint target,
-        address payable initiator
+        address initiator
     )
         internal
         returns (uint totalBMT, uint totalAMT)

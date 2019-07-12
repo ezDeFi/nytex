@@ -167,6 +167,9 @@ contract Absorbable is Orderbook {
         bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell orders
         dex.Book storage book = books[orderType];
         bool useHaveAmount = book.haveToken == StablizeToken;
+        if (last.isPreemptive) {
+            return book.absorbPreemptive(useHaveAmount, amount, lockdown.maker);
+        }
         return book.absorb(useHaveAmount, amount);
     }
 }
