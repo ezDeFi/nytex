@@ -121,8 +121,7 @@ contract PairEx is Absorbable {
     // check and active a new Preemptive when one is eligible
     // only called by consensus every price block after the last lockdown is finished
     // return the activated proposal maker, if it is
-    function checkNewPreemptyAbsorption() public returns (address) {
-        require(msg.sender == address(0x0), "consensus only");
+    function checkNewPreemptyAbsorption() public consensus returns (address) {
         if (lockdown.isLocked()) {
             // there's current active or lockdown absorption
             return ZERO_ADDRESS;

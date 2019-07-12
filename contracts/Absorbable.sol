@@ -43,11 +43,15 @@ contract Absorbable is Orderbook {
         );
     }
 
+    modifier consensus() {
+        require(msg.sender == address(0x0), "consensus only");
+        _;
+    }
+
     // called by the consensus on each block
     // median price = target / StablizeToken.totalSupply()
     // zero target is fed for no median price available
-    function onBlockInitialize(uint target) public {
-        require(msg.sender == address(0x0), "consensus only");
+    function onBlockInitialized(uint target) public consensus {
         if (isExpired()) {
             // absorption takes no longer than one duration
             clearLastAbsorption();
