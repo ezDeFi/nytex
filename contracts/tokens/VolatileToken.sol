@@ -2,7 +2,6 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./ERC223.sol";
-import "../interfaces/IPairEx.sol";
 
 /*
     . Exchanged with NTY with rate 1 MegaNTY = 1000000 NTY
@@ -14,28 +13,17 @@ contract VolatileToken is ERC223 {
     string public constant name = "Mega NTY";
     uint public constant decimals = 24;
 
-    IPairEx internal orderbook;
-
     constructor (
-        address _orderbook,      // mandatory
-        address _prefundAddress, // optional
-        uint _prefundAmount   // optional
+        address orderbook,      // mandatory
+        address prefundAddress, // optional
+        uint prefundAmount      // optional
     )
         public
     {
-        if (_prefundAmount > 0 ) {
-            _mint(_prefundAddress, _prefundAmount * 10**decimals);
+        if (prefundAmount > 0 ) {
+            _mint(prefundAddress, prefundAmount * 10**decimals);
         }
-        initialize(address(_orderbook));
-    }
-
-    function registerDex(
-        address _orderbook
-    )
-        external
-    {
-        // just an interface check
-        orderbook = IPairEx(_orderbook);
+        initialize(orderbook);
     }
 
     // deposit (MNTY <- NTY)

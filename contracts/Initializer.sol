@@ -1,10 +1,10 @@
 pragma solidity ^0.5.2;
 
-import "./interfaces/IOwnableERC223.sol";
+import "./interfaces/IToken.sol";
 
 contract Initializer {
-    IOwnableERC223 VolatileToken;
-    IOwnableERC223 StablizeToken; // intentional incorrect spelling
+    IToken VolatileToken;
+    IToken StablizeToken; // intentional incorrect spelling
 
     bool public constant Ask = false;
     bool public constant Bid = true;
@@ -20,7 +20,7 @@ contract Initializer {
     {
         // SellType false
         require(address(VolatileToken) == address(0), "already set");
-        VolatileToken = IOwnableERC223(_address);
+        VolatileToken = IToken(_address);
     }
 
     function stablizeTokenRegister(address _address)
@@ -28,6 +28,6 @@ contract Initializer {
     {
         // BuyType true
         require(address(StablizeToken) == address(0), "already set");
-        StablizeToken = IOwnableERC223(_address);
+        StablizeToken = IToken(_address);
     }
 }

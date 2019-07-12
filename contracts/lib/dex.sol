@@ -3,7 +3,7 @@ pragma solidity ^0.5.2;
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "../interfaces/IOwnableERC223.sol";
+import "../interfaces/IToken.sol";
 
 /**
  * Library for token pair exchange.
@@ -80,8 +80,8 @@ library dex {
 
 
     struct Book {
-        IOwnableERC223 haveToken;
-        IOwnableERC223 wantToken;
+        IToken haveToken;
+        IToken wantToken;
         mapping (bytes32 => Order) orders;
         // bytes32 top;	// the highest priority (lowest sell or highest buy)
         // bytes32 bottom;	// the lowest priority (highest sell or lowest buy)
@@ -90,8 +90,8 @@ library dex {
 
     function init(
         Book storage book,
-        IOwnableERC223 haveToken,
-        IOwnableERC223 wantToken
+        IToken haveToken,
+        IToken wantToken
     )
         internal
     {

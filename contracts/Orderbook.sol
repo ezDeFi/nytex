@@ -43,8 +43,6 @@ contract Orderbook is Initializer {
     {
         volatileTokenRegister(_volatileTokenAddress);
         stablizeTokenRegister(_stablizeTokenAddress);
-        VolatileToken.registerDex(address(this));
-        StablizeToken.registerDex(address(this));
         books[Ask].init(VolatileToken, StablizeToken);
         books[Bid].init(StablizeToken, VolatileToken);
     }
