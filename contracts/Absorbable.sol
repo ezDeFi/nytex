@@ -15,7 +15,7 @@ contract Absorbable is Orderbook {
     // constants
     uint ENDURIO_BLOCK;
     uint MAX_DURATION = 1 weeks / 2 seconds;
-    int MIN_DURATION = int(MAX_DURATION) / 2;
+    int MIN_DURATION = int(MAX_DURATION / 2);
 
     // last absorption
     absn.Absorption internal last;
