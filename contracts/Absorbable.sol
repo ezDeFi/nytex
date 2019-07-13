@@ -11,6 +11,7 @@ import "./Orderbook.sol";
 contract Absorbable is Orderbook {
     using SafeMath for uint;
     using dex for dex.Book;
+    using absn for absn.Preemptive;
 
     // constants
     uint ENDURIO_BLOCK;
@@ -35,12 +36,7 @@ contract Absorbable is Orderbook {
         if (maxDuration > 0) MAX_DURATION = maxDuration;
         MIN_DURATION = int(minDuration > 0 ? minDuration : maxDuration / 2);
         // dummy absorption
-        last = absn.Absorption(
-            block.number,
-            StablizeToken.totalSupply(),
-            StablizeToken.totalSupply(),
-            false
-        );
+        triggerAbsorption(StablizeToken.totalSupply(), false);
     }
 
     modifier consensus() {
@@ -58,6 +54,9 @@ contract Absorbable is Orderbook {
         }
         if (target > 0) { // absorption block
             onMedianPriceFed(target);
+            if (lockdown.isLocked()) {
+                // WIP: slash the pre-emptive maker if target goes wrong way
+            }
         }
         if (isAbsorbing()) {
             int nextAmount = calcNextAbsorption();
@@ -66,14 +65,11 @@ contract Absorbable is Orderbook {
     }
 
     function onMedianPriceFed(uint target) internal {
-        if (block.number < ENDURIO_BLOCK + MAX_DURATION) {
-            // no absorption in the first duration
+        if (ENDURIO_BLOCK + MAX_DURATION <= block.number) {
             return;
         }
-        // TODO: check pre-emptive
-        if (passivable() || activable(StablizeToken.totalSupply(), target)) {
-            last = absn.Absorption(block.number, StablizeToken.totalSupply(), target, false);
-            return;
+        if (shouldTriggerPassive() || shouldTriggerActive(StablizeToken.totalSupply(), target)) {
+            triggerAbsorption(target, false);
         }
     }
 
@@ -91,15 +87,15 @@ contract Absorbable is Orderbook {
         return remain / MIN_DURATION;
     }
 
-    // passivable returns whether a new passive absorption can be activated
+    // shouldTriggerPassive returns whether a new passive absorption can be activated
     // passive condition: 1 duration without any active absorption or absorption never occurs
-    function passivable() internal view returns (bool) {
+    function shouldTriggerPassive() internal view returns (bool) {
         return !isAbsorbing();
     }
 
-    // activable returns whether the new target is sufficient to trigger a new active absorption
+    // shouldTriggerActive returns whether the new target is sufficient to trigger a new active absorption
     // make things simple by compare only the (target-supply) instead (target-supply)/supply
-    function activable(uint supply, uint target) internal view returns (bool) {
+    function shouldTriggerActive(uint supply, uint target) internal view returns (bool) {
         if (target == supply) {
             return false;
         }
@@ -159,6 +155,10 @@ contract Absorbable is Orderbook {
 
     function clearLastAbsorption() public {
         delete last;
+    }
+
+    function triggerAbsorption(uint target, bool isPreemptive) internal {
+        last = absn.Absorption(block.number, StablizeToken.totalSupply(), target, isPreemptive);
     }
 
     function absorb(

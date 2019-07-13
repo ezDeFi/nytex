@@ -63,7 +63,7 @@ library absn {
 
     struct Preemptive {
         address maker;
-        int absorption;
+        int amount;
         uint stake;
         uint slashingRate;
 

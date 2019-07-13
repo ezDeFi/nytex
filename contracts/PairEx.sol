@@ -82,6 +82,11 @@ contract PairEx is Absorbable {
         super.trade(maker, value, wantAmount, assistingID);
     }
 
+    function onBlockInitialized(uint target) public consensus {
+        checkAndTriggerPreemptive();
+        super.onBlockInitialized(target);
+    }
+
     function propose(
         address maker,
         uint stake,
@@ -118,25 +123,24 @@ contract PairEx is Absorbable {
         proposals.push(proposal);
     }
 
-    // check and active a new Preemptive when one is eligible
-    // only called by consensus every price block after the last lockdown is finished
-    // return the activated proposal maker, if it is
-    function checkNewPreemptyAbsorption() public consensus returns (address) {
+    // check and trigger a new Preemptive when one is eligible
+    // return the true if a new preemptive is activated
+    function checkAndTriggerPreemptive() internal returns (bool) {
         if (lockdown.isLocked()) {
             // there's current active or lockdown absorption
-            return ZERO_ADDRESS;
+            return false;
         }
         address bestMaker = calcBestProposal();
         if (bestMaker == ZERO_ADDRESS) {
             // no eligible proposals
-            return ZERO_ADDRESS;
+            return false;
         }
-        activate(bestMaker);
-        return bestMaker;
+        triggerPreemptive(bestMaker);
+        return true;
     }
 
-    // activate an absorption from a maker's proposal
-    function activate(address maker) internal {
+    // trigger an absorption from a maker's proposal
+    function triggerPreemptive(address maker) internal {
         absn.Proposal storage proposal = proposals.get(maker);
         lockdown = absn.Preemptive(
             proposal.maker,
@@ -146,6 +150,7 @@ contract PairEx is Absorbable {
             block.number + proposal.lockdownDuration
         );
         proposals.remove(maker);
+        triggerAbsorption(math.add(StablizeToken.totalSupply(), lockdown.amount), true);
     }
 
     // deactive the current absorption
