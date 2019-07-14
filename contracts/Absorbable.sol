@@ -14,7 +14,6 @@ contract Absorbable is Orderbook {
     using absn for absn.Preemptive;
 
     // constants
-    uint ENDURIO_BLOCK;
     uint EXPIRATION = 1 weeks / 2 seconds;
     int DURATION = int(EXPIRATION / 2);
 
@@ -32,7 +31,6 @@ contract Absorbable is Orderbook {
         Orderbook(volatileTokenAddress, stablizeTokenAddress)
         public
     {
-        ENDURIO_BLOCK = block.number;
         if (expiration > 0) EXPIRATION = expiration;
         DURATION = int(duration > 0 ? duration : expiration / 2);
         // dummy absorption
@@ -77,9 +75,6 @@ contract Absorbable is Orderbook {
     }
 
     function onMedianPriceFed(uint target) internal {
-        if (ENDURIO_BLOCK + EXPIRATION <= block.number) {
-            return;
-        }
         if (shouldTriggerPassive() || shouldTriggerActive(StablizeToken.totalSupply(), target)) {
             triggerAbsorption(target, false);
         }
