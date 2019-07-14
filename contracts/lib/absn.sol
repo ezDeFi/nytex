@@ -1,14 +1,12 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/math/Math.sol";
 import "./set.sol";
-import "./map.sol";
 import "./dex.sol";
 
 library absn {
+    using set for set.AddressSet;
     using dex for dex.Order;
     using dex for dex.Book;
-    using set for set.AddressSet;
 
     address constant ZERO_ADDRESS = address(0x0);
 
@@ -74,10 +72,14 @@ library absn {
     using absn for Preemptive;
 
     function exists(Preemptive storage this) internal view returns (bool) {
-        return (this.maker != ZERO_ADDRESS);
+        return this.maker != ZERO_ADDRESS;
     }
 
     function isLocked(Preemptive storage this) internal view returns (bool) {
-        return (this.exists() && block.number < this.unlockNumber);
+        return this.exists() && block.number < this.unlockNumber;
+    }
+
+    function unlockable(Preemptive storage this) internal view returns (bool) {
+        return this.exists() && this.unlockNumber <= block.number;
     }
 }

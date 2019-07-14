@@ -1,21 +1,18 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/math/Math.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./lib/set.sol";
 import "./lib/map.sol";
-import "./lib/dex.sol";
 import "./lib/absn.sol";
 import "./Absorbable.sol";
 
+/**
+ * Pre-emptive absorption propsosal and voting logic.
+ */
 contract PairEx is Absorbable {
-    using SafeMath for uint;
-    using dex for dex.Order;
-    using dex for dex.Book;
+    using set for set.AddressSet;
+    using map for map.ProposalMap;
     using absn for absn.Proposal;
     using absn for absn.Preemptive;
-    using map for map.ProposalMap;
-    using set for set.AddressSet;
 
     address constant ZERO_ADDRESS = address(0x0);
 
@@ -90,6 +87,10 @@ contract PairEx is Absorbable {
         super.onBlockInitialized(target);
     }
 
+    /**
+     * propose allows Preemptive initiator to lock their MNTY in and
+     * introduces new proposal.
+     */
     function propose(
         address maker,
         uint stake,
@@ -126,6 +127,16 @@ contract PairEx is Absorbable {
         proposals.push(proposal);
     }
 
+    function vote(address maker, bool up) external {
+        require(proposals.has(maker), "no such proposal");
+        absn.Proposal storage proposal = proposals.get(maker);
+        if (up) {
+            proposal.voteUp();
+        } else {
+            proposal.voteDown();
+        }
+    }
+
     // check and trigger a new Preemptive when one is eligible
     // return the true if a new preemptive is activated
     function checkAndTriggerPreemptive() internal returns (bool) {
@@ -158,19 +169,19 @@ contract PairEx is Absorbable {
 
     // expensive calculation, only consensus can affort this
     function calcRank(absn.Proposal storage proposal) internal view returns (uint) {
-        uint vote = 0;
+        uint voteCount = 0;
         for (uint i = 0; i < proposal.upVoters.count(); ++i) {
             address voter = proposal.upVoters.get(i);
-            vote += voter.balance + VolatileToken.balanceOf(voter);
+            voteCount += voter.balance + VolatileToken.balanceOf(voter);
         }
         for (uint i = 0; i < proposal.downVoters.count(); ++i) {
             address voter = proposal.downVoters.get(i);
-            vote -= voter.balance + VolatileToken.balanceOf(voter);
+            voteCount -= voter.balance + VolatileToken.balanceOf(voter);
         }
-        if (vote <= 0) {
+        if (voteCount <= 0) {
             return 0;
         }
-        return proposal.stake * vote;
+        return proposal.stake * voteCount;
     }
 
     // expensive calculation, only consensus can affort this

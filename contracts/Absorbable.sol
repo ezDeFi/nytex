@@ -1,15 +1,14 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/math/Math.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./lib/math.sol";
 import "./lib/dex.sol";
 import "./lib/absn.sol";
 import "./Orderbook.sol";
 
+/**
+ * Mechanisms of absorption logic: active, passive and pre-emptive.
+ */
 contract Absorbable is Orderbook {
-    using SafeMath for uint;
     using dex for dex.Book;
     using absn for absn.Preemptive;
 

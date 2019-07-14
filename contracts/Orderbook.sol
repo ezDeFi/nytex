@@ -1,18 +1,12 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/math/Math.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./lib/set.sol";
-import "./lib/map.sol";
 import "./lib/dex.sol";
-import "./lib/absn.sol";
 import "./Initializer.sol";
 
 /**
  * Contract code for Volatile/Stablize exchange
  */
 contract Orderbook is Initializer {
-    using SafeMath for uint;
     using dex for dex.Order;
     using dex for dex.Book;
 
