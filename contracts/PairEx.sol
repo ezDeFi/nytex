@@ -156,16 +156,6 @@ contract PairEx is Absorbable {
         triggerAbsorption(math.add(StablizeToken.totalSupply(), lockdown.amount), true);
     }
 
-    // deactive the current absorption
-    function deactivate() internal {
-        // ...
-    }
-
-    // unlock the lockdown absorption
-    function unlock() internal {
-        // ...
-    }
-
     // expensive calculation, only consensus can affort this
     function calcRank(absn.Proposal storage proposal) internal view returns (uint) {
         uint vote = 0;

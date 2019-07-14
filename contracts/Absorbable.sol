@@ -52,6 +52,9 @@ contract Absorbable is Orderbook {
             // absorption takes no longer than one duration
             clearLastAbsorption();
         }
+        if (lockdown.unlockable()) {
+            unlock();
+        }
         if (target > 0) { // absorption block
             onMedianPriceFed(target);
             if (lockdown.isLocked()) {
@@ -162,7 +165,13 @@ contract Absorbable is Orderbook {
         delete last;
     }
 
-    function clearLockdown() internal {
+    function unlock() internal {
+        if (!lockdown.exists()) {
+            return;
+        }
+        if (lockdown.stake > 0) {
+            VolatileToken.transfer(lockdown.maker, lockdown.stake);
+        }
         delete lockdown;
     }
 
@@ -214,7 +223,7 @@ contract Absorbable is Orderbook {
             slashed = lockdown.stake;
             // there's nothing at stake anymore, clear the lockdown and its absorption
             clearLastAbsorption();
-            clearLockdown();
+            unlock();
         }
         lockdown.stake -= slashed;
         VolatileToken.dexBurn(slashed);
