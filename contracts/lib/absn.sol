@@ -1,21 +1,33 @@
 pragma solidity ^0.5.2;
 
+import "./math.sol";
 import "./set.sol";
-import "./dex.sol";
 
 library absn {
     using set for set.AddressSet;
-    using dex for dex.Order;
-    using dex for dex.Book;
 
     address constant ZERO_ADDRESS = address(0x0);
 
     using absn for Absorption;
     struct Absorption {
-        uint number; // block number the absorpion is activated
-        uint supply; // StablizeToken supply at the activation block
-        uint target; // StablizeToken target supply for the active
+        uint deadline; // the last block the absorption is valid
+        uint supply;   // StablizeToken supply at the activation block
+        uint target;   // StablizeToken target supply for the active
         bool isPreemptive;
+    }
+
+    function exists(Absorption storage this) internal view returns(bool) {
+        return 0 < this.deadline;
+    }
+
+    function isExpired(Absorption storage this) internal view returns(bool) {
+        return this.exists() && this.deadline < block.number;
+    }
+
+    function isAbsorbing(Absorption storage this, uint supply) internal view returns(bool) {
+        return this.exists() &&
+            supply != this.target &&                        // target not reached &&
+            math.inOrder(this.supply, supply, this.target); // not over-absorbed
     }
 
     using absn for Proposal;

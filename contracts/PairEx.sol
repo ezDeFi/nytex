@@ -35,10 +35,10 @@ contract PairEx is Absorbable {
         address stablizeTokenAddress,
         uint initialLockdownDuration,
         uint initialSlashingDuration,
-        uint maxDuration,
-        uint minDuration
+        uint expiration,
+        uint duration
     )
-        Absorbable(volatileTokenAddress, stablizeTokenAddress, maxDuration, minDuration)
+        Absorbable(volatileTokenAddress, stablizeTokenAddress, expiration, duration)
         public
     {
         if (initialLockdownDuration > 0) {

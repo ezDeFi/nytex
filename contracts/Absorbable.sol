@@ -10,12 +10,13 @@ import "./Orderbook.sol";
  */
 contract Absorbable is Orderbook {
     using dex for dex.Book;
+    using absn for absn.Absorption;
     using absn for absn.Preemptive;
 
     // constants
     uint ENDURIO_BLOCK;
-    uint MAX_DURATION = 1 weeks / 2 seconds;
-    int MIN_DURATION = int(MAX_DURATION / 2);
+    uint EXPIRATION = 1 weeks / 2 seconds;
+    int DURATION = int(EXPIRATION / 2);
 
     // last absorption
     absn.Absorption internal last;
@@ -25,15 +26,15 @@ contract Absorbable is Orderbook {
     constructor (
         address volatileTokenAddress,
         address stablizeTokenAddress,
-        uint maxDuration,
-        uint minDuration
+        uint expiration,
+        uint duration
     )
         Orderbook(volatileTokenAddress, stablizeTokenAddress)
         public
     {
         ENDURIO_BLOCK = block.number;
-        if (maxDuration > 0) MAX_DURATION = maxDuration;
-        MIN_DURATION = int(minDuration > 0 ? minDuration : maxDuration / 2);
+        if (expiration > 0) EXPIRATION = expiration;
+        DURATION = int(duration > 0 ? duration : expiration / 2);
         // dummy absorption
         triggerAbsorption(StablizeToken.totalSupply(), false);
     }
@@ -43,13 +44,17 @@ contract Absorbable is Orderbook {
         _;
     }
 
+    function getRemainToAbsorb() public view returns (int) {
+        return math.sub(last.target, StablizeToken.totalSupply());
+    }
+
     // called by the consensus on each block
     // median price = target / StablizeToken.totalSupply()
     // zero target is fed for no median price available
     function onBlockInitialized(uint target) public consensus {
-        if (isExpired()) {
+        if (last.isExpired()) {
             // absorption takes no longer than one duration
-            clearLastAbsorption();
+            delete last;
         }
         if (lockdown.unlockable()) {
             unlock();
@@ -65,14 +70,14 @@ contract Absorbable is Orderbook {
                 }
             }
         }
-        if (isAbsorbing()) {
+        if (last.isAbsorbing(StablizeToken.totalSupply())) {
             int nextAmount = calcNextAbsorption();
             absorb(nextAmount);
         }
     }
 
     function onMedianPriceFed(uint target) internal {
-        if (ENDURIO_BLOCK + MAX_DURATION <= block.number) {
+        if (ENDURIO_BLOCK + EXPIRATION <= block.number) {
             return;
         }
         if (shouldTriggerPassive() || shouldTriggerActive(StablizeToken.totalSupply(), target)) {
@@ -91,13 +96,13 @@ contract Absorbable is Orderbook {
             // target passed
             return 0;
         }
-        return remain / MIN_DURATION;
+        return remain / DURATION;
     }
 
     // shouldTriggerPassive returns whether a new passive absorption can be activated
     // passive condition: 1 duration without any active absorption or absorption never occurs
     function shouldTriggerPassive() internal view returns (bool) {
-        return !isAbsorbing();
+        return last.isExpired();
     }
 
     // shouldTriggerActive returns whether the new target is sufficient to trigger a new active absorption
@@ -136,34 +141,6 @@ contract Absorbable is Orderbook {
         return rate >= 2;
     }
 
-    function isAbsorbing() public view returns(bool) {
-        return last.number > 0 &&
-            last.target != last.supply &&
-            !isExpired();
-    }
-
-    function isExpired() public view returns(bool) {
-        return last.number > 0 &&
-            last.number + MAX_DURATION < block.number;
-    }
-
-    function getLastAbsorption() public view
-        returns(uint number, uint supply, uint target, bool isPreemptive)
-    {
-        return (last.number, last.supply, last.target, last.isPreemptive);
-    }
-
-    function setLastAbsorption(uint number, uint supply, uint target, bool isPreemptive) internal {
-        last.number = number;
-        last.supply = supply;
-        last.target = target;
-        last.isPreemptive = isPreemptive;
-    }
-
-    function clearLastAbsorption() internal {
-        delete last;
-    }
-
     function unlock() internal {
         if (!lockdown.exists()) {
             return;
@@ -175,7 +152,10 @@ contract Absorbable is Orderbook {
     }
 
     function triggerAbsorption(uint target, bool isPreemptive) internal {
-        last = absn.Absorption(block.number, StablizeToken.totalSupply(), target, isPreemptive);
+        last = absn.Absorption(block.number + EXPIRATION,
+            StablizeToken.totalSupply(),
+            target,
+            isPreemptive);
     }
 
     function absorb(
@@ -221,7 +201,7 @@ contract Absorbable is Orderbook {
         if (lockdown.stake < slashed) {
             slashed = lockdown.stake;
             // there's nothing at stake anymore, clear the lockdown and its absorption
-            clearLastAbsorption();
+            delete last;
             unlock();
         }
         lockdown.stake -= slashed;
