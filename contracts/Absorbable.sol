@@ -56,6 +56,11 @@ contract Absorbable is Orderbook {
             onMedianPriceFed(target);
             if (lockdown.isLocked()) {
                 // WIP: slash the pre-emptive maker if target goes wrong way
+                int diviation = math.sub(target, StablizeToken.totalSupply());
+                if (checkAndSlash(diviation) && last.isPreemptive) {
+                    // lockdown violation, halt the preemptive absorption for this block
+                    return;
+                }
             }
         }
         if (isAbsorbing()) {
@@ -146,15 +151,19 @@ contract Absorbable is Orderbook {
         return (last.number, last.supply, last.target, last.isPreemptive);
     }
 
-    function setLastAbsorption(uint number, uint supply, uint target, bool isPreemptive) public {
+    function setLastAbsorption(uint number, uint supply, uint target, bool isPreemptive) internal {
         last.number = number;
         last.supply = supply;
         last.target = target;
         last.isPreemptive = isPreemptive;
     }
 
-    function clearLastAbsorption() public {
+    function clearLastAbsorption() internal {
         delete last;
+    }
+
+    function clearLockdown() internal {
+        delete lockdown;
     }
 
     function triggerAbsorption(uint target, bool isPreemptive) internal {
@@ -176,5 +185,40 @@ contract Absorbable is Orderbook {
             return book.absorbPreemptive(useHaveAmount, amount, lockdown.maker);
         }
         return book.absorb(useHaveAmount, amount);
+    }
+
+    /**
+     * @dev slash the initiator whenever the price is moving in
+     * opposition direction with the initiator's direction,
+     * the initiator's deposited balance will be minus by _amount
+     *
+     * _amount is the NTY value need to be burn, calculate in the consensus level
+     * _amount = |d/D|/SlashingDuration
+     * d = MedianPriceDeviation
+     * D = X/S, X is the amount of NewSD will be absorbed, S is the current NewSD total supply
+     * consensus need to update the balance to burn amount return from calling slash function
+     *
+     * @return true if the lockdown is violated and get slashed
+     */
+    function checkAndSlash(int diviation) internal returns (bool) {
+        if (!math.inOrder(lockdown.amount, 0, diviation)) {
+            // same direction, no slashing
+            return false;
+        }
+        // lockdown violated
+        uint slashed = uint(-diviation/lockdown.amount) / lockdown.slashingDuration;
+        if (slashed == 0) {
+            slashed = 1; // minimum 1 wei
+        }
+        if (lockdown.stake < slashed) {
+            slashed = lockdown.stake;
+            // there's nothing at stake anymore, clear the lockdown and its absorption
+            clearLastAbsorption();
+            clearLockdown();
+        }
+        lockdown.stake -= slashed;
+        VolatileToken.dexBurn(slashed);
+        // this slashed NTY will be burnt by the consensus by calling setBalance
+        return true;
     }
 }

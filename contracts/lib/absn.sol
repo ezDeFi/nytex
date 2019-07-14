@@ -34,10 +34,11 @@ library absn {
         // lockdown duration (in blocks from the activation)
         uint lockdownDuration;
 
-        // slashed = |d/D|*SlashingRate/LockdownDuration
+        // SlashingDuration = 1 / SlashingRate
+        // slashed = |d/D|*SlashingRate
         //  d = MedianPriceDeviation
         //  D = X/S, X is the amount of StablizeToken will be absorbed, S is the current NewSD total supply
-        uint slashingRate;
+        uint slashingDuration;
 
         // block number the proposal is proposed
         uint number;
@@ -65,7 +66,7 @@ library absn {
         address maker;
         int amount;
         uint stake;
-        uint slashingRate;
+        uint slashingDuration;
 
         // block number the lockdown will end
         uint unlockNumber;

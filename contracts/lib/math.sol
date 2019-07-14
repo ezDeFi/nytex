@@ -22,4 +22,12 @@ library math {
     function inStrictOrder(uint a, uint b, uint c) internal pure returns (bool) {
         return (a < b && b < c) || (a > b && b > c);
     }
+
+    function inOrder(int a, int b, int c) internal pure returns (bool) {
+        return (a <= b && b <= c) || (a >= b && b >= c);
+    }
+
+    function inStrictOrder(int a, int b, int c) internal pure returns (bool) {
+        return (a < b && b < c) || (a > b && b > c);
+    }
 }

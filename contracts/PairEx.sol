@@ -20,8 +20,8 @@ contract PairEx is Absorbable {
     address constant ZERO_ADDRESS = address(0x0);
 
     // adapting global default parameters, only used if proposal maker doesn't specify them
-    uint internal globalLockdownDuration;
-    uint internal globalSlashingRate;
+    uint internal globalLockdownDuration = 2 weeks / 1 seconds;
+    uint internal globalSlashingDuration = globalLockdownDuration / 2;
 
     // proposal params must not lower than 1/3 of global params
     uint constant PARAM_TOLERANCE = 3;
@@ -37,15 +37,18 @@ contract PairEx is Absorbable {
         address volatileTokenAddress,
         address stablizeTokenAddress,
         uint initialLockdownDuration,
-        uint initialSlashingRate,
+        uint initialSlashingDuration,
         uint maxDuration,
         uint minDuration
     )
         Absorbable(volatileTokenAddress, stablizeTokenAddress, maxDuration, minDuration)
         public
     {
-        globalLockdownDuration = initialLockdownDuration;
-        globalSlashingRate = initialSlashingRate;
+        if (initialLockdownDuration > 0) {
+            globalLockdownDuration = initialLockdownDuration;
+        }
+        globalSlashingDuration = initialSlashingDuration > 0 ?
+            initialSlashingDuration : globalLockdownDuration / 2;
     }
 
     // Token transfer's fallback
@@ -67,10 +70,10 @@ contract PairEx is Absorbable {
 
             (   int amount,
                 uint lockdownDuration,
-                uint slashingRate
+                uint slashingDuration
             ) = abi.decode(data, (int, uint, uint));
 
-            propose(maker, value, amount, lockdownDuration, slashingRate);
+            propose(maker, value, amount, lockdownDuration, slashingDuration);
             return;
         }
 
@@ -92,7 +95,7 @@ contract PairEx is Absorbable {
         uint stake,
         int amount,
         uint lockdownDuration,
-        uint slashingRate
+        uint slashingDuration
     )
         internal
     {
@@ -104,20 +107,20 @@ contract PairEx is Absorbable {
 
         if (lockdownDuration > 0) {
             require(
-                lockdownDuration >=
+                lockdownDuration <
                 globalLockdownDuration - globalLockdownDuration / PARAM_TOLERANCE,
                 "lockdown duration param too short");
         } else {
             proposal.lockdownDuration = globalLockdownDuration;
         }
 
-        if (slashingRate > 0) {
+        if (slashingDuration > 0) {
             require(
-                slashingRate >=
-                globalSlashingRate - globalSlashingRate / PARAM_TOLERANCE,
-                "slashing rate param too low");
+                slashingDuration >
+                globalSlashingDuration + globalSlashingDuration / PARAM_TOLERANCE,
+                "slashing duration param too long");
         } else {
-            proposal.slashingRate = globalSlashingRate;
+            proposal.slashingDuration = globalSlashingDuration;
         }
 
         proposals.push(proposal);
@@ -146,7 +149,7 @@ contract PairEx is Absorbable {
             proposal.maker,
             proposal.amount,
             proposal.stake,
-            proposal.slashingRate,
+            proposal.slashingDuration,
             block.number + proposal.lockdownDuration
         );
         proposals.remove(maker);
