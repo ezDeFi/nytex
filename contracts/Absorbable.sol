@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-import "./lib/math.sol";
+import "./lib/util.sol";
 import "./lib/dex.sol";
 import "./lib/absn.sol";
 import "./Orderbook.sol";
@@ -26,18 +26,35 @@ contract Absorbable is Orderbook {
     absn.Preemptive internal lockdown;
 
     constructor (
-        address volatileToken,
-        address stablizeToken,
-        uint expiration,
-        uint duration
+        uint absorptionDuration,
+        uint absorptionExpiration
     )
-        Orderbook(volatileToken, stablizeToken)
         public
     {
-        if (expiration > 0) EXPIRATION = expiration;
-        DURATION = int(duration > 0 ? duration : expiration / 2);
-        // dummy absorption
+        if (absorptionExpiration > 0) EXPIRATION = absorptionExpiration;
+        DURATION = int(absorptionDuration > 0 ? absorptionDuration : absorptionExpiration / 2);
+    }
+
+    function registerTokens(
+        address volatileToken,
+        address stablizeToken
+    )
+        public
+    {
+        require(address(VolatileToken) == address(0), "already set");
+        require(address(StablizeToken) == address(0), "already set");
+        VolatileToken = IToken(volatileToken);
+        StablizeToken = IToken(stablizeToken);
+        super.registerTokens(volatileToken, stablizeToken);
+        // trigger the first blank absorption
         triggerAbsorption(StablizeToken.totalSupply(), false);
+    }
+
+    function toString(address x) internal pure returns (string memory) {
+        bytes memory b = new bytes(20);
+        for (uint i = 0; i < 20; i++)
+            b[i] = byte(uint8(uint(x) / (2**(8*(19 - i)))));
+        return string(b);
     }
 
     modifier consensus() {
@@ -45,8 +62,12 @@ contract Absorbable is Orderbook {
         _;
     }
 
-    function getRemainToAbsorb() public view returns (int) {
-        return math.sub(last.target, StablizeToken.totalSupply());
+    // for ethstat
+    function getRemainToAbsorb() public view returns (bool, int) {
+        if (last.target == 0) {
+            return (false, 0);
+        }
+        return (true, util.sub(last.target, StablizeToken.totalSupply()));
     }
 
     // called by the consensus on each block
@@ -64,7 +85,7 @@ contract Absorbable is Orderbook {
             onMedianPriceFed(target);
             if (lockdown.isLocked()) {
                 // WIP: slash the pre-emptive maker if target goes wrong way
-                int diviation = math.sub(target, StablizeToken.totalSupply());
+                int diviation = util.sub(target, StablizeToken.totalSupply());
                 if (checkAndSlash(diviation) && last.isPreemptive) {
                     // lockdown violation, halt the preemptive absorption for this block
                     return;
@@ -84,8 +105,8 @@ contract Absorbable is Orderbook {
     }
 
     function calcNextAbsorption() internal view returns(int) {
-        int total = math.sub(last.target, last.supply);
-        int remain = math.sub(last.target, StablizeToken.totalSupply());
+        int total = util.sub(last.target, last.supply);
+        int remain = util.sub(last.target, StablizeToken.totalSupply());
         if (total == 0 || remain == 0) {
             // no absorption require or target reached
             return 0;
@@ -187,7 +208,7 @@ contract Absorbable is Orderbook {
      * @return true if the lockdown is violated and get slashed
      */
     function checkAndSlash(int diviation) internal returns (bool) {
-        if (!math.inOrder(lockdown.amount, 0, diviation)) {
+        if (!util.inOrder(lockdown.amount, 0, diviation)) {
             // same direction, no slashing
             return false;
         }

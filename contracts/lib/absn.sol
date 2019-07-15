@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-import "./math.sol";
+import "./util.sol";
 import "./set.sol";
 
 library absn {
@@ -27,7 +27,7 @@ library absn {
     function isAbsorbing(Absorption storage this, uint supply) internal view returns(bool) {
         return this.exists() &&
             supply != this.target &&                        // target not reached &&
-            math.inOrder(this.supply, supply, this.target); // not over-absorbed
+            util.inOrder(this.supply, supply, this.target); // not over-absorbed
     }
 
     using absn for Proposal;
@@ -42,7 +42,7 @@ library absn {
         uint stake;
 
         // lockdown duration (in blocks from the activation)
-        uint lockdownDuration;
+        uint lockdownExpiration;
 
         // SlashingDuration = 1 / SlashingRate
         // slashed = |d/D|*SlashingRate

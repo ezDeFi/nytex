@@ -1,5 +1,6 @@
 pragma solidity ^0.5.2;
 
+import "./lib/util.sol";
 import "./lib/set.sol";
 import "./lib/map.sol";
 import "./lib/absn.sol";
@@ -17,35 +18,36 @@ contract Preemptivable is Absorbable {
     address constant ZERO_ADDRESS = address(0x0);
 
     // adapting global default parameters, only used if proposal maker doesn't specify them
-    uint internal globalLockdownDuration = 2 weeks / 1 seconds;
-    uint internal globalSlashingDuration = globalLockdownDuration / 2;
+    uint internal globalLockdownExpiration = 2 weeks / 1 seconds;
+    uint internal globalSlashingDuration = globalLockdownExpiration / 2;
 
     // proposal params must not lower than 1/3 of global params
     uint constant PARAM_TOLERANCE = 3;
 
-    // proposal must have atleast globalLockdownDuration/4 block to be voted
-    // note: using globalLockdownDuration instead of proposal's value for safety
+    // proposal must have atleast globalLockdownExpiration/4 block to be voted
+    // note: using globalLockdownExpiration instead of proposal's value for safety
     uint constant MIN_VOTING_DURATION = 4;
 
     // map (maker => Proposal)
     map.ProposalMap internal proposals;
 
     constructor (
-        address volatileToken,
-        address stablizeToken,
-        uint initialLockdownDuration,
+        uint absorptionDuration,
+        uint absorptionExpiration,
         uint initialSlashingDuration,
-        uint expiration,
-        uint duration
+        uint initialLockdownExpiration
     )
-        Absorbable(volatileToken, stablizeToken, expiration, duration)
+        Absorbable(
+            absorptionDuration,
+            absorptionExpiration
+        )
         public
     {
-        if (initialLockdownDuration > 0) {
-            globalLockdownDuration = initialLockdownDuration;
+        if (initialLockdownExpiration > 0) {
+            globalLockdownExpiration = initialLockdownExpiration;
         }
         globalSlashingDuration = initialSlashingDuration > 0 ?
-            initialSlashingDuration : globalLockdownDuration / 2;
+            initialSlashingDuration : globalLockdownExpiration / 2;
     }
 
     // Token transfer's fallback
@@ -66,11 +68,11 @@ contract Preemptivable is Absorbable {
             require(!proposals.has(maker), "already has a proposal");
 
             (   int amount,
-                uint lockdownDuration,
+                uint lockdownExpiration,
                 uint slashingDuration
             ) = abi.decode(data, (int, uint, uint));
 
-            propose(maker, value, amount, lockdownDuration, slashingDuration);
+            propose(maker, value, amount, lockdownExpiration, slashingDuration);
             return;
         }
 
@@ -95,7 +97,7 @@ contract Preemptivable is Absorbable {
         address maker,
         uint stake,
         int amount,
-        uint lockdownDuration,
+        uint lockdownExpiration,
         uint slashingDuration
     )
         internal
@@ -106,13 +108,13 @@ contract Preemptivable is Absorbable {
         proposal.amount = amount;
         proposal.number = block.number;
 
-        if (lockdownDuration > 0) {
+        if (lockdownExpiration > 0) {
             require(
-                lockdownDuration <
-                globalLockdownDuration - globalLockdownDuration / PARAM_TOLERANCE,
+                lockdownExpiration <
+                globalLockdownExpiration - globalLockdownExpiration / PARAM_TOLERANCE,
                 "lockdown duration param too short");
         } else {
-            proposal.lockdownDuration = globalLockdownDuration;
+            proposal.lockdownExpiration = globalLockdownExpiration;
         }
 
         if (slashingDuration > 0) {
@@ -161,10 +163,10 @@ contract Preemptivable is Absorbable {
             proposal.amount,
             proposal.stake,
             proposal.slashingDuration,
-            block.number + proposal.lockdownDuration
+            block.number + proposal.lockdownExpiration
         );
         proposals.remove(maker);
-        triggerAbsorption(math.add(StablizeToken.totalSupply(), lockdown.amount), true);
+        triggerAbsorption(util.add(StablizeToken.totalSupply(), lockdown.amount), true);
     }
 
     // expensive calculation, only consensus can affort this
@@ -190,7 +192,7 @@ contract Preemptivable is Absorbable {
         address bestMaker = ZERO_ADDRESS;
         for (uint i = 0; i < proposals.count(); ++i) {
             absn.Proposal storage proposal = proposals.get(i);
-            if (block.number - proposal.number < globalLockdownDuration / MIN_VOTING_DURATION) {
+            if (block.number - proposal.number < globalLockdownExpiration / MIN_VOTING_DURATION) {
                 // not enough time for voting
                 continue;
             }

@@ -21,15 +21,6 @@ contract Orderbook {
     // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => dex.Book)
     mapping(bool => dex.Book) internal books;
 
-    constructor (
-        address volatileToken,
-        address stablizeToken
-    )
-        public
-    {
-        registerTokens(volatileToken, stablizeToken);
-    }
-
     function registerTokens(
         address volatileToken,
         address stablizeToken

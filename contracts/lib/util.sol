@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-library math {
+library util {
     // subtract 2 uints and convert result to int
     function sub(uint a, uint b) internal pure returns(int) {
         // require(|a-b| < 2**128)
