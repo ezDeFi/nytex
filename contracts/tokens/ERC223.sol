@@ -9,7 +9,7 @@ interface ContractReceiver {
 }
  
 /*
-    Ownable ERC223 Token plus dexMint() and dexBurnt for PairEx contract
+    Ownable ERC223 Token plus dexMint() and dexBurnt for Seigniorage contract
 */
 
 contract ERC223 is ERC20, Ownable {

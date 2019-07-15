@@ -91,7 +91,7 @@ export default class extends BaseComponent {
         />
 
         <Menu onClick={this.clickItem.bind(this)} theme="dark" mode="inline" className="menu-sidebar" defaultSelectedKeys={this.detectUrl()}>
-          <Menu.Item key="pairEx">
+          <Menu.Item key="seigniorage">
             <Icon type="credit-card" /> {I18N.get('0002')}
           </Menu.Item>
         </Menu>
@@ -103,7 +103,7 @@ export default class extends BaseComponent {
     const key = e.key
     if (_.includes([
       'home',
-      'pairEx'
+      'seigniorage'
     ], key)) {
       this.props.history.push('/' + e.key)
     } else if (key === 'logout') {
@@ -127,11 +127,11 @@ export default class extends BaseComponent {
 
     let sidebar = [
       'home',
-      'pairEx'
+      'seigniorage'
     ]
 
     if (!url) {
-      return ['pairEx']
+      return ['seigniorage']
     }
 
     for (var menu in sidebar) {

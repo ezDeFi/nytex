@@ -3,18 +3,18 @@ import Component from './Component'
 import UserService from '@/service/UserService'
 import VolatileTokenService from '@/service/contracts/volatileTokenService'
 import StableTokenService from '@/service/contracts/stableTokenService'
-import PairExService from '@/service/contracts/pairExService'
+import SeigniorageService from '@/service/contracts/seigniorageService'
 var curWallet = null
 export default createContainer(Component, (state) => {
   const userService = new UserService()
   const volatileTokenService = new VolatileTokenService()
   const stableTokenService = new StableTokenService()
-  const pairExService = new PairExService()
+  const seigniorageService = new SeigniorageService()
 
   async function loadOnInit () {
     load()
-    pairExService.loadOrders(true)
-    pairExService.loadOrders(false)
+    seigniorageService.loadOrders(true)
+    seigniorageService.loadOrders(false)
   }
 
   async function load () {
@@ -38,13 +38,13 @@ export default createContainer(Component, (state) => {
     balance: state.user.balance,
     volatileTokenBalance: state.user.volatileTokenBalance,
     stableTokenBalance: state.user.stableTokenBalance,
-    orders: state.pairEx.orders
+    orders: state.seigniorage.orders
   }
 }, () => {
   const userService = new UserService()
   const volatileTokenService = new VolatileTokenService()
   const stableTokenService = new StableTokenService()
-  const pairExService = new PairExService()
+  const seigniorageService = new SeigniorageService()
 
   return {
     async transferVolatileToken(toWallet, amount) {
@@ -61,7 +61,7 @@ export default createContainer(Component, (state) => {
     },
     // TEST
     async reload() {
-      return await pairExService.reload()
+      return await seigniorageService.reload()
     }
   }
 })

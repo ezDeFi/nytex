@@ -13,6 +13,9 @@ contract Absorbable is Orderbook {
     using absn for absn.Absorption;
     using absn for absn.Preemptive;
 
+    IToken VolatileToken;
+    IToken StablizeToken; // intentional incorrect spelling
+
     // constants
     uint EXPIRATION = 1 weeks / 2 seconds;
     int DURATION = int(EXPIRATION / 2);
@@ -23,12 +26,12 @@ contract Absorbable is Orderbook {
     absn.Preemptive internal lockdown;
 
     constructor (
-        address volatileTokenAddress,
-        address stablizeTokenAddress,
+        address volatileToken,
+        address stablizeToken,
         uint expiration,
         uint duration
     )
-        Orderbook(volatileTokenAddress, stablizeTokenAddress)
+        Orderbook(volatileToken, stablizeToken)
         public
     {
         if (expiration > 0) EXPIRATION = expiration;

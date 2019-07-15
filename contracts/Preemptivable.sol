@@ -8,7 +8,7 @@ import "./Absorbable.sol";
 /**
  * Pre-emptive absorption propsosal and voting logic.
  */
-contract PairEx is Absorbable {
+contract Preemptivable is Absorbable {
     using set for set.AddressSet;
     using map for map.ProposalMap;
     using absn for absn.Proposal;
@@ -31,14 +31,14 @@ contract PairEx is Absorbable {
     map.ProposalMap internal proposals;
 
     constructor (
-        address volatileTokenAddress,
-        address stablizeTokenAddress,
+        address volatileToken,
+        address stablizeToken,
         uint initialLockdownDuration,
         uint initialSlashingDuration,
         uint expiration,
         uint duration
     )
-        Absorbable(volatileTokenAddress, stablizeTokenAddress, expiration, duration)
+        Absorbable(volatileToken, stablizeToken, expiration, duration)
         public
     {
         if (initialLockdownDuration > 0) {

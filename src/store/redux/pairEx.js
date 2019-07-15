@@ -1,8 +1,8 @@
 import BaseRedux from '@/model/BaseRedux';
 
-class PairExRedux extends BaseRedux {
+class SeigniorageRedux extends BaseRedux {
     defineTypes () {
-        return ['pairEx'];
+        return ['seigniorage'];
     }
 
     defineDefaultState () {
@@ -21,4 +21,4 @@ class PairExRedux extends BaseRedux {
     }
 }
 
-export default new PairExRedux()
+export default new SeigniorageRedux()

@@ -1,4 +1,4 @@
-const PairExData = require('./../build/contracts/PairEx.json')
+const SeigniorageData = require('./../build/contracts/Seigniorage.json')
 const VolatileTokenData = require('./../build/contracts/VolatileToken.json')
 const StableTokenData = require('./../build/contracts/StableToken.json')
 const Web3 = require('web3');
@@ -14,10 +14,10 @@ const networkId = 111111
 
 const CONTRACTS =
   {
-    'PairEx':
+    'Seigniorage':
       {
-        'abi': PairExData.abi,
-        'address': PairExData.networks[networkId].address
+        'abi': SeigniorageData.abi,
+        'address': SeigniorageData.networks[networkId].address
       },
     'VolatileToken':
       {
@@ -34,7 +34,7 @@ const CONTRACTS =
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
 var StableToken = new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address)
-var PairEx = new web3.eth.Contract(CONTRACTS.PairEx.abi, CONTRACTS.PairEx.address)
+var Seigniorage = new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address)
 var myAddress = '0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d';
 var privateKey = Buffer.from('a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a5', 'hex')
 
@@ -47,8 +47,8 @@ async function getNonce (_address) {
 
 async function absorb(nonce, _orderType, _targetSTB) {
   console.log('absorb', _orderType, _targetSTB)
-  let contractAddress = PairEx._address
-  let methods = PairEx.methods
+  let contractAddress = Seigniorage._address
+  let methods = Seigniorage.methods
   let toDeposit = 0
   let rawTransaction = {
     'from': myAddress,

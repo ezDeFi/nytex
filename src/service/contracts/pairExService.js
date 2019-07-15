@@ -20,7 +20,7 @@ export default class extends BaseService {
 
     async getOrder(_orderType, _id) {
         const store = this.store.getState()
-        let methods = store.contracts.pairEx.methods
+        let methods = store.contracts.seigniorage.methods
         let res = await methods.getOrder(_orderType, _id).call()
         let weiMNTY = _orderType ? BigNumber(await res[2]) : BigNumber(await res[1])
         weiMNTY = weiMNTY.toFixed(0)
@@ -48,7 +48,7 @@ export default class extends BaseService {
     }
 
     async loadOrders(_orderType) {
-        const pairExRedux = this.store.getRedux('pairEx')
+        const seigniorageRedux = this.store.getRedux('seigniorage')
         let orders = []
         const byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
         const byteFFFF = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
@@ -72,15 +72,15 @@ export default class extends BaseService {
         await console.log('order Zero', orderNull)
         //orders = await orders.sort((a, b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0))
         if (_orderType) {
-            await this.dispatch(pairExRedux.actions.orders_update({'true': orders}))
+            await this.dispatch(seigniorageRedux.actions.orders_update({'true': orders}))
         } else {
-            await this.dispatch(pairExRedux.actions.orders_update({'false': orders.reverse()}))
+            await this.dispatch(seigniorageRedux.actions.orders_update({'false': orders.reverse()}))
         }
     }
 
     async reload () {
-        const pairExRedux = this.store.getRedux('pairEx')
-        this.dispatch(pairExRedux.actions.orders_reset())
+        const seigniorageRedux = this.store.getRedux('seigniorage')
+        this.dispatch(seigniorageRedux.actions.orders_reset())
         this.loadOrders(true)
         this.loadOrders(false)
     }

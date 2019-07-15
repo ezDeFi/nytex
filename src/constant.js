@@ -1,6 +1,6 @@
 import VolatileToken from './../build/contracts/VolatileToken.json'
 import StableToken from './../build/contracts/StableToken.json'
-import PairEx from './../build/contracts/PairEx.json'
+import Seigniorage from './../build/contracts/Seigniorage.json'
 
 const NetId = '111111'
 
@@ -28,10 +28,10 @@ export const CONTRACTS =
         'abi': StableToken.abi,
         'address': StableToken.networks[NetId].address
       },
-    'PairEx':
+    'Seigniorage':
       {
-        'abi': PairEx.abi,
-        'address': PairEx.networks[NetId].address
+        'abi': Seigniorage.abi,
+        'address': Seigniorage.networks[NetId].address
       },
   }
 

@@ -1,4 +1,4 @@
-import PairExPage from '@/module/page/pairEx/Container'
+import SeignioragePage from '@/module/page/seigniorage/Container'
 
 import LoginPage from '@/module/page/login/Container'
 
@@ -11,7 +11,7 @@ export default [
   },
   {
     path: '/home',
-    page: PairExPage
+    page: SeignioragePage
   },
   {
     path: '/login',

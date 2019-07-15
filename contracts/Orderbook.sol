@@ -1,44 +1,43 @@
 pragma solidity ^0.5.2;
 
+import "openzeppelin-solidity/contracts/math/Math.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./lib/set.sol";
+import "./lib/map.sol";
 import "./lib/dex.sol";
-import "./Initializer.sol";
+import "./lib/absn.sol";
 
 /**
  * Contract code for Volatile/Stablize exchange
  */
-contract Orderbook is Initializer {
+contract Orderbook {
+    using SafeMath for uint;
     using dex for dex.Order;
     using dex for dex.Book;
+
+    bool public constant Ask = false;
+    bool public constant Bid = true;
 
     // TODO: mapping (hash(haveTokenAddres,wantTokenAddress) => dex.Book)
     mapping(bool => dex.Book) internal books;
 
     constructor (
-        address volatileTokenAddress,
-        address stablizeTokenAddress
+        address volatileToken,
+        address stablizeToken
     )
         public
     {
-        if (volatileTokenAddress != address(0)) {
-            volatileTokenRegister(volatileTokenAddress);
-        }
-        if (stablizeTokenAddress != address(0)) {
-            stablizeTokenRegister(stablizeTokenAddress);
-        }
-        books[Ask].init(VolatileToken, StablizeToken);
-        books[Bid].init(StablizeToken, VolatileToken);
+        registerTokens(volatileToken, stablizeToken);
     }
 
     function registerTokens(
-        address _volatileTokenAddress,
-        address _stablizeTokenAddress
+        address volatileToken,
+        address stablizeToken
     )
-        external
+        public
     {
-        volatileTokenRegister(_volatileTokenAddress);
-        stablizeTokenRegister(_stablizeTokenAddress);
-        books[Ask].init(VolatileToken, StablizeToken);
-        books[Bid].init(StablizeToken, VolatileToken);
+        books[Ask].init(IToken(volatileToken), IToken(stablizeToken));
+        books[Bid].init(IToken(stablizeToken), IToken(volatileToken));
     }
 
     function trade(

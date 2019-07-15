@@ -1,6 +1,6 @@
 const VolatileTokenData = require('./../build/contracts/VolatileToken.json')
 const StableTokenData = require('./../build/contracts/StableToken.json')
-const PairExData = require('./../build/contracts/PairEx.json')
+const SeigniorageData = require('./../build/contracts/Seigniorage.json')
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx')
 var BigNumber = require('bignumber.js')
@@ -45,10 +45,10 @@ const CONTRACTS =
         'abi': StableTokenData.abi,
         'address': StableTokenData.networks[networkId].address
       },
-    'PairEx':
+    'Seigniorage':
       {
-        'abi': PairExData.abi,
-        'address': PairExData.networks[networkId].address
+        'abi': SeigniorageData.abi,
+        'address': SeigniorageData.networks[networkId].address
       }
   }
 
@@ -91,7 +91,7 @@ const UNITS =
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
 var StableToken = new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address)
-var PairEx = new web3.eth.Contract(CONTRACTS.PairEx.abi, CONTRACTS.PairEx.address)
+var Seigniorage = new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address)
 var myAddress = '0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d';
 var privateKey = Buffer.from('a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a5', 'hex')
 
@@ -197,7 +197,7 @@ async function randomOrder (nonce) {
 
 async function getOrder(_orderType, _id) {
   // const store = this.store.getState()
-  let methods = PairEx.methods
+  let methods = Seigniorage.methods
   let res = await methods.getOrder(_orderType, _id).call()
   let weiMNTY = _orderType ? BigNumber(await res[2]) : BigNumber(await res[1])
   weiMNTY = weiMNTY.toFixed(0)
@@ -225,7 +225,7 @@ async function getOrder(_orderType, _id) {
 }
 
 async function loadOrders(_orderType) {
-  //const pairExRedux = this.store.getRedux('pairEx')
+  //const seigniorageRedux = this.store.getRedux('seigniorage')
   let orders = []
   let byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
   let _id = byteZero
@@ -266,9 +266,9 @@ async function loadOrders(_orderType) {
   //   await console.log('CORRECT')
   // }
   // if (_orderType) {
-  //     await this.dispatch(pairExRedux.actions.orders_update({'true': orders.reverse()}))
+  //     await this.dispatch(seigniorageRedux.actions.orders_update({'true': orders.reverse()}))
   // } else {
-  //     await this.dispatch(pairExRedux.actions.orders_update({'false': orders}))
+  //     await this.dispatch(seigniorageRedux.actions.orders_update({'false': orders}))
   // }
 }
 
