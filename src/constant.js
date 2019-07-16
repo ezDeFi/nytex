@@ -1,6 +1,6 @@
 import VolatileToken from './../build/contracts/VolatileToken.json'
 import StableToken from './../build/contracts/StableToken.json'
-import PairEx from './../build/contracts/PairEx.json'
+import Seigniorage from './../build/contracts/Seigniorage.json'
 
 const NetId = '111111'
 
@@ -28,17 +28,17 @@ export const CONTRACTS =
         'abi': StableToken.abi,
         'address': StableToken.networks[NetId].address
       },
-    'PairEx':
+    'Seigniorage':
       {
-        'abi': PairEx.abi,
-        'address': PairEx.networks[NetId].address
+        'abi': Seigniorage.abi,
+        'address': Seigniorage.networks[NetId].address
       },
   }
 
 export const WEB3 = {
-  HTTP: 'http://108.61.148.72:8545', // testnet
+  // HTTP: 'http://rpc.testnet.nexty.io:8545', // testnet
   // HTTP: 'http://13.228.68.50:8545', // mainnet
-  // HTTP: 'http://localhost:8545', // localhost
+  HTTP: 'http://localhost:8545', // localhost
   NETWORK_ID: NetId // testnet
 }
 
@@ -46,7 +46,6 @@ export const WEB3 = {
 
 export const USER_LANGUAGE = {
   en: 'en',
-  zh: 'zh'
 }
 
 export const TEAM_ROLE = {

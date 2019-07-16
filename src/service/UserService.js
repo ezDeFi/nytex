@@ -72,7 +72,7 @@ export default class extends BaseService {
     const contracts = {
       VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
       StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
-      PairEx: new web3.eth.Contract(CONTRACTS.PairEx.abi, CONTRACTS.PairEx.address)
+      Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address)
     }
 
     web3.eth.defaultAccount = address
@@ -81,7 +81,7 @@ export default class extends BaseService {
     await this.dispatch(userRedux.actions.web3_update(web3))
     await this.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
     await this.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
-    await this.dispatch(contractsRedux.actions.pairEx_update(contracts.PairEx))
+    await this.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
 
     return true
   }

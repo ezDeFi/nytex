@@ -1,7 +1,7 @@
 export default {
   // Header
   '0001': 'User',
-  '0002': 'pairEx',
+  '0002': 'Exchange',
   '0003': 'Pool',
   '0004': 'Pool Control',
   '0005': 'Teams',

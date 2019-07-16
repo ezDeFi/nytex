@@ -1,6 +1,6 @@
 const VolatileTokenData = require('./../build/contracts/VolatileToken.json')
 const StableTokenData = require('./../build/contracts/StableToken.json')
-const PairExData = require('./../build/contracts/PairEx.json')
+const SeigniorageData = require('./../build/contracts/Seigniorage.json')
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx')
 var BigNumber = require('bignumber.js')
@@ -11,7 +11,7 @@ let spamType = args[3]
 if (!spamType) spamType = 'both'
 let noo = args[4]
 if (!noo) noo = 30
-let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://108.61.148.72:8545'
+let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://rpc.testnet.nexty.io:8545'
 const networkId = 111111
 
 let seed = 1
@@ -45,10 +45,10 @@ const CONTRACTS =
         'abi': StableTokenData.abi,
         'address': StableTokenData.networks[networkId].address
       },
-    'PairEx':
+    'Seigniorage':
       {
-        'abi': PairExData.abi,
-        'address': PairExData.networks[networkId].address
+        'abi': SeigniorageData.abi,
+        'address': SeigniorageData.networks[networkId].address
       }
   }
 
@@ -91,7 +91,7 @@ const UNITS =
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
 var StableToken = new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address)
-var PairEx = new web3.eth.Contract(CONTRACTS.PairEx.abi, CONTRACTS.PairEx.address)
+var Seigniorage = new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address)
 var myAddress = '0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d';
 var privateKey = Buffer.from('a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a5', 'hex')
 
@@ -101,7 +101,7 @@ async function getNonce (_address) {
   return await web3.eth.getTransactionCount(_address)
 }
 
-async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
+async function trade(nonce, _orderType, _haveAmount, _wantAmount) {
   console.log('new order', _orderType, _haveAmount, _wantAmount)
   let contractAddress = _orderType === 'sell' ? VolatileToken._address : StableToken._address
   let methods = _orderType === 'sell' ? VolatileToken.methods : StableToken.methods
@@ -115,11 +115,11 @@ async function simpleBuy (nonce, _orderType, _haveAmount, _wantAmount) {
   console.log('current balance xxx', myBalance, 'toDeposit', toDeposit)
   let rawTransaction = {
     'from': myAddress,
-    'gasPrice': web3.utils.toHex(1e9),
+    'gasPrice': web3.utils.toHex(0),
     'gasLimit': web3.utils.toHex(780000),
     'to': contractAddress,
     'value': web3.utils.toHex(toDeposit),
-    'data': methods.simpleBuy(_haveAmount, _wantAmount, [0]).encodeABI(),
+    'data': methods.trade(_haveAmount, _wantAmount, [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
   console.log(rawTransaction)
@@ -192,12 +192,12 @@ function createRandomOrder () {
 
 async function randomOrder (nonce) {
   let order = createRandomOrder()
-  await simpleBuy(nonce, order.orderType, order.haveAmount, order.wantAmount)
+  await trade(nonce, order.orderType, order.haveAmount, order.wantAmount)
 }
 
 async function getOrder(_orderType, _id) {
   // const store = this.store.getState()
-  let methods = PairEx.methods
+  let methods = Seigniorage.methods
   let res = await methods.getOrder(_orderType, _id).call()
   let weiMNTY = _orderType ? BigNumber(await res[2]) : BigNumber(await res[1])
   weiMNTY = weiMNTY.toFixed(0)
@@ -225,7 +225,7 @@ async function getOrder(_orderType, _id) {
 }
 
 async function loadOrders(_orderType) {
-  //const pairExRedux = this.store.getRedux('pairEx')
+  //const seigniorageRedux = this.store.getRedux('seigniorage')
   let orders = []
   let byteZero = '0x0000000000000000000000000000000000000000000000000000000000000000'
   let _id = byteZero
@@ -266,9 +266,9 @@ async function loadOrders(_orderType) {
   //   await console.log('CORRECT')
   // }
   // if (_orderType) {
-  //     await this.dispatch(pairExRedux.actions.orders_update({'true': orders.reverse()}))
+  //     await this.dispatch(seigniorageRedux.actions.orders_update({'true': orders.reverse()}))
   // } else {
-  //     await this.dispatch(pairExRedux.actions.orders_update({'false': orders}))
+  //     await this.dispatch(seigniorageRedux.actions.orders_update({'false': orders}))
   // }
 }
 

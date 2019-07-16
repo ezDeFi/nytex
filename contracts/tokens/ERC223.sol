@@ -9,35 +9,35 @@ interface ContractReceiver {
 }
  
 /*
-    Ownable ERC223 Token plus ownerMint() for oderbook contract
+    Ownable ERC223 Token plus dexMint() and dexBurnt for Seigniorage contract
 */
 
 contract ERC223 is ERC20, Ownable {
 
-    event Transfer(address indexed _from, address indexed _to, uint256 _value, bytes _data);
+    event Transfer(address indexed _from, address indexed _to, uint _value, bytes _data);
 
-    function mintToOwner(
-        uint256 _amount
-    )
-        public
-        onlyOwner()
+    function dex() public view returns(address)
     {
-        _mint(owner(), _amount);
+        return owner();
     }
 
-    function burnFromOwner(
-        uint256 _amount
-    )
+    function dexMint(uint _amount)
         public
         onlyOwner()
     {
-        _burn(owner(), _amount);
+        _mint(dex(), _amount);
+    }
+
+    function dexBurn(uint _amount)
+        public
+        onlyOwner()
+    {
+        _burn(dex(), _amount);
     }
 
     // Function that is called when a user or another contract wants to transfer funds .
     function transfer(address _to, uint _value, bytes memory _data) public
     returns (bool success) {
-        
         if(isContract(_to)) {
             return transferToContract(_to, _value, _data);
         }
@@ -50,8 +50,8 @@ contract ERC223 is ERC20, Ownable {
     function isContract(address _addr) private view returns (bool is_contract) {
         uint length;
         assembly {
-                //retrieve the size of the code on target address, this needs assembly
-                length := extcodesize(_addr)
+            //retrieve the size of the code on target address, this needs assembly
+            length := extcodesize(_addr)
         }
         return (length>0);
     }

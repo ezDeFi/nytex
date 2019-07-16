@@ -69,7 +69,7 @@ function setupWeb3 () {
                 const contracts = {
                   VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
                   StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
-                  PairEx: new web3.eth.Contract(CONTRACTS.PairEx.abi, CONTRACTS.PairEx.address),
+                  Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
                 }
 
                 if (!isLogined) {
@@ -77,7 +77,7 @@ function setupWeb3 () {
 
                   await store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
                   await store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
-                  await store.dispatch(contractsRedux.actions.pairEx_update(contracts.PairEx))
+                  await store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
 
                   await store.dispatch(userRedux.actions.web3_update(web3))
                   await userService.metaMaskLogin(accounts[0])
