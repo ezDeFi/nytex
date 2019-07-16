@@ -54,109 +54,31 @@ export default class extends LoggedInPage {
               <Col span={6}>
                 Balance:
               </Col>
-              <Col span={6}>
-                {weiToMNTY(this.props.balance)} MNTY
+              <Col span={18}>
+                {weiToMNTY(this.props.balance)} Million NTY
               </Col>
             </Row>
 
             <Row>
               <Col span={6}>
-                MNTY Tokens:
+                Token:
               </Col>
-              <Col span={6}>
+              <Col span={18}>
                 {weiToMNTY(this.props.volatileTokenBalance)} MNTY
               </Col>
             </Row>
 
             <Row>
               <Col span={6}>
-                NUSD Tokens:
+                StableCoin:
               </Col>
-              <Col span={6}>
-                {weiToNUSD(this.props.stableTokenBalance)} NUSD
+              <Col span={18}>
+                {weiToNUSD(this.props.stableTokenBalance)} NEWSD
               </Col>
-            </Row>
-
-            <Row>
-              <Col span={2}>
-                Amount
-              </Col>
-              <Col span={1}/>
-              <Col span={8}>
-                <InputNumber className="maxWidth"
-                  defaultValue={0}
-                  value={this.state.transferAmount}
-                  onChange={this.transferAmountChange.bind(this)}
-                />
-              </Col>
-              <Col span={1}/>
-              <Col span={2}>
-                to
-              </Col>
-              <Col span={1}/>
-              <Col span={8}>
-                <Input className="maxWidth"
-                  defaultValue={0}
-                  value={this.state.toWallet}
-                  onChange={this.toWalletChange.bind(this)}
-                />
-              </Col>
-              <Col span={1}/>
-            </Row>
-
-            <Row style={{ 'marginTop': '15px' }}>
-              <Col span={0}/>
-              <Col span={12}>
-                <Button onClick={() => this.transferVolatileToken()} type="primary" className="btn-margin-top submit-button maxWidth">Transfer MNTY</Button>
-              </Col>
-              <Col span={0}/>
-              <Col span={12}>
-                <Button onClick={() => this.transferStableToken()} type="primary" className="btn-margin-top submit-button maxWidth">Transfer NUSD</Button>
-              </Col>
-              <Col span={0}/>
             </Row>
 
             <div className="ebp-header-divider dashboard-rate-margin">
             </div>
-
-            <Row>
-              <Col span={2}>
-                Amount
-              </Col>
-              <Col span={1}/>
-              <Col span={8}>
-                <Input className="maxWidth"
-                  defaultValue={0}
-                  value={this.state.amount}
-                  onChange={this.amountChange.bind(this)}
-                />
-              </Col>
-              <Col span={1}/>
-              <Col span={2}>
-                Price
-              </Col>
-              <Col span={1}/>
-              <Col span={8}>
-                <Input className="maxWidth"
-                  defaultValue={0}
-                  value={this.state.price}
-                  onChange={this.priceChange.bind(this)}
-                />
-              </Col>
-              <Col span={1}/>
-            </Row>
-
-            <Row style={{ 'marginTop': '15px' }}>
-              <Col span={0}/>
-              <Col span={12}>
-                <Button onClick={() => this.sellVolatileToken()} type="primary" className="btn-margin-top submit-button maxWidth">Sell MNTY</Button>
-              </Col>
-              <Col span={0}/>
-              <Col span={12}>
-                <Button onClick={() => this.buyVolatileToken()} type="primary" className="btn-margin-top submit-button maxWidth">Buy MNTY</Button>
-              </Col>
-              <Col span={0}/>
-            </Row>
 
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={2}>
@@ -184,29 +106,70 @@ export default class extends LoggedInPage {
               <Col span={0}/>
             </Row>
 
-            <div className="ebp-header-divider dashboard-rate-margin">
-            </div>
-            <Col className="text-center" span={24}>
-              <h3 className="text-center">Orderbook</h3>
-            </Col>
-            <Col span={24}>
-              {this.ordersRender(false)}
-            </Col>
-            <Col span={24}>
-              {this.ordersRender(true)}
-            </Col>
-
-            <div className="ebp-header-divider dashboard-rate-margin">
-            </div>
+            <div className="ebp-header-divider dashboard-rate-margin"/>
 
             <Row style={{ 'marginTop': '15px' }}>
+              <Col className="text-center" span={24}>
+                <h3 className="text-center">Orderbook</h3>
+              </Col>
               <Col span={24}>
-                <Button onClick={() => this.props.reload()} type="primary" className="btn-margin-top submit-button maxWidth">Reload</Button>
+                {this.ordersRender(false)}
               </Col>
             </Row>
 
-            <div className="ebp-header-divider dashboard-rate-margin">
-            </div>
+            <Row style={{ 'marginTop': '15px' }}>
+              <Col span={6}>
+              </Col>
+              <Col span={12}/>
+              <Col span={6}>
+                <Button onClick={() => this.buyVolatileToken()} type="primary" className="btn-margin-top submit-button maxWidth">BUY</Button>
+              </Col>
+            </Row>
+
+            <Row style={{ 'marginTop': '10px' }}>
+              <Col span={2}>
+                MNTY:
+              </Col>
+              <Col span={1}/>
+              <Col span={5}>
+                <Input className="maxWidth"
+                  defaultValue={0}
+                  value={this.state.amount}
+                  onChange={this.amountChange.bind(this)}
+                />
+              </Col>
+              <Col span={1}/>
+              <Col span={2}>
+                Price:
+              </Col>
+              <Col span={1}/>
+              <Col span={5}>
+                <Input className="maxWidth"
+                  defaultValue={0}
+                  value={this.state.price}
+                  onChange={this.priceChange.bind(this)}
+                />
+              </Col>
+              <Col span={6}>
+                NEWSD/MNTY
+              </Col>
+            </Row>
+
+            <Row style={{ 'marginTop': '10px' }}>
+              <Col span={6}>
+                <Button onClick={() => this.props.reload()} type="primary" className="btn-margin-top submit-button maxWidth">Reload</Button>
+              </Col>
+              <Col span={12}/>
+              <Col span={6}>
+                <Button onClick={() => this.sellVolatileToken()} type="primary" className="btn-margin-top submit-button maxWidth">SELL</Button>
+              </Col>
+            </Row>
+
+            <Row style={{ 'marginTop': '15px' }}>
+              <Col span={24}>
+                {this.ordersRender(true)}
+              </Col>
+            </Row>
           </div>
         </div>
       </div>
@@ -226,77 +189,51 @@ remove(_orderType) {
   return this.props.remove(_orderType, this.state.id)
 }
 
-// async reload() {
-//     this.setState({data: []})
-//     await this.props.reload()
-//     let falseLength = this.props.orders.false.length
-//     let trueLength = this.props.orders.true.length
-//     let l = falseLength > trueLength ? falseLength : trueLength
-//     console.log('length = ', l)
-//     let data = []
-//     for (let i = 0; i < l; i++) {
-//         let falseOrder = i< falseLength ? this.props.orders.false[i] : ''
-//         let trueOrder = i < trueLength ? this.props.orders.true[i] : ''
-//         data.push({
-//             idWnty: falseOrder.id,
-//             addressWnty: cutString(falseOrder.maker),
-//             amountWnty: falseOrder.haveAmount,
-//             priceWnty: falseOrder.haveAmount ? falseOrder.wantAmount / falseOrder.haveAmount : '',
-//             idNusd: trueOrder.id,
-//             addressNusd: cutString(trueOrder.maker),
-//             amountNusd: trueOrder.wantAmount,
-//             priceNusd: trueOrder.haveAmount ? trueOrder.haveAmount / trueOrder.wantAmount : ''
-//         })
-//     }
-//     this.setState({data: data})
-// }
+onCopy = () => {
+  this.setState({copied: true});
+};
 
-  onCopy = () => {
-    this.setState({copied: true});
-  };
-
-  ordersRender(_orderType) {
-
-    //const data = [{'fromAmountWnty' : 0, 'toAmountWnty' : 1, 'fromAmountNusd' : 2, 'toAmountNusd' : 3}];
-    const columns = [
+ordersRender(_orderType) {
+  //const data = [{'fromAmountWnty' : 0, 'toAmountWnty' : 1, 'fromAmountNusd' : 2, 'toAmountNusd' : 3}];
+  const columns = [
+    {
+      title: _orderType ? 'Buy' : 'Sell',
+      children: [
         {
-            title: _orderType ? 'Buy' : 'Sell',
-            children: [
-                {
-                    title: 'id',
-                    dataIndex: 'id',
-                    key: 'id',
-                    render: (text, record) => (
-                        <span>
-                            {record.id &&
-                            <CopyToClipboard onCopy={this.onCopy} text={record.id}>
-                                <button>Copy</button>
-                            </CopyToClipboard>
-                            }
-                        </span>
-                    )
-                },
-                {
-                    title: 'address',
-                    dataIndex: 'maker',
-                    key: 'maker'
-                },
-                {
-                    title: 'amount',
-                    dataIndex: 'amount',
-                    key: 'amount'
-                },
-                {
-                    title: 'price',
-                    dataIndex: 'price',
-                    key: 'price'
-                },
-            ]
+          title: 'id',
+          dataIndex: 'id',
+          key: 'id',
+          render: (text, record) => (
+            <span>
+              {record.id &&
+              <CopyToClipboard onCopy={this.onCopy} text={record.id}>
+                  <button>{record.id}</button>
+              </CopyToClipboard>
+              }
+            </span>
+          )
         },
-    ]
-    return (<div>
-        <Table rowKey="id" dataSource={_orderType ? this.props.orders.true : this.props.orders.false} columns={columns} pagination={false} />
-    </div>)
+        {
+          title: 'address',
+          dataIndex: 'maker',
+          key: 'maker'
+        },
+        {
+          title: 'amount',
+          dataIndex: 'amount',
+          key: 'amount'
+        },
+        {
+          title: 'price',
+          dataIndex: 'price',
+          key: 'price'
+        },
+      ]
+    },
+  ]
+  return (<div>
+    <Table rowKey="id" dataSource={_orderType ? this.props.orders.true : this.props.orders.false} columns={columns} pagination={false} />
+  </div>)
 }
 
 transferVolatileToken() {
