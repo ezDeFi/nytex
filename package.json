@@ -6,6 +6,8 @@
     "compile": "truffle compile",
     "deploy:local": "truffle migrate --reset --network localhost",
     "deploy:dev": "truffle migrate --reset --network development",
+    "load:local": "node tools/load.js localhost",
+    "load:dev": "node tools/load.js development",
     "spam:local": "node tools/spammer.js localhost",
     "spam:dev": "node tools/spammer.js development",
     "absorb:local": "node tools/absorb.js localhost",
