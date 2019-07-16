@@ -47,11 +47,14 @@ export default createContainer(Component, (state) => {
   const seigniorageService = new SeigniorageService()
 
   return {
+    async cancel(orderType, id) {
+      return await seigniorageService.cancel(orderType, id)
+    },
     async transferVolatileToken(toWallet, amount) {
-      volatileTokenService.transfer(toWallet, amount)
+      return await volatileTokenService.transfer(toWallet, amount)
     },
     async transferStableToken(toWallet, amount) {
-      stableTokenService.transfer(toWallet, amount)
+      return await stableTokenService.transfer(toWallet, amount)
     },
     async sellVolatileToken(haveAmount, wantAmount) {
       return await volatileTokenService.trade(haveAmount, wantAmount)

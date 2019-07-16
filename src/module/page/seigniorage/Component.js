@@ -38,7 +38,7 @@ export default class extends LoggedInPage {
         </div>
 
         <div className="ebp-page">
-          <h3 className="text-center">User's Info</h3>
+          <h3 className="text-center">Exchange</h3>
           <div className="ant-col-md-18 ant-col-md-offset-3 text-alert" style={{ 'textAlign': 'left' }}>
 
             <Row>
@@ -81,37 +81,6 @@ export default class extends LoggedInPage {
             </div>
 
             <Row style={{ 'marginTop': '15px' }}>
-              <Col span={2}>
-                Id
-              </Col>
-              <Col span={1}/>
-              <Col span={8}>
-                <InputNumber className="maxWidth"
-                  defaultValue={0}
-                  value={this.state.id}
-                  onChange={this.idChange.bind(this)}
-                />
-              </Col>
-            </Row>
-
-            <Row style={{ 'marginTop': '15px' }}>
-              <Col span={0}/>
-              <Col span={12}>
-                <Button onClick={() => this.remove(false)} type="primary" className="btn-margin-top submit-button maxWidth">Selling Order Remove</Button>
-              </Col>
-              <Col span={0}/>
-              <Col span={12}>
-                <Button onClick={() => this.remove(true)} type="primary" className="btn-margin-top submit-button maxWidth">Buying Order Remove</Button>
-              </Col>
-              <Col span={0}/>
-            </Row>
-
-            <div className="ebp-header-divider dashboard-rate-margin"/>
-
-            <Row style={{ 'marginTop': '15px' }}>
-              <Col className="text-center" span={24}>
-                <h3 className="text-center">Orderbook</h3>
-              </Col>
               <Col span={24}>
                 {this.ordersRender(false)}
               </Col>
@@ -122,11 +91,11 @@ export default class extends LoggedInPage {
               </Col>
               <Col span={12}/>
               <Col span={6}>
-                <Button onClick={() => this.buyVolatileToken()} type="primary" className="btn-margin-top submit-button maxWidth">BUY</Button>
+                <Button onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
               </Col>
             </Row>
 
-            <Row style={{ 'marginTop': '10px' }}>
+            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
               <Col span={2}>
                 MNTY:
               </Col>
@@ -157,11 +126,11 @@ export default class extends LoggedInPage {
 
             <Row style={{ 'marginTop': '10px' }}>
               <Col span={6}>
-                <Button onClick={() => this.props.reload()} type="primary" className="btn-margin-top submit-button maxWidth">Reload</Button>
+                <Button onClick={() => this.props.reload()} className="btn-margin-top submit-button maxWidth">Reload</Button>
               </Col>
               <Col span={12}/>
               <Col span={6}>
-                <Button onClick={() => this.sellVolatileToken()} type="primary" className="btn-margin-top submit-button maxWidth">SELL</Button>
+                <Button onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
               </Col>
             </Row>
 
@@ -185,10 +154,6 @@ export default class extends LoggedInPage {
     )
   }
 
-remove(_orderType) {
-  return this.props.remove(_orderType, this.state.id)
-}
-
 onCopy = () => {
   this.setState({copied: true});
 };
@@ -200,15 +165,17 @@ ordersRender(_orderType) {
       title: _orderType ? 'Buy' : 'Sell',
       children: [
         {
-          title: 'id',
-          dataIndex: 'id',
-          key: 'id',
+          title: 'action',
+          dataIndex: 'action',
+          key: 'action',
           render: (text, record) => (
             <span>
               {record.id &&
-              <CopyToClipboard onCopy={this.onCopy} text={record.id}>
-                  <button>{record.id}</button>
-              </CopyToClipboard>
+                <Button
+                  onClick={() => this.props.cancel(_orderType, record.id)}
+                  className="btn-margin-top submit-button maxWidth">
+                    Cancel
+                </Button>
               }
             </span>
           )

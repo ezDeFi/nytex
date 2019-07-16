@@ -8,6 +8,15 @@ import { DECIMALS } from '@/constant'
 var BigNumber = require('bignumber.js');
 
 export default class extends BaseService {
+    async cancel(orderType, id) {
+        console.log("cancel " + (orderType ? "buy" : "ask") + "ing order: ", id.toString())
+        const store = this.store.getState()
+        let wallet = store.user.wallet
+        let methods = store.contracts.seigniorage.methods
+        await methods.cancel(orderType, id).send({from: wallet})
+        return
+    }
+
     async sellVolatileToken(haveAmount, wantAmount) {
         console.log(haveAmount.toString(), wantAmount.toString())
         return
