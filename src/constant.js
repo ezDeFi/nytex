@@ -3,6 +3,10 @@ import StableToken from './../build/contracts/StableToken.json'
 import Seigniorage from './../build/contracts/Seigniorage.json'
 
 const NetId = '111111'
+const SeigniorageAddress    = '0x0000000000000000000000000000000000123456'
+const VolatileTokenAddress  = '0x0000000000000000000000000000000001234567'
+const StableTokenAddress    = '0x0000000000000000000000000000000012345678'
+const ConsensusDeploy = true
 
 export const USER_ROLE = {
   MEMBER: 'MEMBER',
@@ -21,17 +25,17 @@ export const CONTRACTS =
     'VolatileToken':
       {
         'abi': VolatileToken.abi,
-        'address': VolatileToken.networks[NetId].address
+        'address': ConsensusDeploy ? VolatileTokenAddress : VolatileToken.networks[NetId].address
       },
     'StableToken':
       {
         'abi': StableToken.abi,
-        'address': StableToken.networks[NetId].address
+        'address': ConsensusDeploy ? StableTokenAddress : StableToken.networks[NetId].address
       },
     'Seigniorage':
       {
         'abi': Seigniorage.abi,
-        'address': Seigniorage.networks[NetId].address
+        'address': ConsensusDeploy ? SeigniorageAddress : Seigniorage.networks[NetId].address
       },
   }
 
