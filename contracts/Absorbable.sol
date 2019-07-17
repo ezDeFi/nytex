@@ -81,41 +81,40 @@ contract Absorbable is Orderbook {
         if (lockdown.unlockable()) {
             unlock();
         }
+        uint supply = StablizeToken.totalSupply();
         if (target > 0) { // absorption block
-            onMedianPriceFed(target);
+            if (shouldTriggerPassive() ||
+                shouldTriggerActive(supply, target)) {
+                triggerAbsorption(target, false);
+            }
             if (lockdown.isLocked()) {
                 // WIP: slash the pre-emptive maker if target goes wrong way
-                int diviation = util.sub(target, StablizeToken.totalSupply());
+                int diviation = util.sub(target, supply);
                 if (checkAndSlash(diviation) && last.isPreemptive) {
                     // lockdown violation, halt the preemptive absorption for this block
                     return;
                 }
             }
         }
-        if (last.isAbsorbing(StablizeToken.totalSupply())) {
+        if (last.isAbsorbing(supply)) {
             int nextAmount = calcNextAbsorption();
             absorb(nextAmount);
-        }
-    }
-
-    function onMedianPriceFed(uint target) internal {
-        if (shouldTriggerPassive() || shouldTriggerActive(StablizeToken.totalSupply(), target)) {
-            triggerAbsorption(target, false);
         }
     }
 
     function calcNextAbsorption() internal view returns(int) {
         int total = util.sub(last.target, last.supply);
         int remain = util.sub(last.target, StablizeToken.totalSupply());
-        if (total == 0 || remain == 0) {
-            // no absorption require or target reached
+        if (!util.inOrder(0, remain, total)) {
+            // target reached or passed
             return 0;
         }
-        if (total > 0 != remain > 0) {
-            // target passed
-            return 0;
+        int amount = total / DURATION;
+        if (!util.inOrder(0, amount, remain)) {
+            // don't over absorb
+            return remain;
         }
-        return remain / DURATION;
+        return amount;
     }
 
     // shouldTriggerPassive returns whether a new passive absorption can be activated
@@ -133,32 +132,29 @@ contract Absorbable is Orderbook {
         if (last.target == last.supply) {
             return true;
         }
-        uint rate;
+        // int a = util.sub(target, supply);
+        // int b = util.sub(last.target, last.supply);
+        // return a/b >= 2 || util.inOrder(-2, b/a, 0);
         if (target > supply) {
             uint a = target - supply;
             if (last.target > last.supply) {
                 uint b = last.target - last.supply;
-                //return a * last.supply >= 2 * b * supply;
-                rate = a / b;
+                return a / b >= 2;
             } else {
                 uint b = last.supply - last.target;
-                //return a * last.supply * 2 <= b * supply;
-                rate = b / a;
+                return b / a <= 2;
             }
         } else {
             uint a = supply - target;
             if (last.target < last.supply) {
                 uint b = last.supply - last.target;
-                //return a * last.supply >= 2 * b * supply;
-                rate = a / b;
+                return a / b >= 2;
             } else {
-                uint b = last.supply - last.target;
-                //return a * last.supply * 2 <= b * supply;
-                rate = b / a;
+                uint b = last.target - last.supply;
+                return b / a <= 2;
             }
         }
-        return rate >= 2;
-    }
+     }
 
     function unlock() internal {
         if (!lockdown.exists()) {
@@ -183,15 +179,12 @@ contract Absorbable is Orderbook {
         internal
         returns(uint totalVOL, uint totalSTB)
     {
-        bool inflate = stableTokenAmount > 0;
-        uint amount = uint(inflate ? stableTokenAmount : -stableTokenAmount);
-        bool orderType = inflate ? Ask : Bid; // inflate by filling NTY sell orders
-        dex.Book storage book = books[orderType];
+        dex.Book storage book = books[stableTokenAmount > 0 ? Ask : Bid];
         bool useHaveAmount = book.haveToken == StablizeToken;
         if (last.isPreemptive) {
-            return book.absorbPreemptive(useHaveAmount, amount, lockdown.maker);
+            return book.absorbPreemptive(useHaveAmount, util.abs(stableTokenAmount), lockdown.maker);
         }
-        return book.absorb(useHaveAmount, amount);
+        return book.absorb(useHaveAmount, util.abs(stableTokenAmount));
     }
 
     /**

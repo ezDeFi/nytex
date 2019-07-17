@@ -382,7 +382,7 @@ library dex {
                 bmt = bmt * fillableAMT / amt;
                 amt = fillableAMT;
                 uint fillableHave = useHaveAmount ? amt : bmt;
-                uint fillableWant = useHaveAmount ? amt : bmt;
+                uint fillableWant = useHaveAmount ? bmt : amt;
                 // fill the partial order
                 book.haveToken.dexBurn(fillableHave);
                 book.wantToken.dexMint(fillableWant);
