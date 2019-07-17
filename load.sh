@@ -1,8 +1,8 @@
 #!/bin/bash
-
+export CONDEP=1
 while true; do
-    yarn spam:local sell 13
+    yarn load:local sell 1
     sleep 6s
-    yarn spam:local buy 13
+    yarn load:local buy 1
     sleep 6s
 done
