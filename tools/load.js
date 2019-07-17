@@ -88,32 +88,27 @@ async function trade (nonce, orderType) {
     console.log('have too little token, don\'t order');
     return
   }
-  const wiggle = Math.random() * 0.003 + (orderType === 'sell' ? 0.9999 : 0.9998) ;
-  const nooBN = new BN(noo);
-  let amountHave = balanceHave.clone().shrn(13).divRound(nooBN);
-  let amountWant = supplyWant.clone().shrn(13).divRound(nooBN);
-  //let amountWant = Math.floor(supplyWant / 2 / noo * wiggle)
-  //  .toLocaleString('fullwide', {useGrouping:false});
+  let have = balanceHave.clone().shrn(6);
+  let want = supplyWant.clone().shrn(6);
 
-  console.log('have', amountHave.toString(), 'want', amountWant.toString());
-
-  cap(amountHave, amountWant, 128);
-  if (amountHave.isZero()) {
-    amountHave = new BN(1);
+  // wiggle 16%
+  const wiggle = new BN(Math.floor(Math.random() * 128)).mul(want).shrn(13);
+  if (orderType === 'sell') {
+    want.add(wiggle)
+  } else {
+    want.sub(wiggle)
   }
-  if (amountWant.isZero()) {
-    amountWant = new BN(1);
-  }
-  console.log('capped have', amountHave.toString(), 'capped want', amountWant.toString());
 
-  const bn1e18 = new BN(10).pow(new BN(18))
-  const price = orderType === 'sell' ?
-    (amountWant.clone().div(amountHave).div(new BN(bn1e18))) :
-    (bn1e18.clone().mul(amountHave).div(amountWant));
-  // const price = orderType === 'sell' ?
-  //   (amountWant.toNumber()/amountHave.toNumber()/1e18) :
-  //   (1e18*amountHave.toNumber()/amountWant.toNumber());
-  console.log('PRICE', price.toString(), 'wiggle', wiggle, 'have', amountHave, 'want', amountWant);
+  console.log('have', have.toString(), 'want', want.toString(), 'wiggle', wiggle.toString());
+
+  cap(have, want, 128);
+  if (have.isZero()) {
+    have = new BN(1);
+  }
+  if (want.isZero()) {
+    want = new BN(1);
+  }
+  console.log('capped have', have.toString(), 'capped want', want.toString());
 
   let rawTransaction = {
     'from': myAddress,
@@ -121,7 +116,7 @@ async function trade (nonce, orderType) {
     'gasLimit': web3.utils.toHex(9999999),
     'to': haveToken._address,
     'value': web3.utils.toHex(0),
-    'data': haveToken.methods.trade(amountHave.toString(10), amountWant.toString(10), [0]).encodeABI(),
+    'data': haveToken.methods.trade(have.toString(10), want.toString(10), [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
   //console.log(rawTransaction)
