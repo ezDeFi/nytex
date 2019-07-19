@@ -99,25 +99,29 @@ contract VolatileToken is ERC223 {
 
     // deposit and propose()
     function depositAndPropose(
-        int absorption,  // absorption amount of StablizeToken
-        uint stake       // staked amount of VolatileToken
+        uint stake,              // staked amount of VolatileToken
+        int amount,             // absorption amount of StablizeToken
+        uint slashingDuration,
+        uint lockdownExpiration
     )
         public
         payable
     {
         depositTo(msg.sender);
-        propose(absorption, stake);
+        propose(stake, amount, slashingDuration, lockdownExpiration);
     }
 
     // propose a new pre-emptive absorption
-    // with verbose data = (absorption, stake);
+    // with verbose data = (amount, slashingDuration, lockdownExpiration);
     function propose(
-        int absorption,  // absorption amount of StablizeToken
-        uint stake       // staked amount of VolatileToken
+        uint stake,              // staked amount of VolatileToken
+        int amount,             // absorption amount of StablizeToken
+        uint slashingDuration,
+        uint lockdownExpiration
     )
         public
     {
-        bytes memory data = abi.encode(absorption);
+        bytes memory data = abi.encode(amount, slashingDuration, lockdownExpiration);
         transfer(dex(), stake, data);
     }
 }

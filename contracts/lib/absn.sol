@@ -35,11 +35,11 @@ library absn {
         // address of the proposer
         address maker;
 
-        // amount of StablizeToken to absorb, positive for inflation, negative for deflation
-        int amount;
-
         // NTY amount staked for the preemptive proposal
         uint stake;
+
+        // amount of StablizeToken to absorb, positive for inflation, negative for deflation
+        int amount;
 
         // lockdown duration (in blocks from the activation)
         uint lockdownExpiration;

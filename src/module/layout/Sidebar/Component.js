@@ -94,6 +94,9 @@ export default class extends BaseComponent {
           <Menu.Item key="exchange">
             <Icon type="credit-card" /> {I18N.get('0002')}
           </Menu.Item>
+          <Menu.Item key="preemptive">
+            <Icon type="credit-card" /> {I18N.get('0003')}
+          </Menu.Item>
         </Menu>
       </Sider>
     )
@@ -103,7 +106,8 @@ export default class extends BaseComponent {
     const key = e.key
     if (_.includes([
       'home',
-      'exchange'
+      'exchange',
+      'preemptive'
     ], key)) {
       this.props.history.push('/' + e.key)
     } else if (key === 'logout') {
@@ -127,7 +131,8 @@ export default class extends BaseComponent {
 
     let sidebar = [
       'home',
-      'exchange'
+      'exchange',
+      'preemptive'
     ]
 
     if (!url) {

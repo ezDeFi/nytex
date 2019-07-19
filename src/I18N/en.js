@@ -2,7 +2,7 @@ export default {
   // Header
   '0001': 'User',
   '0002': 'Exchange',
-  '0003': 'Pool',
+  '0003': 'Preemptive',
   '0004': 'Pool Control',
   '0005': 'Teams',
   '0006': 'Tasks',

@@ -68,11 +68,11 @@ contract Preemptivable is Absorbable {
             require(!proposals.has(maker), "already has a proposal");
 
             (   int amount,
-                uint lockdownExpiration,
-                uint slashingDuration
+                uint slashingDuration,
+                uint lockdownExpiration
             ) = abi.decode(data, (int, uint, uint));
 
-            propose(maker, value, amount, lockdownExpiration, slashingDuration);
+            propose(maker, value, amount, slashingDuration, lockdownExpiration);
             return;
         }
 
@@ -97,8 +97,8 @@ contract Preemptivable is Absorbable {
         address maker,
         uint stake,
         int amount,
-        uint lockdownExpiration,
-        uint slashingDuration
+        uint slashingDuration,
+        uint lockdownExpiration
     )
         internal
     {
@@ -108,15 +108,6 @@ contract Preemptivable is Absorbable {
         proposal.amount = amount;
         proposal.number = block.number;
 
-        if (lockdownExpiration > 0) {
-            require(
-                lockdownExpiration <
-                globalLockdownExpiration - globalLockdownExpiration / PARAM_TOLERANCE,
-                "lockdown duration param too short");
-        } else {
-            proposal.lockdownExpiration = globalLockdownExpiration;
-        }
-
         if (slashingDuration > 0) {
             require(
                 slashingDuration >
@@ -124,6 +115,15 @@ contract Preemptivable is Absorbable {
                 "slashing duration param too long");
         } else {
             proposal.slashingDuration = globalSlashingDuration;
+        }
+
+        if (lockdownExpiration > 0) {
+            require(
+                lockdownExpiration <
+                globalLockdownExpiration - globalLockdownExpiration / PARAM_TOLERANCE,
+                "lockdown duration param too short");
+        } else {
+            proposal.lockdownExpiration = globalLockdownExpiration;
         }
 
         proposals.push(proposal);
@@ -203,5 +203,19 @@ contract Preemptivable is Absorbable {
             }
         }
         return bestMaker;
+    }
+
+    function getProposal(uint idx) public view
+        returns (
+            address maker,
+            uint stake,
+            int amount,
+            uint slashingDuration,
+            uint lockdownExpiration,
+            uint number
+        )
+    {
+        absn.Proposal storage p = proposals.get(idx);
+        return (p.maker, p.stake, p.amount, p.slashingDuration, p.lockdownExpiration, p.number);
     }
 }
