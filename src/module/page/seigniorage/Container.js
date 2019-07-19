@@ -38,7 +38,8 @@ export default createContainer(Component, (state) => {
     balance: state.user.balance,
     volatileTokenBalance: state.user.volatileTokenBalance,
     stableTokenBalance: state.user.stableTokenBalance,
-    orders: state.seigniorage.orders
+    bids: state.seigniorage.bids,
+    asks: state.seigniorage.asks,
   }
 }, () => {
   const userService = new UserService()

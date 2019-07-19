@@ -1,4 +1,5 @@
 import BaseService from '../../model/BaseService'
+import web3 from 'web3'
 import _ from 'lodash'
 
 var BigNumber = require('big-number');

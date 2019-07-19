@@ -1,10 +1,27 @@
 import moment from 'moment'
 import web3 from 'web3'
 
+const BN = web3.utils.BN;
+
+const BN_1e24 = new BN(10).pow(new BN(24));
+const BN_MAX_BIT = 53;
+
 const MAX = 88888888888
 
 const pad = (num) => {
     return ('0' + num).slice(-2);
+}
+
+export function thousands(nStr) {
+	nStr += '';
+	let x = nStr.split('.');
+	let x1 = x[0];
+	let x2 = x.length > 1 ? '.' + x[1] : '';
+	let rgx = /(\d+)(\d{3})/;
+	while (rgx.test(x1)) {
+		x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	}
+	return x1 + x2;
 }
 
 export function cutString (s) {
@@ -14,9 +31,46 @@ export function cutString (s) {
     var last3 = s.slice(-3)
     return first5 + '...' + last3
 }
+
+export function weiToNUSD (wei) {
+    let value = web3.utils.toBN(wei);
+    if (value.bitLength() <= BN_MAX_BIT) {
+        value = value.toNumber() / 1e6
+    } else {
+        value.divn(1e6)
+    }
+    return thousands(value)
+}
+
 export function weiToMNTY (wei) {
-    return (Number(web3.utils.fromWei(wei.toString())) / 1000000).toFixed(4)
-  }
+    let value = web3.utils.toBN(wei);
+    if (value.bitLength() > BN_MAX_BIT) {
+        const bitDiff = value.bitLength() - BN_1e24.bitLength() + 1;
+        const toShift = BN_MAX_BIT - bitDiff;
+        if (toShift > 0) {
+            value = value.shln(toShift).div(BN_1e24).toNumber() / 2**toShift;
+        } else {
+            value = value.div(BN_1e24)
+        }
+    } else {
+        value = value.toNumber() / 1e24
+    }
+    return thousands(value)
+}
+
+export function weiToPrice(mnty, nusd, decimal) {
+    mnty = web3.utils.toBN(mnty);
+    nusd = web3.utils.toBN(nusd);
+    // asume that mnty is much larger than nusd
+    let price = mnty.div(nusd);
+    if (price.bitLength() > BN_MAX_BIT) {
+        price = new BN(10).pow(new BN(18+decimal)).div(price).toNumber() / (10**decimal);
+    } else {
+        price = 1e18 / price.toNumber();
+    }
+    return price;
+}
+
 // string
 export function weiToEthS (weiAmount) {
     if (isNaN(weiAmount)) return 'Loading'

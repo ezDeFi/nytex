@@ -6,20 +6,13 @@ import { Link } from 'react-router-dom' // eslint-disable-line
 import web3 from 'web3'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { DECIMALS } from '@/constant'
+import { weiToMNTY, weiToNUSD } from '../../../util/help.js'
 
 import './style.scss'
 
 import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'antd' // eslint-disable-line
 
 var BigNumber = require('big-number');
-
-const weiToNUSD = (wei) => {
-  return Number(wei / (10 ** (DECIMALS.nusd))).toFixed(4)
-}
-
-const weiToMNTY = (wei) => {
-  return (Number(web3.utils.fromWei(wei.toString())) / 1000000).toFixed(4)
-}
 
 export default class extends LoggedInPage {
   state = {
@@ -181,7 +174,7 @@ ordersRender(_orderType) {
           )
         },
         {
-          title: 'address',
+          title: 'maker',
           dataIndex: 'maker',
           key: 'maker'
         },
@@ -199,7 +192,9 @@ ordersRender(_orderType) {
     },
   ]
   return (<div>
-    <Table rowKey="id" dataSource={_orderType ? this.props.orders.true : this.props.orders.false} columns={columns} pagination={false} />
+    <Table rowKey="id"
+      dataSource={_orderType ? Object.values(this.props.bids) : Object.values(this.props.asks)}
+      columns={columns} pagination={false} />
   </div>)
 }
 
