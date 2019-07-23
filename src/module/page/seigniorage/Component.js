@@ -192,7 +192,7 @@ ordersRender(_orderType) {
     },
   ]
   return (<div>
-    <Table rowKey="id"
+    <Table rowKey="seq"
       dataSource={_orderType ? Object.values(this.props.bids) : Object.values(this.props.asks)}
       columns={columns} pagination={false} />
   </div>)

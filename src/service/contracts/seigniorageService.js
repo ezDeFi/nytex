@@ -33,10 +33,10 @@ export default class extends BaseService {
     async loadProposals() {
         const store = this.store.getState()
         let methods = store.contracts.seigniorage.methods
-        var finished = false;
         const seigniorageRedux = this.store.getRedux('seigniorage')
+        const count = await methods.getProposalCount().call()
         this.dispatch(seigniorageRedux.actions.proposals_reset());
-        for (let i = 0; !finished && i < 10; ++i) {
+        for (let i = 0; i < count; ++i) {
             methods.getProposal(i).call()
                 .then(res => {
                     console.log(res);
@@ -48,20 +48,16 @@ export default class extends BaseService {
                         'lockdownExpiration': res.lockdownExpiration,
                     }}));
                 })
-                .catch(err => {
-                    //console.error(err);
-                    finished = true;
-                })
         }
     }
 
     async loadOrders(orderType) {
         const seigniorageRedux = this.store.getRedux('seigniorage')
-        if (orderType) {
-            this.dispatch(seigniorageRedux.actions.bids_reset());
-        } else {
-            this.dispatch(seigniorageRedux.actions.asks_reset());
-        }
+        // if (orderType) {
+        //     this.dispatch(seigniorageRedux.actions.bids_reset());
+        // } else {
+        //     this.dispatch(seigniorageRedux.actions.asks_reset());
+        // }
         const byteFFFF = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
         const store = this.store.getState()
         const methods = store.contracts.seigniorage.methods
@@ -70,13 +66,26 @@ export default class extends BaseService {
         const MAX_ITEMS = 10;
         for (let i = 0; i < MAX_ITEMS; ++i) {
             if (id === byteFFFF) {
-                break;
+                // clear the empty rows
+                const order = {
+                    'seq': i,
+                    'id': id,
+                    'maker': '',
+                    'amount': '',
+                    'price': '',
+                };
+                if (orderType) {
+                    this.dispatch(seigniorageRedux.actions.bids_update({[i]: order}));
+                } else {
+                    this.dispatch(seigniorageRedux.actions.asks_update({[MAX_ITEMS-1-i]: order}));
+                }
+                continue;
             }
             let res = await methods.getOrder(orderType, id).call();
             let mnty = res[orderType ? 2 : 1];
             let nusd = res[orderType ? 1 : 2];
-            console.log(mnty, nusd);
-            let order = {
+            const order = {
+                'seq': i,
                 'id': id,
                 'maker': cutString(res[0]),
                 'amount': thousands(weiToMNTY(mnty)),

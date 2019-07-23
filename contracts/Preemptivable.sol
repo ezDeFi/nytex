@@ -129,6 +129,13 @@ contract Preemptivable is Absorbable {
         proposals.push(proposal);
     }
 
+    function cancel(address maker) public {
+        absn.Proposal storage p = proposals.get(maker);
+        require(maker == p.maker, "only maker can cancel proposal");
+        VolatileToken.transfer(p.maker, p.stake);
+        proposals.remove(maker);
+    }
+
     function vote(address maker, bool up) external {
         require(proposals.has(maker), "no such proposal");
         absn.Proposal storage proposal = proposals.get(maker);
@@ -171,6 +178,11 @@ contract Preemptivable is Absorbable {
 
     // expensive calculation, only consensus can affort this
     function calcRank(absn.Proposal storage proposal) internal view returns (uint) {
+        return proposal.stake * countVote(proposal);
+    }
+
+    // expensive calculation, only consensus can affort this
+    function countVote(absn.Proposal storage proposal) internal view returns(uint) {
         uint voteCount = 0;
         for (uint i = 0; i < proposal.upVoters.count(); ++i) {
             address voter = proposal.upVoters.get(i);
@@ -183,11 +195,11 @@ contract Preemptivable is Absorbable {
         if (voteCount <= 0) {
             return 0;
         }
-        return proposal.stake * voteCount;
+        return voteCount;
     }
 
     // expensive calculation, only consensus can affort this
-    function calcBestProposal() internal view returns (address) {
+    function calcBestProposal() internal view returns(address) {
         uint bestRank = 0;
         address bestMaker = ZERO_ADDRESS;
         for (uint i = 0; i < proposals.count(); ++i) {
@@ -203,6 +215,15 @@ contract Preemptivable is Absorbable {
             }
         }
         return bestMaker;
+    }
+
+    function totalVote(address maker) public view returns(uint) {
+        absn.Proposal storage p = proposals.get(maker);
+        return countVote(p);
+    }
+
+    function getProposalCount() public view returns(uint) {
+        return proposals.count();
     }
 
     function getProposal(uint idx) public view
