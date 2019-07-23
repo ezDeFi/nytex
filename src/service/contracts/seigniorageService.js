@@ -1,7 +1,7 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
 import { empty } from 'glamor';
-import { weiToNUSD, weiToMNTY, weiToPrice, cutString, thousands} from '../../util/help'
+import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString} from '../../util/help'
 import { DECIMALS } from '@/constant'
 import web3 from 'web3';
 
@@ -42,8 +42,8 @@ export default class extends BaseService {
                     console.log(res);
                     this.dispatch(seigniorageRedux.actions.proposals_update({[i]: {
                         'maker': cutString(res.maker),
-                        'stake': weiToMNTY(res.stake),
-                        'amount': weiToNUSD(res.amount),
+                        'stake': thousands(weiToMNTY(res.stake)),
+                        'amount': thousands(weiToNUSD(res.amount)),
                         'slashingDuration': res.slashingDuration,
                         'lockdownExpiration': res.lockdownExpiration,
                     }}));
@@ -76,12 +76,11 @@ export default class extends BaseService {
             let mnty = res[orderType ? 2 : 1];
             let nusd = res[orderType ? 1 : 2];
             console.log(mnty, nusd);
-            let price = weiToPrice(mnty, nusd, 3);
             let order = {
                 'id': id,
                 'maker': cutString(res[0]),
-                'amount': weiToMNTY(mnty),
-                'price': thousands(price),
+                'amount': thousands(weiToMNTY(mnty)),
+                'price': thousands(weiToPrice(mnty, nusd)),
             };
             if (orderType) {
                 this.dispatch(seigniorageRedux.actions.bids_update({[i]: order}));

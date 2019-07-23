@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom' // eslint-disable-line
 import web3 from 'web3'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { DECIMALS } from '@/constant'
-import { weiToMNTY, weiToNUSD } from '../../../util/help.js'
+import { thousands, weiToMNTY, weiToNUSD } from '../../../util/help.js'
 
 import './style.scss'
 
@@ -48,7 +48,7 @@ export default class extends LoggedInPage {
                 Balance:
               </Col>
               <Col span={18}>
-                {weiToMNTY(this.props.balance)} Million NTY
+                {thousands(weiToMNTY(this.props.balance))} Million NTY
               </Col>
             </Row>
 
@@ -57,7 +57,7 @@ export default class extends LoggedInPage {
                 Token:
               </Col>
               <Col span={18}>
-                {weiToMNTY(this.props.volatileTokenBalance)} MNTY
+                {thousands(weiToMNTY(this.props.volatileTokenBalance))} MNTY
               </Col>
             </Row>
 
@@ -66,7 +66,7 @@ export default class extends LoggedInPage {
                 StableCoin:
               </Col>
               <Col span={18}>
-                {weiToNUSD(this.props.stableTokenBalance)} NEWSD
+                {thousands(weiToNUSD(this.props.stableTokenBalance))} NEWSD
               </Col>
             </Row>
 

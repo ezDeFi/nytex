@@ -3,8 +3,11 @@ import web3 from 'web3'
 
 const BN = web3.utils.BN;
 
+const BN_1e6 = new BN(10).pow(new BN(6));
+const BN_1e18 = new BN(10).pow(new BN(18));
 const BN_1e24 = new BN(10).pow(new BN(24));
 const BN_MAX_BIT = 53;
+const BN_ZOOM_BIT = 18;
 
 const MAX = 88888888888
 
@@ -12,11 +15,14 @@ const pad = (num) => {
     return ('0' + num).slice(-2);
 }
 
-export function thousands(nStr) {
+export function thousands(nStr, decimal = 4) {
 	nStr += '';
 	let x = nStr.split('.');
 	let x1 = x[0];
-	let x2 = x.length > 1 ? '.' + x[1] : '';
+    let x2 = x.length > 1 ? '.' + x[1] : '';
+    if (x2.length > decimal + 1) {
+        x2 = x2.substring(0, decimal + 1);
+    }
 	let rgx = /(\d+)(\d{3})/;
 	while (rgx.test(x1)) {
 		x1 = x1.replace(rgx, '$1' + ',' + '$2');
@@ -32,49 +38,108 @@ export function cutString (s) {
     return first5 + '...' + last3
 }
 
-export function weiToNUSD (wei) {
-    let value = web3.utils.toBN(wei);
-    if (value.bitLength() <= BN_MAX_BIT) {
-        value = value.toNumber() / 1e6
-    } else {
-        value.divn(1e6)
+export function intShift(s, d) {
+    s = s.toString();
+    if (d === 0) {
+        return s;
     }
-    return thousands(value)
-}
-
-export function weiToMNTY (wei) {
-    let value = web3.utils.toBN(wei);
-    if (value.bitLength() > BN_MAX_BIT) {
-        const bitDiff = value.bitLength() - BN_1e24.bitLength() + 1;
-        const toShift = BN_MAX_BIT - bitDiff;
-        if (toShift > 0) {
-            value = value.shln(toShift).div(BN_1e24).toNumber() / 2**toShift;
-        } else {
-            value = value.div(BN_1e24)
+    if (d > 0) {
+        return s + '0'.repeat(d);
+    } else {
+        if (s.length <= d) {
+            return 0;
         }
-    } else {
-        value = value.toNumber() / 1e24
+        return s.substring(0, s.length - d);
     }
-    return thousands(value)
 }
 
-export function weiToPrice(mnty, nusd, decimal) {
-    mnty = web3.utils.toBN(mnty);
-    nusd = web3.utils.toBN(nusd);
-    // asume that mnty is much larger than nusd
-    let price = mnty.div(nusd);
-    if (price.bitLength() > BN_MAX_BIT) {
-        price = new BN(10).pow(new BN(18+decimal)).div(price).toNumber() / (10**decimal);
-    } else {
-        price = 1e18 / price.toNumber();
+export function decShift(s, d) {
+    s = s.toString();
+    if (d == 0) {
+        return s;
     }
-    return price;
+    let f = '';
+    let p = s.indexOf('.');
+    if (p >= 0) {
+        f = s.substring(p+1); // assume that s.length > p
+        s = s.substring(0, p);
+    }
+    if (d > 0) {
+        if (d < f.length) {
+            s += f.substring(0, d);
+            f = f.substring(d+1);
+            return s + '.' + f;
+        }
+        // d > f.length
+        return intShift(s + f, d - f.length);
+    }
+    // d < 0
+    d = -d
+    if (d < s.length) {
+        f = s.substring(s.length - d) + f;
+        s = s.substring(0, s.length - d);
+        f = f.replace(/0+$/g, "");
+        if (f.length > 0) {
+            s += '.' + f;
+        }
+        return s;
+    }
+    // d > s.length
+    f = '0'.repeat(d - s.length) + s + f;
+    f = f.replace(/0+$/g, "");
+    if (f.length > 0) {
+        return '0' + '.' + f;
+    }
+    return '0';
+}
+
+export function weiToMNTY(wei) {
+    return decShift(wei, -24);
+}
+
+export function weiToNUSD(wei) {
+    return decShift(wei, -6);
+}
+
+export function weiToPrice(mnty, nusd) {
+    const price = div(web3.utils.toBN(decShift(nusd, 18)), web3.utils.toBN(mnty))
+    return price.toString()
 }
 
 // string
 export function weiToEthS (weiAmount) {
     if (isNaN(weiAmount)) return 'Loading'
     return (weiAmount * 1e-18).toLocaleString('en', {maximumFractionDigits: 4})
+}
+
+// (BN / BN) => string
+function div(a, b) {
+    if (a.isZero()) {
+        return 0;
+    }
+    if (a.lt(b)) {
+        return 1 / _div(b, a);
+    }
+    return _div(a, b);
+}
+
+function _div(a, b) {
+    const resultBitLen = a.bitLength() - b.bitLength() + 1;
+    // zoom the result to BN_MAX_BIT
+    const toShift = BN_ZOOM_BIT - resultBitLen;
+    if (toShift > 0) {
+        a = a.shln(toShift);
+    } else if (toShift < 0) {
+        b = b.shln(-toShift);
+    }
+    let c = a.div(b).toNumber();
+    // assert(c.bitLength() <= BN_MAX_BIT)
+    if (toShift > 0) {
+        c /= 1<<toShift
+    } else if (toShift < 0) {
+        c *= 1<<-toShift
+    }
+    return c;
 }
 
 export function hhmmss(_secs) {

@@ -3,7 +3,7 @@ import LoggedInPage from '../LoggedInPage'
 import Footer from '@/module/layout/Footer/Container' // eslint-disable-line
 import Tx from 'ethereumjs-tx' // eslint-disable-line
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { thousands, weiToMNTY, weiToNUSD } from '../../../util/help.js'
+import { cutString, thousands, weiToMNTY, weiToNUSD, decShift } from '../../../util/help.js'
 import web3 from 'web3'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { DECIMALS } from '@/constant'
@@ -52,7 +52,7 @@ export default class extends LoggedInPage {
                 Balance:
               </Col>
               <Col span={18}>
-                {weiToMNTY(this.props.balance)} Million NTY
+                {thousands(weiToMNTY(this.props.balance))} Million NTY
               </Col>
             </Row>
 
@@ -61,7 +61,7 @@ export default class extends LoggedInPage {
                 Token:
               </Col>
               <Col span={18}>
-                {weiToMNTY(this.props.volatileTokenBalance)} MNTY
+                {thousands(weiToMNTY(this.props.volatileTokenBalance))} MNTY
               </Col>
             </Row>
 
@@ -70,7 +70,7 @@ export default class extends LoggedInPage {
                 StableCoin:
               </Col>
               <Col span={18}>
-                {weiToNUSD(this.props.stableTokenBalance)} NEWSD
+                {thousands(weiToNUSD(this.props.stableTokenBalance))} NEWSD
               </Col>
             </Row>
 
@@ -199,8 +199,8 @@ proposalsRender() {
 }
 
 propose() {
-  const stake = web3.utils.toBN(this.state.stake).mul(new BN(10).pow(new BN(DECIMALS.mnty)))
-  const amount = web3.utils.toBN(this.state.amount).mul(new BN(10).pow(new BN(DECIMALS.nusd)))
+  const stake = web3.utils.toBN(decShift(this.state.stake, DECIMALS.mnty));
+  const amount = web3.utils.toBN(decShift(this.state.amount, DECIMALS.nusd));
   let slashingDuration = Number(this.state.slashingDuration)
   let lockdownExpiration = Number(this.state.lockdownExpiration)
   console.log('***** stake MNTY: ', thousands(stake.toString()))
