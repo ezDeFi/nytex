@@ -69,8 +69,9 @@ function cap (a, b, bitLength) {
     return
   }
   const toShift = Math.max(a.bitLength(), b.bitLength()) - bitLength;
-  a.shrn(toShift);
-  b.shrn(toShift);
+  console.log("toShift = ", toShift)
+  a = a.shrn(toShift);
+  b = b.shrn(toShift);
 }
 
 async function trade (nonce, orderType) {
@@ -101,14 +102,22 @@ async function trade (nonce, orderType) {
 
   console.log('have', have.toString(), 'want', want.toString(), 'wiggle', wiggle.toString());
 
-  cap(have, want, 128);
-  if (have.isZero()) {
-    have = new BN(1);
+  //cap(have, want, 128);
+  const bitLength = 128
+  if (have.bitLength() > bitLength || want.bitLength() > bitLength) {
+    const toShift = Math.max(have.bitLength(), want.bitLength()) - bitLength;
+    console.log("toShift = ", toShift)
+    have = have.shrn(toShift);
+    want = want.shrn(toShift);
+  
+    if (have.isZero()) {
+      have = new BN(1);
+    }
+    if (want.isZero()) {
+      want = new BN(1);
+    }
+    console.log('capped have', have.toString(), 'capped want', want.toString());
   }
-  if (want.isZero()) {
-    want = new BN(1);
-  }
-  console.log('capped have', have.toString(), 'capped want', want.toString());
 
   let rawTransaction = {
     'from': myAddress,
