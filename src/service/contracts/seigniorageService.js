@@ -30,6 +30,15 @@ export default class extends BaseService {
         return
     }
 
+
+    async revoke(maker) {
+        console.log("revoking proposal: ", maker)
+        const store = this.store.getState()
+        let wallet = store.user.wallet
+        let methods = store.contracts.seigniorage.methods
+        await methods.revoke(maker).send({from: wallet})
+    }
+
     async loadProposals() {
         const store = this.store.getState()
         let methods = store.contracts.seigniorage.methods
@@ -41,7 +50,7 @@ export default class extends BaseService {
                 .then(res => {
                     console.log(res);
                     this.dispatch(seigniorageRedux.actions.proposals_update({[i]: {
-                        'maker': cutString(res.maker),
+                        'maker': res.maker,
                         'stake': thousands(weiToMNTY(res.stake)),
                         'amount': thousands(weiToNUSD(res.amount)),
                         'slashingDuration': res.slashingDuration,

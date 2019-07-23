@@ -129,9 +129,9 @@ contract Preemptivable is Absorbable {
         proposals.push(proposal);
     }
 
-    function cancel(address maker) public {
+    function revoke(address maker) public {
         absn.Proposal storage p = proposals.get(maker);
-        require(maker == p.maker, "only maker can cancel proposal");
+        require(maker == p.maker, "only maker can revoke proposal");
         VolatileToken.transfer(p.maker, p.stake);
         proposals.remove(maker);
     }

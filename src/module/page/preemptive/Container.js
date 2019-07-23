@@ -48,8 +48,8 @@ export default createContainer(Component, (state) => {
     async propose(stake, amount, slashingDuration, lockdownExpiration) {
       return await volatileTokenService.propose(stake, amount, slashingDuration, lockdownExpiration)
     },
-    async cancel(orderType, id) {
-      return await seigniorageService.cancel(orderType, id)
+    async revoke(maker) {
+      return await seigniorageService.revoke(maker)
     },
     // TEST
     async reload() {
