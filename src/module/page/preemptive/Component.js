@@ -211,6 +211,11 @@ proposalsRender() {
           dataIndex: 'lockdownExpiration',
           key: 'lockdownExpiration',
         },
+        {
+          title: 'total vote',
+          dataIndex: 'totalVote',
+          key: 'totalVote',
+        },
       ]
     },
   ]

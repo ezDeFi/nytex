@@ -46,17 +46,22 @@ export default class extends BaseService {
         const count = await methods.getProposalCount().call()
         this.dispatch(seigniorageRedux.actions.proposals_reset());
         for (let i = 0; i < count; ++i) {
-            methods.getProposal(i).call()
-                .then(res => {
-                    console.log(res);
+            methods.getProposal(i).call().then(res => {
+                console.log(res);
+                this.dispatch(seigniorageRedux.actions.proposals_update({[i]: {
+                    'maker': res.maker,
+                    'stake': thousands(weiToMNTY(res.stake)),
+                    'amount': thousands(weiToNUSD(res.amount)),
+                    'slashingDuration': res.slashingDuration,
+                    'lockdownExpiration': res.lockdownExpiration,
+                }}));
+                methods.totalVote(res.maker).call().then(totalVote => {
+                    console.log(totalVote);
                     this.dispatch(seigniorageRedux.actions.proposals_update({[i]: {
-                        'maker': res.maker,
-                        'stake': thousands(weiToMNTY(res.stake)),
-                        'amount': thousands(weiToNUSD(res.amount)),
-                        'slashingDuration': res.slashingDuration,
-                        'lockdownExpiration': res.lockdownExpiration,
+                        'totalVote': totalVote,
                     }}));
-                })
+                });
+            })
         }
     }
 
