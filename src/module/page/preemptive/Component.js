@@ -216,6 +216,21 @@ proposalsRender() {
           dataIndex: 'totalVote',
           key: 'totalVote',
         },
+        {
+          title: 'vote',
+          dataIndex: 'vote',
+          key: 'vote',
+          render: (text, record) => (
+            <span>
+              {
+                <span>
+                  <Button onClick={() => this.props.vote(record.maker, true)}>UP</Button>
+                  <Button onClick={() => this.props.vote(record.maker, false)}>DOWN</Button>
+                </span>
+              }
+            </span>
+          )
+        },
       ]
     },
   ]

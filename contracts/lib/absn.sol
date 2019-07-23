@@ -58,14 +58,14 @@ library absn {
         set.AddressSet downVoters;
     }
 
-    function voteUp(Proposal storage this) internal {
-        this.downVoters.remove(msg.sender);
-        this.upVoters.push(msg.sender);
-    }
-
-    function voteDown(Proposal storage this) internal {
-        this.upVoters.remove(msg.sender);
-        this.downVoters.push(msg.sender);
+    function vote(Proposal storage this, bool up) internal {
+        if (up) {
+            this.downVoters.remove(msg.sender);
+            this.upVoters.push(msg.sender);
+        } else {
+            this.upVoters.remove(msg.sender);
+            this.downVoters.push(msg.sender);
+        }
     }
 
     function exists(Proposal storage this) internal view returns (bool) {

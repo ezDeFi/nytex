@@ -139,11 +139,7 @@ contract Preemptivable is Absorbable {
     function vote(address maker, bool up) external {
         require(proposals.has(maker), "no such proposal");
         absn.Proposal storage proposal = proposals.get(maker);
-        if (up) {
-            proposal.voteUp();
-        } else {
-            proposal.voteDown();
-        }
+        proposal.vote(up);
     }
 
     // check and trigger a new Preemptive when one is eligible
@@ -178,6 +174,10 @@ contract Preemptivable is Absorbable {
 
     // expensive calculation, only consensus can affort this
     function calcRank(absn.Proposal storage proposal) internal view returns (uint) {
+        uint voteCount = countVote(proposal);
+        if (voteCount <= 0) {
+            return 0;
+        }
         return proposal.stake * countVote(proposal);
     }
 
@@ -191,9 +191,6 @@ contract Preemptivable is Absorbable {
         for (uint i = 0; i < proposal.downVoters.count(); ++i) {
             address voter = proposal.downVoters.get(i);
             voteCount -= voter.balance + VolatileToken.balanceOf(voter);
-        }
-        if (voteCount <= 0) {
-            return 0;
         }
         return voteCount;
     }

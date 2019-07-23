@@ -30,6 +30,13 @@ export default class extends BaseService {
         return
     }
 
+    async vote(maker, up){
+        console.log(maker.toString(), up)
+        const store = this.store.getState()
+        let wallet = store.user.wallet
+        let methods = store.contracts.seigniorage.methods
+        await methods.vote(maker, up).send({from: wallet})
+    }
 
     async revoke(maker) {
         console.log("revoking proposal: ", maker)

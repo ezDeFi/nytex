@@ -51,6 +51,9 @@ export default createContainer(Component, (state) => {
     async revoke(maker) {
       return await seigniorageService.revoke(maker)
     },
+    async vote(maker, up) {
+      return await seigniorageService.vote(maker, up)
+    },
     // TEST
     async reload() {
       return await seigniorageService.loadProposals()
