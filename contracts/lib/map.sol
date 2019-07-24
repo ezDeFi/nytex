@@ -47,7 +47,7 @@ library map {
     // position is the correct array position, which is (set.idxs[item]-1)
     function remove(ProposalMap storage this, uint position) internal {
         delete this.idxs[this.vals[position].maker];
-        this.vals[position].clear();
+        //this.vals[position].clear(); // should be handled differently for user and consensus
 
         if (this.vals.length-1 != position) {
             // swap with the last item in the vals

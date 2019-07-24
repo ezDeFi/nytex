@@ -30,6 +30,10 @@ contract Preemptivable is Absorbable {
     // map (maker => Proposal)
     map.ProposalMap internal proposals;
 
+    // revoked proposals' votes to clear by consensus
+    // since the clearing job is too expensive for transaction to perform.
+    map.AddressBool[] votesToClear;
+
     constructor (
         uint absorptionDuration,
         uint absorptionExpiration,
@@ -84,6 +88,12 @@ contract Preemptivable is Absorbable {
     }
 
     function onBlockInitialized(uint target) public consensus {
+        // cleaning up
+        for (uint i = 0; i < votesToClear.length; i++) {
+            votesToClear[i].clear();
+        }
+        delete votesToClear;
+
         checkAndTriggerPreemptive();
         super.onBlockInitialized(target);
     }
@@ -131,6 +141,7 @@ contract Preemptivable is Absorbable {
     function revoke(address maker) external {
         absn.Proposal storage p = proposals.get(maker);
         require(maker == p.maker, "only maker can revoke proposal");
+        votesToClear.push(p.votes); // leave the job for consensus
         VolatileToken.transfer(p.maker, p.stake);
         proposals.remove(maker);
     }
@@ -160,6 +171,7 @@ contract Preemptivable is Absorbable {
     // trigger an absorption from a maker's proposal
     function triggerPreemptive(address maker) internal {
         absn.Proposal storage proposal = proposals.get(maker);
+        proposal.votes.clear(); // clear the votes (consensus only)
         lockdown = absn.Preemptive(
             proposal.maker,
             proposal.amount,
