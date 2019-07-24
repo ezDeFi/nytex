@@ -343,16 +343,19 @@ library dex {
     {
         (totalBMT, totalAMT) = book.absorb(useHaveAmount, target);
         (uint haveAMT, uint wantAMT) = useHaveAmount ? (totalAMT, totalBMT) : (totalBMT, totalAMT);
-        if (book.haveToken.allowance(initiator, address(this)) < haveAMT ||
-            book.haveToken.balanceOf(initiator) < haveAMT) {
-            // not enough alowance to side-absorb, halt the absorption for this call
-            return (0, 0);
+        if (haveAMT <= book.haveToken.allowance(initiator, address(this)) &&
+            haveAMT <= book.haveToken.balanceOf(initiator))
+        {
+            book.haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
+            book.haveToken.dexBurn(haveAMT);
+            book.wantToken.dexMint(wantAMT);
+            book.wantToken.transfer(initiator, wantAMT);
+            // accumulate the side-absorb
+            totalAMT += useHaveAmount ? haveAMT : wantAMT;
+            totalBMT += useHaveAmount ? wantAMT : haveAMT;
+            // TODO: emit event for side-absorption
         }
-        book.haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
-        book.haveToken.dexBurn(haveAMT);
-        book.wantToken.dexMint(wantAMT);
-        book.wantToken.transfer(initiator, wantAMT);
-        return (totalBMT, totalAMT);
+        // not enough alowance for side absorption
     }
 
     function absorb(

@@ -154,7 +154,7 @@ contract Absorbable is Orderbook {
                 return b / a <= 2;
             }
         }
-     }
+    }
 
     function unlock() internal {
         if (!lockdown.exists()) {
