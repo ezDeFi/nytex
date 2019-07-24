@@ -202,17 +202,17 @@ proposalsRender() {
           key: 'amount',
         },
         {
-          title: 'slashing duration',
+          title: 'SD',
           dataIndex: 'slashingDuration',
           key: 'slashingDuration',
         },
         {
-          title: 'lockdown expiration',
+          title: 'LE',
           dataIndex: 'lockdownExpiration',
           key: 'lockdownExpiration',
         },
         {
-          title: 'total vote',
+          title: 'TV',
           dataIndex: 'totalVote',
           key: 'totalVote',
         },

@@ -2,7 +2,6 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./lib/set.sol";
 import "./lib/map.sol";
 import "./lib/dex.sol";
 import "./lib/absn.sol";

@@ -1,7 +1,6 @@
 pragma solidity ^0.5.2;
 
 import "./lib/util.sol";
-import "./lib/set.sol";
 import "./lib/map.sol";
 import "./lib/absn.sol";
 import "./Absorbable.sol";
@@ -10,8 +9,8 @@ import "./Absorbable.sol";
  * Pre-emptive absorption propsosal and voting logic.
  */
 contract Preemptivable is Absorbable {
-    using set for set.AddressSet;
     using map for map.ProposalMap;
+    using map for map.AddressBool;
     using absn for absn.Proposal;
     using absn for absn.Preemptive;
 
@@ -129,7 +128,7 @@ contract Preemptivable is Absorbable {
         proposals.push(proposal);
     }
 
-    function revoke(address maker) public {
+    function revoke(address maker) external {
         absn.Proposal storage p = proposals.get(maker);
         require(maker == p.maker, "only maker can revoke proposal");
         VolatileToken.transfer(p.maker, p.stake);
@@ -173,31 +172,32 @@ contract Preemptivable is Absorbable {
     }
 
     // expensive calculation, only consensus can affort this
-    function calcRank(absn.Proposal storage proposal) internal view returns (uint) {
-        uint voteCount = countVote(proposal);
+    function calcRank(absn.Proposal storage proposal) internal view returns (int) {
+        int voteCount = countVote(proposal);
         if (voteCount <= 0) {
             return 0;
         }
-        return proposal.stake * countVote(proposal);
+        return int(proposal.stake) * countVote(proposal);
     }
 
     // expensive calculation, only consensus can affort this
-    function countVote(absn.Proposal storage proposal) internal view returns(uint) {
-        uint voteCount = 0;
-        for (uint i = 0; i < proposal.upVoters.count(); ++i) {
-            address voter = proposal.upVoters.get(i);
-            voteCount += voter.balance + VolatileToken.balanceOf(voter);
-        }
-        for (uint i = 0; i < proposal.downVoters.count(); ++i) {
-            address voter = proposal.downVoters.get(i);
-            voteCount -= voter.balance + VolatileToken.balanceOf(voter);
+    function countVote(absn.Proposal storage proposal) internal view returns(int) {
+        int voteCount = 0;
+        for (uint i = 0; i < proposal.votes.count(); ++i) {
+            (address voter, bool up) = proposal.votes.get(i);
+            int weight = int(voter.balance + VolatileToken.balanceOf(voter));
+            if (up) {
+                voteCount += weight;
+            } else {
+                voteCount -= weight;
+            }
         }
         return voteCount;
     }
 
     // expensive calculation, only consensus can affort this
     function calcBestProposal() internal view returns(address) {
-        uint bestRank = 0;
+        int bestRank = 0;
         address bestMaker = ZERO_ADDRESS;
         for (uint i = 0; i < proposals.count(); ++i) {
             absn.Proposal storage proposal = proposals.get(i);
@@ -205,7 +205,7 @@ contract Preemptivable is Absorbable {
                 // not enough time for voting
                 continue;
             }
-            uint rank = calcRank(proposal);
+            int rank = calcRank(proposal);
             if (rank > bestRank) {
                 bestRank = rank;
                 bestMaker = proposal.maker;
@@ -214,7 +214,7 @@ contract Preemptivable is Absorbable {
         return bestMaker;
     }
 
-    function totalVote(address maker) public view returns(uint) {
+    function totalVote(address maker) public view returns(int) {
         absn.Proposal storage p = proposals.get(maker);
         return countVote(p);
     }

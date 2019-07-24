@@ -55,7 +55,7 @@ export default class extends BaseService {
         for (let i = 0; i < count; ++i) {
             methods.getProposal(i).call().then(res => {
                 console.log(res);
-                this.dispatch(seigniorageRedux.actions.proposals_update({[i]: {
+                this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
                     'maker': res.maker,
                     'stake': thousands(weiToMNTY(res.stake)),
                     'amount': thousands(weiToNUSD(res.amount)),
@@ -64,8 +64,8 @@ export default class extends BaseService {
                 }}));
                 methods.totalVote(res.maker).call().then(totalVote => {
                     console.log(totalVote);
-                    this.dispatch(seigniorageRedux.actions.proposals_update({[i]: {
-                        'totalVote': totalVote,
+                    this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
+                        'totalVote': thousands(weiToMNTY(totalVote)),
                     }}));
                 });
             })

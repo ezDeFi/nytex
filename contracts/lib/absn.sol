@@ -1,10 +1,10 @@
 pragma solidity ^0.5.2;
 
 import "./util.sol";
-import "./set.sol";
+import "./map.sol";
 
 library absn {
-    using set for set.AddressSet;
+    using map for map.AddressBool;
 
     address constant ZERO_ADDRESS = address(0x0);
 
@@ -53,23 +53,20 @@ library absn {
         // block number the proposal is proposed
         uint number;
 
-        // voters set
-        set.AddressSet upVoters;
-        set.AddressSet downVoters;
+        // voters map
+        map.AddressBool votes;
     }
 
     function vote(Proposal storage this, bool up) internal {
-        if (up) {
-            this.downVoters.remove(msg.sender);
-            this.upVoters.push(msg.sender);
-        } else {
-            this.upVoters.remove(msg.sender);
-            this.downVoters.push(msg.sender);
-        }
+        this.votes.set(msg.sender, up);
     }
 
     function exists(Proposal storage this) internal view returns (bool) {
         return (this.maker != ZERO_ADDRESS);
+    }
+
+    function clear(Proposal storage this) internal {
+        this.votes.clear();
     }
 
     struct Preemptive {
