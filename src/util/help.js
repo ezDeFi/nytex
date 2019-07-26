@@ -16,7 +16,7 @@ const pad = (num) => {
 }
 
 export function thousands(nStr, decimal = 4) {
-	nStr += '';
+    nStr += '';
 	let x = nStr.split('.');
 	let x1 = x[0];
     let x2 = x.length > 1 ? '.' + x[1] : '';
@@ -26,7 +26,7 @@ export function thousands(nStr, decimal = 4) {
 	let rgx = /(\d+)(\d{3})/;
 	while (rgx.test(x1)) {
 		x1 = x1.replace(rgx, '$1' + ',' + '$2');
-	}
+    }
 	return x1 + x2;
 }
 
@@ -53,7 +53,7 @@ export function intShift(s, d) {
     }
 }
 
-export function decShift(s, d) {
+export function _decShiftPositive(s, d){
     s = s.toString();
     if (d == 0) {
         return s;
@@ -91,6 +91,13 @@ export function decShift(s, d) {
         return '0' + '.' + f;
     }
     return '0';
+}
+
+export function decShift(s, d) {
+    if (s[0] == '-') {
+        return '-' + _decShiftPositive(s.substring(1), d);
+    }
+    return _decShiftPositive(s, d);
 }
 
 export function weiToMNTY(wei) {
