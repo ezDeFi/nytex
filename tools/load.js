@@ -63,17 +63,6 @@ async function getNonce (_address) {
   return await web3.eth.getTransactionCount(_address)
 }
 
-// cap both amount (BN) to fit in bitLength
-function cap (a, b, bitLength) {
-  if (a.bitLength() <= bitLength && b.bitLength() <= bitLength) {
-    return
-  }
-  const toShift = Math.max(a.bitLength(), b.bitLength()) - bitLength;
-  console.log("toShift = ", toShift)
-  a = a.shrn(toShift);
-  b = b.shrn(toShift);
-}
-
 async function trade (nonce, orderType) {
   console.log('new order', orderType)
   const haveToken = orderType === 'sell' ? VolatileToken : StableToken
