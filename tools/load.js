@@ -4,7 +4,8 @@ const SeigniorageData = require('./../build/contracts/Seigniorage.json')
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx')
 const BN = require('bn.js')
-var BigNumber = require('bignumber.js')
+const BigNumber = require('bignumber.js')
+const crypto = require('crypto')
 
 let args = process.argv
 let network = args[2]
@@ -108,13 +109,15 @@ async function trade (nonce, orderType) {
     console.log('capped have', have.toString(), 'capped want', want.toString());
   }
 
+  const index = '0x' + crypto.randomBytes(32).toString('hex');
+
   let rawTransaction = {
     'from': myAddress,
     'gasPrice': web3.utils.toHex(0),
     'gasLimit': web3.utils.toHex(9999999),
     'to': haveToken._address,
     'value': web3.utils.toHex(0),
-    'data': haveToken.methods.trade(have.toString(10), want.toString(10), [0]).encodeABI(),
+    'data': haveToken.methods.trade(index, have.toString(10), want.toString(10), [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
   //console.log(rawTransaction)

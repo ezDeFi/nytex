@@ -2,7 +2,8 @@ import BaseService from '../../model/BaseService'
 import web3 from 'web3'
 import _ from 'lodash'
 
-var BigNumber = require('big-number');
+const BigNumber = require('big-number');
+const crypto = require('crypto');
 
 export default class extends BaseService {
     async loadMyVolatileTokenBalance () {
@@ -28,10 +29,12 @@ export default class extends BaseService {
         const store = this.store.getState()
         let wallet = store.user.wallet
         let _volatileTokenBalance = BigNumber(store.user.volatileTokenBalance)
-        let _toDeposit = _haveAmount.gt(_volatileTokenBalance) ? _haveAmount.subtract(_volatileTokenBalance) : 0
+        //let _toDeposit = _haveAmount.gt(_volatileTokenBalance) ? _haveAmount.subtract(_volatileTokenBalance) : 0
         let methods = store.contracts.volatileToken.methods
         // console.log('sell MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
-        await methods.trade(_haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet, value: _toDeposit.toString()})
+        const index = '0x' + crypto.randomBytes(32).toString('hex');
+        console.log('index = ', index)
+        await methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet/*, value: _toDeposit.toString()*/})
     }
 
     async transfer(_toWallet, _amount) {

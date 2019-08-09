@@ -73,28 +73,30 @@ contract VolatileToken is ERC223 {
 
     // deposit and order (NTY -> MNTY -> USD)
     function depositAndTrade(
-        uint _haveAmount,
-        uint _wantAmount,
-        bytes32 _assistingID
+        bytes32 index,
+        uint haveAmount,
+        uint wantAmount,
+        bytes32 assistingID
     )
         public
         payable
     {
         depositTo(msg.sender);
-        trade(_haveAmount, _wantAmount, _assistingID);
+        trade(index, haveAmount, wantAmount, assistingID);
     }
 
     // create selling order (MNTY -> USD)
     // with verbose data = (wantAmount, assistingID)
     function trade(
-        uint _haveAmount,
-        uint _wantAmount,
-        bytes32 _assistingID
+        bytes32 index,
+        uint haveAmount,
+        uint wantAmount,
+        bytes32 assistingID
     )
         public
     {
-        bytes memory data = abi.encode(_wantAmount, _assistingID);
-        transfer(dex(), _haveAmount, data);
+        bytes memory data = abi.encode(index, wantAmount, assistingID);
+        transfer(dex(), haveAmount, data);
     }
 
     // deposit and propose()
@@ -121,7 +123,7 @@ contract VolatileToken is ERC223 {
     )
         public
     {
-        bytes memory data = abi.encode(amount, slashingDuration, lockdownExpiration);
+        bytes memory data = abi.encode(amount, slashingDuration, lockdownExpiration, bytes32(0));
         transfer(dex(), stake, data);
     }
 }

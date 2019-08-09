@@ -65,26 +65,35 @@ contract Preemptivable is Absorbable {
         bytes calldata data)
         external
     {
-        // if MNTY is received and data contains 3 params
-        if (data.length == 32*3 && msg.sender == address(VolatileToken)) {
+        // if MNTY is received and data contains 4 params
+        if (data.length == 32*4 && msg.sender == address(VolatileToken)) {
             // pre-emptive absorption proposal
             require(!proposals.has(maker), "already has a proposal");
 
             (   int amount,
                 uint slashingDuration,
-                uint lockdownExpiration
-            ) = abi.decode(data, (int, uint, uint));
+                uint lockdownExpiration,
+                bytes32 reserve // reserve params to distinguish proposal and trading request
+            ) = abi.decode(data, (int, uint, uint, bytes32));
+
+            // unused
+            reserve = bytes32(0);
 
             propose(maker, value, amount, slashingDuration, lockdownExpiration);
             return;
         }
 
         // not a pre-emptive proposal, fallback to Orderbook trader order
-        (uint wantAmount, bytes32 assistingID) = (data.length == 32) ?
-            (abi.decode(data, (uint         )), bytes32(0)) :
-            (abi.decode(data, (uint, bytes32))            );
+        bytes32 index;
+        uint wantAmount;
+        bytes32 assistingID;
+        if (data.length == 32*3) {
+            (index, wantAmount, assistingID) = abi.decode(data, (bytes32, uint, bytes32));
+        } else {
+            (index, wantAmount) = abi.decode(data, (bytes32, uint));
+        }
 
-        super.trade(maker, value, wantAmount, assistingID);
+        super.trade(maker, index, value, wantAmount, assistingID);
     }
 
     function onBlockInitialized(uint target) public consensus {

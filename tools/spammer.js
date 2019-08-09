@@ -3,7 +3,8 @@ const StableTokenData = require('./../build/contracts/StableToken.json')
 const SeigniorageData = require('./../build/contracts/Seigniorage.json')
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx')
-var BigNumber = require('bignumber.js')
+const BigNumber = require('bignumber.js')
+const crypto = require('crypto')
 
 let args = process.argv
 let network = args[2]
@@ -112,14 +113,15 @@ async function trade(nonce, _orderType, _haveAmount, _wantAmount) {
     toDeposit = new BigNumber(toDeposit).toFixed(0)
   }
   if (BigNumber(toDeposit).isGreaterThan(0)) myBalance = 0
-  console.log('current balance xxx', myBalance, 'toDeposit', toDeposit)
+  const index = '0x' + crypto.randomBytes(32).toString('hex');
+  console.log('current balance xxx', myBalance, 'toDeposit', toDeposit, 'index', index)
   let rawTransaction = {
     'from': myAddress,
     'gasPrice': web3.utils.toHex(0),
     'gasLimit': web3.utils.toHex(780000),
     'to': contractAddress,
     'value': web3.utils.toHex(toDeposit),
-    'data': methods.trade(_haveAmount, _wantAmount, [0]).encodeABI(),
+    'data': methods.trade(index, _haveAmount, _wantAmount, [0]).encodeABI(),
     'nonce': web3.utils.toHex(nonce)
   }
   console.log(rawTransaction)
