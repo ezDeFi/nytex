@@ -134,6 +134,7 @@ contract Preemptivable is Absorbable {
                 slashingDuration >
                 globalSlashingDuration + globalSlashingDuration / PARAM_TOLERANCE,
                 "slashing duration param too long");
+            proposal.slashingDuration = slashingDuration;
         } else {
             proposal.slashingDuration = globalSlashingDuration;
         }
@@ -143,6 +144,7 @@ contract Preemptivable is Absorbable {
                 lockdownExpiration <
                 globalLockdownExpiration - globalLockdownExpiration / PARAM_TOLERANCE,
                 "lockdown duration param too short");
+            proposal.lockdownExpiration = lockdownExpiration;
         } else {
             proposal.lockdownExpiration = globalLockdownExpiration;
         }
