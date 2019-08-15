@@ -22,6 +22,7 @@ contract Preemptivable is Absorbable {
 
     // adapting global requirement
     uint internal globalSuccessRank = 0;
+    uint internal globalSuccessStake = 0;
 
     // proposal params must not lower than 1/3 of global params
     uint constant PARAM_TOLERANCE = 3;
@@ -123,11 +124,9 @@ contract Preemptivable is Absorbable {
     )
         internal
     {
+        require(stake > globalSuccessStake - globalSuccessStake / PARAM_TOLERANCE, "stake too low");
+
         absn.Proposal memory proposal;
-        proposal.maker = maker;
-        proposal.stake = stake;
-        proposal.amount = amount;
-        proposal.number = block.number;
 
         if (slashingDuration > 0) {
             require(
@@ -149,6 +148,10 @@ contract Preemptivable is Absorbable {
             proposal.lockdownExpiration = globalLockdownExpiration;
         }
 
+        proposal.maker = maker;
+        proposal.stake = stake;
+        proposal.amount = amount;
+        proposal.number = block.number;
         proposals.push(proposal);
     }
 
@@ -187,6 +190,7 @@ contract Preemptivable is Absorbable {
     // adapt the global params to the last winning preemptive
     function adaptParams(absn.Proposal storage proposal, uint rank) internal {
         globalSuccessRank = (globalSuccessRank + rank) >> 1;
+        globalSuccessStake = (globalSuccessStake + proposal.stake) >> 1;
         globalLockdownExpiration = (globalLockdownExpiration + proposal.lockdownExpiration) >> 1;
         globalSlashingDuration = (globalSlashingDuration + proposal.slashingDuration) >> 1;
     }
