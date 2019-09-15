@@ -282,10 +282,10 @@ library dex {
             order.wantAmount = 0;
         }
         book.wantToken.transfer(order.maker, fillableWant);
-        // TODO: emit event for 'partial order filled'
+        // emit PartialFill(id, order.maker, fillableHave, fillableWant);
         if (order.isEmpty()) {
+            // emit RefundRemain(id, order.maker, order.haveAmount);
             book.refund(id);
-            // TODO: emit event for 'remain order rejected'
         }
     }
 
@@ -347,7 +347,7 @@ library dex {
             // accumulate the side-absorb
             totalAMT += useHaveAmount ? haveAMT : wantAMT;
             totalBMT += useHaveAmount ? wantAMT : haveAMT;
-            // TODO: emit event for side-absorption
+            // emit SideFill(initiator, haveAMT, wantAMT);
         }
         // not enough alowance for side absorption
     }
@@ -369,10 +369,10 @@ library dex {
                 // fill the order
                 book.haveToken.dexBurn(order.haveAmount);
                 book.wantToken.dexMint(order.wantAmount);
+                // emit FullFill(id, order.maker);
                 bytes32 next = order.next;
                 book.payout(id);
                 id = next;
-                // TODO: emit event for 'full order filled'
             } else {
                 // partial order fill
                 uint fillableAMT = target.sub(totalAMT);

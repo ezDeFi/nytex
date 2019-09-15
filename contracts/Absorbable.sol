@@ -13,6 +13,11 @@ contract Absorbable is Orderbook {
     using absn for absn.Absorption;
     using absn for absn.Preemptive;
 
+    event Absorption(int256 amount, uint256 supply, bool emptive);
+    event Stop();
+    event Slash(address maker, uint256 amount);
+    event Unlock(address maker);
+
     IToken VolatileToken;
     IToken StablizeToken; // spelling intented
 
@@ -47,7 +52,8 @@ contract Absorbable is Orderbook {
         StablizeToken = IToken(stablizeToken);
         super.registerTokens(volatileToken, stablizeToken);
         // trigger the first blank absorption
-        triggerAbsorption(StablizeToken.totalSupply(), false);
+        uint supply = StablizeToken.totalSupply();
+        triggerAbsorption(supply, supply, false, false);
     }
 
     function toString(address x) internal pure returns (string memory) {
@@ -76,16 +82,17 @@ contract Absorbable is Orderbook {
     function onBlockInitialized(uint target) public consensus {
         if (last.isExpired()) {
             // absorption takes no longer than one duration
-            delete last;
+            stopAbsorption();
         }
         if (lockdown.unlockable()) {
             unlock();
         }
         uint supply = StablizeToken.totalSupply();
         if (target > 0) { // absorption block
-            if (shouldTriggerPassive() ||
-                shouldTriggerActive(supply, target)) {
-                triggerAbsorption(target, false);
+            if (shouldTriggerPassive()) {
+                triggerAbsorption(target, supply, false, false);
+            } else if (shouldTriggerActive(supply, target)) {
+                triggerAbsorption(target, supply, true, false);
             }
             if (lockdown.isLocked()) {
                 // WIP: slash the pre-emptive maker if target goes wrong way
@@ -163,14 +170,22 @@ contract Absorbable is Orderbook {
         if (lockdown.stake > 0) {
             VolatileToken.transfer(lockdown.maker, lockdown.stake);
         }
+        emit Unlock(lockdown.maker);
         delete lockdown;
     }
 
-    function triggerAbsorption(uint target, bool isPreemptive) internal {
+    function triggerAbsorption(uint target, uint supply, bool emptive, bool isPreemptive) internal {
         last = absn.Absorption(block.number + EXPIRATION,
-            StablizeToken.totalSupply(),
+            supply,
             target,
             isPreemptive);
+        int amount = util.sub(target, supply);
+        emit Absorption(amount, supply, emptive);
+    }
+
+    function stopAbsorption() internal {
+        delete last;
+        emit Stop();
     }
 
     function absorb(
@@ -213,11 +228,12 @@ contract Absorbable is Orderbook {
         if (lockdown.stake < slashed) {
             slashed = lockdown.stake;
             // there's nothing at stake anymore, clear the lockdown and its absorption
-            delete last;
+            stopAbsorption();
             unlock();
         }
         lockdown.stake -= slashed;
         VolatileToken.dexBurn(slashed);
+        emit Slash(lockdown.maker, slashed);
         // this slashed NTY will be burnt by the consensus by calling setBalance
         return true;
     }

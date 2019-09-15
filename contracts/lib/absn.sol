@@ -35,20 +35,20 @@ library absn {
         // address of the proposer
         address maker;
 
-        // NTY amount staked for the preemptive proposal
-        uint stake;
-
         // amount of StablizeToken to absorb, positive for inflation, negative for deflation
         int amount;
 
-        // lockdown duration (in blocks from the activation)
-        uint lockdownExpiration;
+        // NTY amount staked for the preemptive proposal
+        uint stake;
 
         // SlashingDuration = 1 / SlashingRate
         // slashed = |d/D|*SlashingRate
         //  d = MedianPriceDeviation
         //  D = X/S, X is the amount of StablizeToken will be absorbed, S is the current NewSD total supply
         uint slashingDuration;
+
+        // lockdown duration (in blocks from the activation)
+        uint lockdownExpiration;
 
         // block number the proposal is proposed
         uint number;
