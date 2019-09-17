@@ -3,7 +3,7 @@ import LoggedInPage from '../LoggedInPage'
 import Footer from '@/module/layout/Footer/Container' // eslint-disable-line
 import Tx from 'ethereumjs-tx' // eslint-disable-line
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { cutString, thousands, weiToMNTY, weiToNUSD, decShift } from '../../../util/help.js'
+import { cutString, thousands, weiToMNTY, weiToNUSD, decShift, mntyToWei, nusdToWei } from '../../../util/help.js'
 import web3 from 'web3'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { DECIMALS } from '@/constant'
@@ -240,13 +240,13 @@ proposalsRender() {
 }
 
 propose() {
-  const stake = web3.utils.toBN(decShift(this.state.stake, DECIMALS.mnty));
-  const amount = web3.utils.toBN(decShift(this.state.amount, DECIMALS.nusd));
-  let slashingDuration = Number(this.state.slashingDuration)
-  let lockdownExpiration = Number(this.state.lockdownExpiration)
-  console.log('***** stake MNTY: ', thousands(stake.toString()))
-  console.log('*** amount NEWSD: ', thousands(amount.toString()))
-  this.props.propose(stake, amount, slashingDuration, lockdownExpiration)
+  const stake = mntyToWei(this.state.stake, DECIMALS.mnty);
+  const amount = nusdToWei(this.state.amount, DECIMALS.nusd);
+  let slashingDuration = this.state.slashingDuration
+  let lockdownExpiration = this.state.lockdownExpiration
+  console.log('***** stake MNTY: ', thousands(weiToMNTY(stake)))
+  console.log('*** amount NEWSD: ', thousands(weiToNUSD(amount)))
+  this.props.propose(amount, stake, slashingDuration, lockdownExpiration)
 }
 
 reload() {

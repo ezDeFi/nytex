@@ -16,12 +16,12 @@ export default class extends BaseService {
         return await _volatileTokenBalance
     }
 
-    async propose(stake, amount, slashingDuration, lockdownExpiration) {
+    async propose(amount, stake, slashingDuration, lockdownExpiration) {
         const store = this.store.getState()
         let wallet = store.user.wallet
         let methods = store.contracts.volatileToken.methods
         // console.log('sell MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
-        await methods.propose(stake.toString(), amount.toString(), slashingDuration, lockdownExpiration).
+        await methods.propose(amount, stake, slashingDuration, lockdownExpiration).
             send({from: wallet, value: 0})
     }
 
