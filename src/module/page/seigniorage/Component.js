@@ -106,7 +106,7 @@ export default class extends LoggedInPage {
               </Col>
               <Col span={12}/>
               <Col span={6}>
-                <Button onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
+                <Button onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
               </Col>
             </Row>
 
@@ -145,7 +145,7 @@ export default class extends LoggedInPage {
               </Col>
               <Col span={12}/>
               <Col span={6}>
-                <Button onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
+                <Button onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
               </Col>
             </Row>
 
