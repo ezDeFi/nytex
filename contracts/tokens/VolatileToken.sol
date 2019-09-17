@@ -101,8 +101,8 @@ contract VolatileToken is ERC223 {
 
     // deposit and propose()
     function depositAndPropose(
-        uint stake,              // staked amount of VolatileToken
         int amount,             // absorption amount of StablizeToken
+        uint stake,             // staked amount of VolatileToken
         uint slashingDuration,
         uint lockdownExpiration
     )
@@ -110,14 +110,14 @@ contract VolatileToken is ERC223 {
         payable
     {
         depositTo(msg.sender);
-        propose(stake, amount, slashingDuration, lockdownExpiration);
+        propose(amount, stake, slashingDuration, lockdownExpiration);
     }
 
     // propose a new pre-emptive absorption
     // with verbose data = (amount, slashingDuration, lockdownExpiration);
     function propose(
-        uint stake,              // staked amount of VolatileToken
         int amount,             // absorption amount of StablizeToken
+        uint stake,             // staked amount of VolatileToken
         uint slashingDuration,
         uint lockdownExpiration
     )
