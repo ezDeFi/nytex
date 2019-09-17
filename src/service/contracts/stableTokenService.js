@@ -19,8 +19,8 @@ export default class extends BaseService {
         const store = this.store.getState()
         let wallet = store.user.wallet
         let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
-        let _toDeposit = _haveAmount.gt(_stableTokenBalance) ? _haveAmount.subtract(_stableTokenBalance) : 0
-        console.log('toDeposit', _toDeposit)
+        // let _toDeposit = _haveAmount.gt(_stableTokenBalance) ? _haveAmount.subtract(_stableTokenBalance) : 0
+        // console.log('toDeposit', _toDeposit)
         let methods = store.contracts.stableToken.methods
         let owner = await methods.owner().call()
         await console.log('owner = ', owner)
@@ -30,12 +30,12 @@ export default class extends BaseService {
         await methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet})
     }
 
-    async transfer(_toWallet, _amount) {
-        const store = this.store.getState()
-        let wallet = store.user.wallet
-        let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
-        let _toDeposit = _amount.gt(_stableTokenBalance) ? _amount.subtract(_stableTokenBalance) : 0
-        let methods = store.contracts.stableToken.methods
-        await methods.transfer(_toWallet, _amount.toString()).send({from: wallet, value: _toDeposit.toString()})
-    }
+    // async transfer(_toWallet, _amount) {
+    //     const store = this.store.getState()
+    //     let wallet = store.user.wallet
+    //     let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
+    //     let _toDeposit = _amount.gt(_stableTokenBalance) ? _amount.subtract(_stableTokenBalance) : 0
+    //     let methods = store.contracts.stableToken.methods
+    //     await methods.transfer(_toWallet, _amount.toString()).send({from: wallet, value: _toDeposit.toString()})
+    // }
 }

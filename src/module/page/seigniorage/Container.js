@@ -51,17 +51,17 @@ export default createContainer(Component, (state) => {
     async cancel(orderType, id) {
       return await seigniorageService.cancel(orderType, id)
     },
-    async transferVolatileToken(toWallet, amount) {
-      return await volatileTokenService.transfer(toWallet, amount)
-    },
-    async transferStableToken(toWallet, amount) {
-      return await stableTokenService.transfer(toWallet, amount)
-    },
     async sellVolatileToken(haveAmount, wantAmount) {
       return await volatileTokenService.trade(haveAmount, wantAmount)
     },
     async sellStableToken(haveAmount, wantAmount) {
       return await stableTokenService.trade(haveAmount, wantAmount)
+    },
+    async deposit(amount) {
+      return await volatileTokenService.deposit(amount)
+    },
+    async withdraw(amount) {
+      return await volatileTokenService.withdraw(amount)
     },
     // TEST
     async reload() {

@@ -1,16 +1,12 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
-import Footer from '@/module/layout/Footer/Container' // eslint-disable-line
-import Tx from 'ethereumjs-tx' // eslint-disable-line
 import { Link } from 'react-router-dom' // eslint-disable-line
-import web3 from 'web3'
-import {CopyToClipboard} from 'react-copy-to-clipboard';
-import { DECIMALS } from '@/constant'
-import { thousands, weiToMNTY, weiToNUSD } from '../../../util/help.js'
-
+import { thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul } from '../../../util/help.js'
+import { DECIMALS, CONTRACTS } from '@/constant'
 import './style.scss'
 
 import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'antd' // eslint-disable-line
+import { util } from 'node-forge'
 
 var BigNumber = require('big-number');
 
@@ -18,6 +14,7 @@ export default class extends LoggedInPage {
   state = {
     data: [],
     copied: false,
+    mnty: 0,
   }
 
   async componentDidMount() {
@@ -35,7 +32,7 @@ export default class extends LoggedInPage {
           <div className="ant-col-md-18 ant-col-md-offset-3 text-alert" style={{ 'textAlign': 'left' }}>
 
             <Row>
-              <Col span={6}>
+              <Col span={4}>
                 Wallet:
               </Col>
               <Col span={6}>
@@ -43,26 +40,51 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
 
-            <Row>
-              <Col span={6}>
-                Balance:
+            <Row style={{ 'marginTop': '15px' }}>
+              <Col span={4}>
+                NTY :
               </Col>
-              <Col span={18}>
-                {thousands(weiToMNTY(this.props.balance))} Million NTY
+
+              <Col span={16}>
+                {thousands(weiToMNTY(this.props.balance))} Million
+              </Col>
+
+              <Col span={4}>
+                <Button
+                  onClick={() => this.deposit()}
+                  className="btn-margin-top submit-button maxWidth">
+                    ⇓ MNTY
+                </Button>
               </Col>
             </Row>
 
             <Row>
-              <Col span={6}>
-                Token:
+              <Col span={4}>
+                MNTY :
               </Col>
-              <Col span={18}>
-                {thousands(weiToMNTY(this.props.volatileTokenBalance))} MNTY
+
+              <Col span={10}>
+                {thousands(weiToMNTY(this.props.volatileTokenBalance))}
+              </Col>
+
+              <Col span={6}>
+                <Input className="maxWidth"
+                  placeholder="0"
+                  defaultValue={0}
+                  value={this.state.mnty}
+                  onChange={this.mntyChange.bind(this)}
+                />
+              </Col>
+              <Col span={4}>
+                <Button onClick={() => this.withdraw()}
+                className="btn-margin-top submit-button maxWidth">
+                  ⇑ NTY
+              </Button>
               </Col>
             </Row>
 
             <Row>
-              <Col span={6}>
+              <Col span={4}>
                 StableCoin:
               </Col>
               <Col span={18}>
@@ -198,41 +220,46 @@ ordersRender(_orderType) {
   </div>)
 }
 
-transferVolatileToken() {
-    let zoom = 1e10
-    let zoomExpo = 10
-    let amount = BigNumber(Math.floor(this.state.transferAmount * zoom))
-    amount = amount.multiply(BigNumber(10).power(DECIMALS.mnty - zoomExpo))
-    this.props.transferVolatileToken(this.state.toWallet, amount)
-}
-
-transferStableToken() {
-    let amount = BigNumber(Math.floor(this.state.transferAmount * zoom))
-    amount = amount.multiply(BigNumber(10).power(DECIMALS.nusd - zoomExpo))
-    this.props.transferStableToken(this.state.toWallet, amount)
-}
-
 sellVolatileToken() {
-    let haveAmount = Number(this.state.amount)
-    let price = Number(this.state.price)
-    let wantAmount = haveAmount * price;
-    console.log(wantAmount);
-    haveAmount = BigNumber(Math.round(haveAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.mnty-6))
-    wantAmount = BigNumber(Math.round(wantAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.nusd-6))
-    console.log('*** have NTY: ', haveAmount.toString().slice(0, 3-DECIMALS.mnty))
-    console.log('*** want USD: ', wantAmount.toString().slice(0, 3-DECIMALS.nusd))
-    this.props.sellVolatileToken(haveAmount, wantAmount)
+    const haveAmount = this.state.amount
+    const price = this.state.price
+    const wantAmount = mul(haveAmount, price);
+    const wantWei = nusdToWei(wantAmount);
+    if (wantWei === '0') {
+      console.error("Want amount too small");
+      return;
+    }
+    const haveWei = mntyToWei(haveAmount);
+    console.log('*** have NTY: ', thousands(haveWei))
+    console.log('*** want USD: ', thousands(wantWei))
+    this.props.sellVolatileToken(haveWei, wantWei)
 }
 
 buyVolatileToken() {
-    let wantAmount = Number(this.state.amount)
-    let price = Number(this.state.price)
-    let haveAmount = wantAmount * price
-    haveAmount = BigNumber(Math.round(haveAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.nusd-6))
-    wantAmount = BigNumber(Math.round(wantAmount * 10 ** 6)).multiply(BigNumber(10).pow(DECIMALS.mnty-6))
-    console.log('*** have USD: ', haveAmount.toString().slice(0, 3-DECIMALS.nusd))
-    console.log('*** want NTY: ', wantAmount.toString().slice(0, 3-DECIMALS.mnty))
-    this.props.sellStableToken(haveAmount, wantAmount)
+    const wantAmount = this.state.amount;
+    const price = this.state.price;
+    const haveAmount = mul(wantAmount, price);
+    const haveWei = nusdToWei(haveAmount);
+    if (haveWei === '0') {
+      console.error("Have amount too small");
+      return;
+    }
+    const wantWei = mntyToWei(wantAmount);
+    console.log('*** have USD: ', thousands(haveWei))
+    console.log('*** want NTY: ', thousands(wantWei))
+    this.props.sellStableToken(haveWei, wantWei)
+}
+
+deposit() {
+  let mnty = this.state.mnty;
+  let wei = mntyToWei(mnty);
+  this.props.deposit(wei)
+}
+
+withdraw() {
+  let mnty = this.state.mnty;
+  let wei = mntyToWei(mnty);
+  this.props.withdraw(wei)
 }
 
 idChange(e) {
@@ -263,5 +290,11 @@ priceChange(e) {
     this.setState({
         price: e.target.value
     })
+}
+
+mntyChange(e) {
+  this.setState({
+    mnty: e.target.value
+  })
 }
 }
