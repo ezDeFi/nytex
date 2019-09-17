@@ -68,17 +68,25 @@ export function _decShiftPositive(s, d){
         if (d < f.length) {
             s += f.substring(0, d);
             f = f.substring(d+1);
+            s = s.replace(/^0+/g, ""); // leading zeros
+            if (s.length == 0) {
+                s = '0';
+            }
             return s + '.' + f;
         }
-        // d > f.length
-        return intShift(s + f, d - f.length);
+        s = intShift(s + f, d - f.length);
+        s = s.replace(/^0+/g, ""); // leading zeros
+        if (s.length == 0) {
+            s = '0';
+        }
+        return s;
     }
     // d < 0
     d = -d
     if (d < s.length) {
         f = s.substring(s.length - d) + f;
         s = s.substring(0, s.length - d);
-        f = f.replace(/0+$/g, "");
+        f = f.replace(/0+$/g, ""); // trailing zeros
         if (f.length > 0) {
             s += '.' + f;
         }
@@ -86,7 +94,7 @@ export function _decShiftPositive(s, d){
     }
     // d > s.length
     f = '0'.repeat(d - s.length) + s + f;
-    f = f.replace(/0+$/g, "");
+    f = f.replace(/0+$/g, ""); // trailing zeros
     if (f.length > 0) {
         return '0' + '.' + f;
     }
@@ -98,6 +106,26 @@ export function decShift(s, d) {
         return '-' + _decShiftPositive(s.substring(1), d);
     }
     return _decShiftPositive(s, d);
+}
+
+// Number => wei string
+export function mntyToWei(mnty) {
+    let s = decShift(mnty, 24);
+    let p = s.indexOf('.');
+    if (p >= 0) {
+        return s.substring(0, p);
+    }
+    return s;
+}
+
+// Number => wei string
+export function nusdToWei(mnty) {
+    let s = decShift(mnty, 6);
+    let p = s.indexOf('.');
+    if (p >= 0) {
+        return s.substring(0, p);
+    }
+    return s;
 }
 
 export function weiToMNTY(wei) {
@@ -130,6 +158,8 @@ function div(a, b) {
     return _div(a, b);
 }
 
+// (BN / BN) => string
+// req: a >= b
 function _div(a, b) {
     const resultBitLen = a.bitLength() - b.bitLength() + 1;
     // zoom the result to BN_MAX_BIT
@@ -145,6 +175,35 @@ function _div(a, b) {
         c /= 1<<toShift
     } else if (toShift < 0) {
         c *= 1<<-toShift
+    }
+    return c;
+}
+
+// find the toShift value of decString s
+function toShift(s) {
+    let p = s.indexOf('.');
+    if (p < 0) {
+        return 0;
+    }
+    return s.length - p;
+}
+
+// decString * decString => BN
+export function mul(a, b) {
+    let pA = toShift(a);
+    if (pA > 0) {
+        a = decShift(a, pA);
+    }
+    let pB = toShift(b);
+    if (pB > 0) {
+        b = decShift(b, pB);
+    }
+    const aa = web3.utils.toBN(a);
+    const bb = web3.utils.toBN(b);
+    let c = aa.mul(bb)
+    const p = pA + pB;
+    if (p > 0) {
+        c = decShift(c, -p);
     }
     return c;
 }
