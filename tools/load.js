@@ -15,9 +15,9 @@ let noo = args[4]
 if (!noo) noo = 30
 let endPoint = network.includes('local') ? 'http://127.0.0.1:8545' : 'http://rpc.testnet.nexty.io:8545'
 const networkId = 111111
-const SeigniorageAddress    = '0x0000000000000000000000000000000000123456'
-const VolatileTokenAddress  = '0x0000000000000000000000000000000001234567'
-const StableTokenAddress    = '0x0000000000000000000000000000000012345678'
+const SeigniorageAddress    = '0x0000000000000000000000000000000000023456'
+const VolatileTokenAddress  = '0x0000000000000000000000000000000000034567'
+const StableTokenAddress    = '0x0000000000000000000000000000000000045678'
 const ConsensusDeploy = process.env.CONDEP
 
 const DECIMALS = {

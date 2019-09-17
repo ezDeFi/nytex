@@ -3,9 +3,9 @@ import StableToken from './../build/contracts/StableToken.json'
 import Seigniorage from './../build/contracts/Seigniorage.json'
 
 const NetId = '111111'
-const SeigniorageAddress    = '0x0000000000000000000000000000000000123456'
-const VolatileTokenAddress  = '0x0000000000000000000000000000000001234567'
-const StableTokenAddress    = '0x0000000000000000000000000000000012345678'
+const SeigniorageAddress    = '0x0000000000000000000000000000000000023456'
+const VolatileTokenAddress  = '0x0000000000000000000000000000000000034567'
+const StableTokenAddress    = '0x0000000000000000000000000000000000045678'
 const ConsensusDeploy = true
 
 export const USER_ROLE = {
