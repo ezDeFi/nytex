@@ -185,7 +185,7 @@ ordersRender(_orderType) {
           key: 'action',
           render: (text, record) => (
             <span>
-              {record.id &&
+              {record.maker.substring(0, 5) === this.props.wallet.substring(0, 5) &&
                 <Button
                   onClick={() => this.props.cancel(_orderType, record.id)}
                   className="btn-margin-top submit-button maxWidth">
