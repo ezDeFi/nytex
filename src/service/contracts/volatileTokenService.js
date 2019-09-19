@@ -11,6 +11,8 @@ export default class extends BaseService {
         const store = this.store.getState()
         let methods = store.contracts.volatileToken.methods
         let wallet = store.user.wallet
+        const inflated = await methods.totalInflated().call()
+        this.dispatch(userRedux.actions.inflated_update(inflated))
         let _volatileTokenBalance = await methods.balanceOf(wallet).call()
         await this.dispatch(userRedux.actions.volatileTokenBalance_update(_volatileTokenBalance))
         return await _volatileTokenBalance

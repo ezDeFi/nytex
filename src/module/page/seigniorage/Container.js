@@ -40,6 +40,7 @@ export default createContainer(Component, (state) => {
     stableTokenBalance: state.user.stableTokenBalance,
     bids: state.seigniorage.bids,
     asks: state.seigniorage.asks,
+    inflated: state.user.inflated,
   }
 }, () => {
   const userService = new UserService()

@@ -95,6 +95,18 @@ export default class extends LoggedInPage {
             <div className="ebp-header-divider dashboard-rate-margin">
             </div>
 
+            <Row>
+              <Col span={4}>
+                Inflated:
+              </Col>
+              <Col span={18}>
+                {thousands(weiToMNTY(this.props.inflated))} MNTY
+              </Col>
+            </Row>
+
+            <div className="ebp-header-divider dashboard-rate-margin">
+            </div>
+
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={24}>
                 {this.ordersRender(false)}

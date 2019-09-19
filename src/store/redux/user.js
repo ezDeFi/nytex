@@ -21,6 +21,7 @@ class UserRedux extends BaseRedux {
       balance: 0,
       volatileTokenBalance: 0,
       stableTokenBalance: 0,
+      inflated: 0,
       loginMetamask: true
     }
   }

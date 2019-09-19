@@ -13,6 +13,10 @@ contract VolatileToken is ERC223 {
     string public constant name = "Mega NTY";
     uint public constant decimals = 24;
 
+    // track the amount of token has been inflated, negative for deflation
+    // only use for report, so ignore any overflow
+    int inflated;
+
     constructor (
         address orderbook,      // mandatory
         address prefundAddress, // optional
@@ -24,6 +28,32 @@ contract VolatileToken is ERC223 {
             _mint(prefundAddress, prefundAmount * 10**decimals);
         }
         initialize(orderbook);
+    }
+
+    // override ERC223.dexMint
+    function dexMint(uint _amount)
+        public
+        onlyOwner
+    {
+        _mint(owner(), _amount);
+        inflated += int(_amount);
+    }
+
+    // override ERC223.dexBurn
+    function dexBurn(uint _amount)
+        public
+        onlyOwner
+    {
+        _burn(owner(), _amount);
+        inflated -= int(_amount);
+    }
+
+    function totalInflated()
+        external
+        view
+        returns(int)
+    {
+        return inflated;
     }
 
     // deposit (MNTY <- NTY)
