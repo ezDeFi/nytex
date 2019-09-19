@@ -14,16 +14,16 @@ contract Preemptivable is Absorbable {
     using absn for absn.Proposal;
     using absn for absn.Preemptive;
 
-    event Revoke(address maker);
+    event Revoke(address indexed maker);
     event Propose(
-        address maker,
+        address indexed maker,
         int256 amount,
         uint256 stake,
         uint256 lockdownExpiration,
         uint256 slashingDuration
     );
     event Preemptive(
-        address maker,
+        address indexed maker,
         uint256 stake,
         uint256 lockdownExpiration,
         uint256 unlockNumber

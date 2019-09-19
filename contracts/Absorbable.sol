@@ -15,8 +15,8 @@ contract Absorbable is Orderbook {
 
     event Absorption(int256 amount, uint256 supply, bool emptive);
     event Stop();
-    event Slash(address maker, uint256 amount);
-    event Unlock(address maker);
+    event Slash(address indexed maker, uint256 amount);
+    event Unlock(address indexed maker);
 
     IToken VolatileToken;
     IToken StablizeToken; // spelling intented
