@@ -349,7 +349,7 @@ library dex {
             totalBMT += useHaveAmount ? wantAMT : haveAMT;
             // emit SideFill(initiator, haveAMT, wantAMT);
         }
-        // not enough alowance for side absorption
+        // not enough allowance for side absorption
     }
 
     function absorb(
@@ -396,34 +396,34 @@ library dex {
 
     // amountToAbsorb calculates the amount will be absorbed by absorb()
     // always be updated with absorb() logic
-    function amountToAbsorb(
-        Book storage book,
-        bool useHaveAmount,
-        uint target
-    )
-        internal
-        view
-        returns(uint totalBMT, uint totalAMT)
-    {
-        bytes32 id = book.topID();
-        while(id != LAST_ID && totalAMT < target) {
-            dex.Order storage order = book.orders[id];
-            uint amt = useHaveAmount ? order.haveAmount : order.wantAmount;
-            uint bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
-            if (totalAMT.add(amt) <= target) {
-                id = order.next;
-            } else {
-                // partial order fill
-                uint fillableAMT = target.sub(totalAMT);
-                bmt = bmt * fillableAMT / amt;
-                amt = fillableAMT;
-                // extra step to make sure the loop will stop after this
-                id = LAST_ID;
-            }
-            totalAMT = totalAMT.add(amt);
-            totalBMT = totalBMT.add(bmt);
-        }
-        // not enough order, return all we have
-        return (totalBMT, totalAMT);
-    }
+    // function amountToAbsorb(
+    //     Book storage book,
+    //     bool useHaveAmount,
+    //     uint target
+    // )
+    //     internal
+    //     view
+    //     returns(uint totalBMT, uint totalAMT)
+    // {
+    //     bytes32 id = book.topID();
+    //     while(id != LAST_ID && totalAMT < target) {
+    //         dex.Order storage order = book.orders[id];
+    //         uint amt = useHaveAmount ? order.haveAmount : order.wantAmount;
+    //         uint bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
+    //         if (totalAMT.add(amt) <= target) {
+    //             id = order.next;
+    //         } else {
+    //             // partial order fill
+    //             uint fillableAMT = target.sub(totalAMT);
+    //             bmt = bmt * fillableAMT / amt;
+    //             amt = fillableAMT;
+    //             // extra step to make sure the loop will stop after this
+    //             id = LAST_ID;
+    //         }
+    //         totalAMT = totalAMT.add(amt);
+    //         totalBMT = totalBMT.add(bmt);
+    //     }
+    //     // not enough order, return all we have
+    //     return (totalBMT, totalAMT);
+    // }
 }

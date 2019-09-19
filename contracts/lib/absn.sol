@@ -42,9 +42,7 @@ library absn {
         uint stake;
 
         // SlashingDuration = 1 / SlashingRate
-        // slashed = |d/D|*SlashingRate
-        //  d = MedianPriceDeviation
-        //  D = X/S, X is the amount of StablizeToken will be absorbed, S is the current NewSD total supply
+        // slashed = -Diviation/Amount / SlashingDuration
         uint slashingDuration;
 
         // lockdown duration (in blocks from the activation)

@@ -139,13 +139,13 @@ contract Preemptivable is Absorbable {
     )
         internal
     {
-        require(stake > globalSuccessStake - globalSuccessStake / PARAM_TOLERANCE, "stake too low");
+        require(stake >= globalSuccessStake - globalSuccessStake / PARAM_TOLERANCE, "stake too low");
 
         absn.Proposal memory proposal;
 
         if (slashingDuration > 0) {
             require(
-                slashingDuration >
+                slashingDuration <=
                 globalSlashingDuration + globalSlashingDuration / PARAM_TOLERANCE,
                 "slashing duration param too long");
             proposal.slashingDuration = slashingDuration;
@@ -155,7 +155,7 @@ contract Preemptivable is Absorbable {
 
         if (lockdownExpiration > 0) {
             require(
-                lockdownExpiration <
+                lockdownExpiration >=
                 globalLockdownExpiration - globalLockdownExpiration / PARAM_TOLERANCE,
                 "lockdown duration param too short");
             proposal.lockdownExpiration = lockdownExpiration;
@@ -268,7 +268,7 @@ contract Preemptivable is Absorbable {
 
     // expensive calculation, only consensus can affort this
     function winningProposal() internal view returns(address, uint) {
-        int globalRequirement = int(globalSuccessRank - (globalSuccessRank / PARAM_TOLERANCE));
+        int globalRequirement = int(globalSuccessRank - globalSuccessRank / PARAM_TOLERANCE);
         int bestRank = 0;
         address bestMaker = ZERO_ADDRESS;
         for (uint i = 0; i < proposals.count(); ++i) {
