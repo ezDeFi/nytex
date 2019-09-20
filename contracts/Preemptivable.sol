@@ -248,7 +248,7 @@ contract Preemptivable is Absorbable {
         if (voteCount <= 0) {
             return 0;
         }
-        return int(proposal.stake) * countVote(proposal);
+        return util.mulCap(voteCount, int(proposal.stake));
     }
 
     // expensive calculation, only consensus can affort this
