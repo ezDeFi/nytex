@@ -55,8 +55,8 @@ const CONTRACTS =
 var web3 = new Web3(new Web3.providers.HttpProvider(endPoint))
 var VolatileToken = new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address)
 var StableToken = new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address)
-var myAddress = '0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d';
-var privateKey = Buffer.from('a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a5', 'hex')
+var myAddress = '0xd638dc353687169d117df1933ba93fcc1ff42834';
+var privateKey = Buffer.from('4c668fce6f03044f74ccd256b837a485a809562a55947abdfcb934d8cf8fe631', 'hex')
 
 var myBalance
 

@@ -50,8 +50,8 @@ const Seigniorage = new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.S
 
 // use Truffle address as prefund
 let PREFUND = {
-  address: '0x95e2fcBa1EB33dc4b8c6DCBfCC6352f0a253285d',
-  key: Buffer.from('a0cf475a29e527dcb1c35f66f1d78852b14d5f5109f75fa4b38fbe46db2022a5', 'hex'),
+  address: '71e2ecb267a79fa7d026559aba3a10ee569f4176',
+  key: Buffer.from('0f2e668a2374c2e19e55520ce65a5f95b3597fd08013fd35bc2de23a917d2ba0', 'hex'),
 };
 
 let FAUCET = {

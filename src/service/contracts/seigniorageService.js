@@ -43,6 +43,14 @@ export default class extends BaseService {
         const store = this.store.getState()
         let wallet = store.user.wallet
         let methods = store.contracts.seigniorage.methods
+        store.contracts.seigniorage.events.Revoke({
+            filter: {
+                maker: wallet,
+            },
+            fromBlock: 0,
+        }, function(error, event) {
+            console.log(event);
+        })
         await methods.revoke(maker).send({from: wallet})
     }
 
@@ -103,6 +111,7 @@ export default class extends BaseService {
                 continue;
             }
             let res = await methods.getOrder(orderType, id).call();
+            // console.log(res);
             let mnty = res[orderType ? 2 : 1];
             let nusd = res[orderType ? 1 : 2];
             const order = {
@@ -112,6 +121,7 @@ export default class extends BaseService {
                 'amount': thousands(weiToMNTY(mnty)),
                 'price': thousands(weiToPrice(mnty, nusd)),
             };
+            // console.log(order);
             if (orderType) {
                 this.dispatch(seigniorageRedux.actions.bids_update({[i]: order}));
             } else {

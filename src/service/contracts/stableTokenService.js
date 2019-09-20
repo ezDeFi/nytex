@@ -18,7 +18,7 @@ export default class extends BaseService {
     async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
         let wallet = store.user.wallet
-        let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
+        // let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
         // let _toDeposit = _haveAmount.gt(_stableTokenBalance) ? _haveAmount.subtract(_stableTokenBalance) : 0
         // console.log('toDeposit', _toDeposit)
         let methods = store.contracts.stableToken.methods
