@@ -103,11 +103,11 @@ contract Orderbook {
         public
         view
         returns (
-            address,
-            uint,
-            uint,
-            bytes32,
-            bytes32
+            address maker,
+            uint have,
+            uint want,
+            bytes32 prevID,
+            bytes32 nextID
         )
     {
         dex.Book storage book = books[_orderType];
