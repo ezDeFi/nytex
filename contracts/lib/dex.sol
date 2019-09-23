@@ -1,6 +1,5 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../interfaces/IToken.sol";
 
 /**
@@ -10,8 +9,6 @@ import "../interfaces/IToken.sol";
  * volatile nature of the token must put in the contract level.
  */
 library dex {
-    using SafeMath for uint;
-
     bytes32 constant ZERO_ID = bytes32(0x0);
     bytes32 constant LAST_ID = bytes32(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
     address constant ZERO_ADDRESS = address(0x0);
@@ -247,9 +244,11 @@ library dex {
         if (order.wantAmount > 0) {
             book.wantToken.transfer(order.maker, order.wantAmount);
         }
+        order.wantAmount = 0;
+        order.haveAmount = 0;
     }
 
-    function payoutAndRemove(
+    function payout(
         Book storage book,
         bytes32 id
     )
@@ -271,9 +270,11 @@ library dex {
         if (order.haveAmount > 0) {
             book.haveToken.transfer(order.maker, order.haveAmount);
         }
+        order.haveAmount = 0;
+        order.wantAmount = 0;
     }
 
-    function refundAndRemove(
+    function refund(
         Book storage book,
         bytes32 id
     )
@@ -288,6 +289,21 @@ library dex {
 
     function payoutPartial(
         Book storage book,
+        Order memory order,
+        uint fillableHave,
+        uint fillableWant
+    )
+        internal
+    {
+        require (fillableHave <= order.haveAmount, "PP: fillable > have");
+        require (fillableWant <= order.wantAmount, "PP: fillable > want");
+        order.haveAmount -= fillableHave; // safe
+        order.wantAmount -= fillableWant; // safe
+        book.wantToken.transfer(order.maker, fillableWant);
+    }
+
+    function payoutPartial(
+        Book storage book,
         bytes32 id,
         uint fillableHave,
         uint fillableWant
@@ -295,37 +311,14 @@ library dex {
         internal
     {
         Order storage order = book.orders[id];
-        require(order.exists(), "order not exist");
-        require(fillableHave <= order.haveAmount, "fill more than have amount");
+        require (fillableHave <= order.haveAmount, "PP: fillable > have");
+        require (fillableWant <= order.wantAmount, "PP: fillable > want");
         order.haveAmount -= fillableHave; // safe
-        if (order.wantAmount <= fillableWant) {
-            book.payoutAndRemove(id);
-            return;
-        }
-        book.wantToken.transfer(order.maker, fillableWant);
         order.wantAmount -= fillableWant; // safe
-        if (order.haveAmount == 0) {
-            book._remove(id);
-        }
-    }
-
-    function payoutPartial(
-        Book storage book,
-        Order memory order,
-        uint fillableHave,
-        uint fillableWant
-    )
-        internal
-    {
-        require(fillableHave <= order.haveAmount, "fill more than have amount");
-        order.haveAmount -= fillableHave; // safe
-        if (fillableWant >= order.wantAmount) {
-            book.wantToken.transfer(order.maker, order.wantAmount);
-            order.wantAmount = 0;
-            return;
-        }
         book.wantToken.transfer(order.maker, fillableWant);
-        order.wantAmount -= fillableWant; // safe
+        if (order.isEmpty()) {
+            book.refund(id);
+        }
     }
 
     function fill(
@@ -347,26 +340,18 @@ library dex {
             }
             if (order.wantAmount < redro.haveAmount) {
                 uint fillable = order.wantAmount * redro.wantAmount / redro.haveAmount;
-                require(fillable <= redro.wantAmount, "fillable > redro want");
-                require(fillable <= order.haveAmount, "fillable > order have");
                 // partially payout the redro
-                redro.wantAmount -= fillable;
-                redro.haveAmount -= order.wantAmount;
-                redroBook.wantToken.transfer(redro.maker, fillable);
+                redroBook.payoutPartial(redroID, order.wantAmount, fillable);
                 // fully spent the order and stop
-                orderBook.wantToken.transfer(order.maker, order.wantAmount);
-                order.wantAmount = 0;
-                order.haveAmount -= fillable;
+                orderBook.payoutPartial(order, fillable, order.wantAmount);
                 break;
             }
-            // partially payout order and fully payout redro
-            order.wantAmount -= redro.haveAmount;
-            order.haveAmount -= redro.wantAmount;
-            orderBook.wantToken.transfer(order.maker, redro.haveAmount);
-            redroBook.wantToken.transfer(redro.maker, redro.wantAmount);
-            bytes32 next = redro.next;
-            redroBook._remove(redroID);
-            redroID = next;
+            // partially payout order
+            orderBook.payoutPartial(order, redro.wantAmount, redro.haveAmount);
+            // fully payout redro
+            redroBook.payout(redroID);
+            // next order
+            redroID = redroBook.topID();
         }
     }
 
@@ -407,33 +392,38 @@ library dex {
     {
         bytes32 id = book.topID();
         while(id != LAST_ID && totalAMT < target) {
-            dex.Order storage order = book.orders[id];
+            Order storage order = book.orders[id];
             uint amt = useHaveAmount ? order.haveAmount : order.wantAmount;
             uint bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
-            if (totalAMT.add(amt) <= target) {
+            uint fillableAMT = target - totalAMT; // safe
+            if (amt <= fillableAMT) {
                 // fill the order
                 book.haveToken.dexBurn(order.haveAmount);
                 book.wantToken.dexMint(order.wantAmount);
                 // emit FullFill(id, order.maker);
                 bytes32 next = order.next;
-                book.payoutAndRemove(id);
+                book.payout(id);
                 id = next;
             } else {
                 // partial order fill
-                uint fillableAMT = target.sub(totalAMT);
                 bmt = bmt * fillableAMT / amt;
                 amt = fillableAMT;
+                if (totalBMT + bmt < totalBMT) {
+                    // overflow: stop the absorption prematurely
+                    return (totalBMT, totalAMT);
+                }
                 uint fillableHave = useHaveAmount ? amt : bmt;
                 uint fillableWant = useHaveAmount ? bmt : amt;
                 // fill the partial order
                 book.haveToken.dexBurn(fillableHave);
                 book.wantToken.dexMint(fillableWant);
+                // emit PartialFill(id, order.maker);
                 book.payoutPartial(id, fillableHave, fillableWant);
                 // extra step to make sure the loop will stop after this
                 id = LAST_ID;
             }
-            totalAMT = totalAMT.add(amt);
-            totalBMT = totalBMT.add(bmt);
+            totalBMT += bmt; // safe
+            totalAMT += amt; // safe
         }
         // not enough order, return all we have
         return (totalBMT, totalAMT);

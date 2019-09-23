@@ -1,7 +1,5 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/math/Math.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./lib/map.sol";
 import "./lib/dex.sol";
 import "./lib/absn.sol";
@@ -10,7 +8,6 @@ import "./lib/absn.sol";
  * Contract code for Volatile/Stablize exchange
  */
 contract Orderbook {
-    using SafeMath for uint;
     using dex for dex.Order;
     using dex for dex.Book;
 
@@ -176,6 +173,6 @@ contract Orderbook {
         dex.Book storage book = books[orderType];
         dex.Order storage order = book.orders[id];
         require(msg.sender == order.maker, "only order maker");
-        book.refundAndRemove(id);
+        book.refund(id);
     }
 }
