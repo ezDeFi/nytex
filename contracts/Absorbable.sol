@@ -177,4 +177,20 @@ contract Absorbable is Orderbook {
         }
         return book.absorb(useHaveAmount, util.abs(stableTokenAmount));
     }
+
+    /// MUST BE REMOVED ///
+    function testAbsorb(
+        int stableTokenAmount,
+        address initiator
+    )
+        external
+        returns(uint totalVOL, uint totalSTB)
+    {
+        dex.Book storage book = books[stableTokenAmount > 0 ? Ask : Bid];
+        bool useHaveAmount = book.haveToken == StablizeToken;
+        if (initiator != address(0x0)) {
+            return book.absorbPreemptive(useHaveAmount, util.abs(stableTokenAmount), initiator);
+        }
+        return book.absorb(useHaveAmount, util.abs(stableTokenAmount));
+    }
 }
