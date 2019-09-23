@@ -47,7 +47,7 @@ library dex {
         return order.maker != ZERO_ADDRESS;
     }
 
-    function isEmpty(Order storage order) internal view returns(bool)
+    function isEmpty(Order memory order) internal pure returns(bool)
     {
         return order.haveAmount == 0 || order.wantAmount == 0;
     }
@@ -122,24 +122,24 @@ library dex {
     }
 
     function createOrder(
-        Book storage book,
         address maker,
         bytes32 index,
         uint haveAmount,
         uint wantAmount
     )
         internal
-        returns (bytes32)
+        pure
+        returns (bytes32 id, Order memory order)
     {
         // TODO move require check to API
         require(haveAmount > 0 && wantAmount > 0, "zero input");
         require(haveAmount < INPUTS_MAX && wantAmount < INPUTS_MAX, "input over limit");
-        bytes32 id = _calcID(maker, index);
-        Order storage order = book.orders[id];
-        require(!order.exists(), "order index exists");
+        id = _calcID(maker, index);
+        // Order storage order = book.orders[id];
+        // require(!order.exists(), "order index exists");
         // create new order
-        book.orders[id] = Order(maker, haveAmount, wantAmount, 0, 0);
-        return id;
+        order = Order(maker, haveAmount, wantAmount, 0, 0);
+        return (id, order);
     }
 
     // insert [id] as [prev].next
@@ -209,16 +209,16 @@ library dex {
     // place the new order into its correct position
     function place(
         Book storage book,
-        bytes32 newID,
+        bytes32 id,
+        Order memory order,
         bytes32 assistingID
     )
         internal
- 	    returns (bytes32)
     {
-        Order storage newOrder = book.orders[newID];
-        bytes32 id = book.find(newOrder, assistingID);
-        book.insertAfter(newID, id);
-        return id;
+        require(!book.orders[id].exists(), "order index exists");
+        book.orders[id] = order;
+        bytes32 prev = book.m_find(order, assistingID);
+        book.insertAfter(id, prev);
     }
 
     // NOTE: this function does not payout nor refund
@@ -240,24 +240,48 @@ library dex {
 
     function payout(
         Book storage book,
+        Order memory order
+    )
+        internal
+    {
+        if (order.wantAmount > 0) {
+            book.wantToken.transfer(order.maker, order.wantAmount);
+        }
+    }
+
+    function payoutAndRemove(
+        Book storage book,
         bytes32 id
     )
         internal
     {
-        if (book.orders[id].wantAmount > 0) {
-            book.wantToken.transfer(book.orders[id].maker, book.orders[id].wantAmount);
+        Order memory order = book.orders[id];
+        if (order.wantAmount > 0) {
+            book.wantToken.transfer(order.maker, order.wantAmount);
         }
         book._remove(id);
     }
 
     function refund(
         Book storage book,
+        Order memory order
+    )
+        internal
+    {
+        if (order.haveAmount > 0) {
+            book.haveToken.transfer(order.maker, order.haveAmount);
+        }
+    }
+
+    function refundAndRemove(
+        Book storage book,
         bytes32 id
     )
         internal
     {
-        if (book.orders[id].haveAmount > 0) {
-            book.haveToken.transfer(book.orders[id].maker, book.orders[id].haveAmount);
+        Order memory order = book.orders[id];
+        if (order.haveAmount > 0) {
+            book.haveToken.transfer(order.maker, order.haveAmount);
         }
         book._remove(id);
     }
@@ -273,31 +297,44 @@ library dex {
         Order storage order = book.orders[id];
         require(order.exists(), "order not exist");
         require(fillableHave <= order.haveAmount, "fill more than have amount");
-        order.haveAmount = order.haveAmount.sub(fillableHave);
-        if (fillableWant < order.wantAmount) {
-            // no need for SafeMath here
-            order.wantAmount -= fillableWant;
-        } else {
-            // possibly profit from price diffirent
-            order.wantAmount = 0;
+        order.haveAmount -= fillableHave; // safe
+        if (order.wantAmount <= fillableWant) {
+            book.payoutAndRemove(id);
+            return;
         }
         book.wantToken.transfer(order.maker, fillableWant);
-        // emit PartialFill(id, order.maker, fillableHave, fillableWant);
-        if (order.isEmpty()) {
-            // emit RefundRemain(id, order.maker, order.haveAmount);
-            book.refund(id);
+        order.wantAmount -= fillableWant; // safe
+        if (order.haveAmount == 0) {
+            book._remove(id);
         }
+    }
+
+    function payoutPartial(
+        Book storage book,
+        Order memory order,
+        uint fillableHave,
+        uint fillableWant
+    )
+        internal
+    {
+        require(fillableHave <= order.haveAmount, "fill more than have amount");
+        order.haveAmount -= fillableHave; // safe
+        if (fillableWant >= order.wantAmount) {
+            book.wantToken.transfer(order.maker, order.wantAmount);
+            order.wantAmount = 0;
+            return;
+        }
+        book.wantToken.transfer(order.maker, fillableWant);
+        order.wantAmount -= fillableWant; // safe
     }
 
     function fill(
         Book storage orderBook,
-        bytes32 orderID,
+        Order memory order,
         Book storage redroBook
     )
         internal
-        returns (bytes32 nextID)
     {
-        Order storage order = orderBook.orders[orderID];
         bytes32 redroID = redroBook.topID();
 
         while (redroID != LAST_ID) {
@@ -308,21 +345,29 @@ library dex {
             if (!order.fillableBy(redro)) {
                 break;
             }
-            if (order.haveAmount < redro.wantAmount) {
-                uint fillable = order.haveAmount * redro.haveAmount / redro.wantAmount;
-                require(fillable <= redro.haveAmount, "fillable > have");
-                // partially payout the redro and stop
-                redroBook.payoutPartial(redroID, fillable, order.haveAmount);
-                orderBook.payoutPartial(orderID, order.haveAmount, fillable);
+            if (order.wantAmount < redro.haveAmount) {
+                uint fillable = order.wantAmount * redro.wantAmount / redro.haveAmount;
+                require(fillable <= redro.wantAmount, "fillable > redro want");
+                require(fillable <= order.haveAmount, "fillable > order have");
+                // partially payout the redro
+                redro.wantAmount -= fillable;
+                redro.haveAmount -= order.wantAmount;
+                redroBook.wantToken.transfer(redro.maker, fillable);
+                // fully spent the order and stop
+                orderBook.wantToken.transfer(order.maker, order.wantAmount);
+                order.wantAmount = 0;
+                order.haveAmount -= fillable;
                 break;
             }
-            // fully payout the redro
-            orderBook.payoutPartial(orderID, redro.wantAmount, redro.haveAmount);
+            // partially payout order and fully payout redro
+            order.wantAmount -= redro.haveAmount;
+            order.haveAmount -= redro.wantAmount;
+            orderBook.wantToken.transfer(order.maker, redro.haveAmount);
+            redroBook.wantToken.transfer(redro.maker, redro.wantAmount);
             bytes32 next = redro.next;
-            redroBook.payout(redroID);
+            redroBook._remove(redroID);
             redroID = next;
         }
-        return redroID;
     }
 
     // absorb and duplicate the effect to initiator
@@ -371,7 +416,7 @@ library dex {
                 book.wantToken.dexMint(order.wantAmount);
                 // emit FullFill(id, order.maker);
                 bytes32 next = order.next;
-                book.payout(id);
+                book.payoutAndRemove(id);
                 id = next;
             } else {
                 // partial order fill

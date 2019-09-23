@@ -39,12 +39,14 @@ contract Orderbook {
     )
         internal
     {
-        // TODO: get order type from ripem160(haveToken)[:16] + ripem160(wantToken)[:16]
+        (bytes32 id, dex.Order memory order) = dex.createOrder(maker, index, haveAmount, wantAmount);
         dex.Book storage book = bookHave(msg.sender);
-
-        bytes32 newID = book.createOrder(maker, index, haveAmount, wantAmount);
-        book.place(newID, assistingID);
-        book.fill(newID, bookWant(msg.sender));
+        book.fill(order, bookWant(msg.sender));
+        if (order.isEmpty()) {
+            book.refund(order);
+        } else {
+            book.place(id, order, assistingID);
+        }
     }
 
     // iterator
@@ -174,6 +176,6 @@ contract Orderbook {
         dex.Book storage book = books[orderType];
         dex.Order storage order = book.orders[id];
         require(msg.sender == order.maker, "only order maker");
-        book.refund(id);
+        book.refundAndRemove(id);
     }
 }
