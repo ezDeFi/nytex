@@ -131,6 +131,14 @@ export default class extends BaseService {
         }
     }
 
+    async absorb(amount) {
+        const store = this.store.getState()
+        const wallet = store.user.wallet
+        const methods = store.contracts.seigniorage.methods
+        const zeroAddress = "0x0000000000000000000000000000000000000000"
+        await methods.testAbsorb(amount, zeroAddress).send({from: wallet})
+    }
+
     async reload() {
         this.loadOrders(true)
         this.loadOrders(false)

@@ -13,8 +13,6 @@ var BigNumber = require('big-number');
 export default class extends LoggedInPage {
   state = {
     data: [],
-    copied: false,
-    mnty: 0,
   }
 
   async componentDidMount() {
@@ -63,13 +61,13 @@ export default class extends LoggedInPage {
                 MNTY :
               </Col>
 
-              <Col span={10}>
+              <Col span={8}>
                 {thousands(weiToMNTY(this.props.volatileTokenBalance))}
               </Col>
 
-              <Col span={6}>
+              <Col span={8}>
                 <Input className="maxWidth"
-                  placeholder="0"
+                  placeholder="MNTY to convert"
                   defaultValue={0}
                   value={this.state.mnty}
                   onChange={this.mntyChange.bind(this)}
@@ -77,9 +75,9 @@ export default class extends LoggedInPage {
               </Col>
               <Col span={4}>
                 <Button onClick={() => this.withdraw()}
-                className="btn-margin-top submit-button maxWidth">
-                  ⇑ NTY
-              </Button>
+                  className="btn-margin-top submit-button maxWidth">
+                    ⇑ NTY
+                </Button>
               </Col>
             </Row>
 
@@ -117,10 +115,10 @@ export default class extends LoggedInPage {
               <Col span={6}>
                 Exchange:
               </Col>
-              <Col span={12}>
+              <Col span={14}>
                 {thousands(weiToMNTY(this.props.exVol))} MNTY + {thousands(weiToNUSD(this.props.exStb))} NewSD
               </Col>
-              <Col span={6}>
+              <Col span={4}>
                 <Button onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
               </Col>
             </Row>
@@ -130,36 +128,50 @@ export default class extends LoggedInPage {
                 MNTY:
               </Col>
               <Col span={1}/>
-              <Col span={5}>
+              <Col span={8}>
                 <Input className="maxWidth"
+                  placeholder="Amount"
                   defaultValue={0}
                   value={this.state.amount}
                   onChange={this.amountChange.bind(this)}
                 />
               </Col>
-              <Col span={1}/>
+              <Col span={2}/>
               <Col span={2}>
                 Price:
               </Col>
               <Col span={1}/>
-              <Col span={5}>
+              <Col span={8}>
                 <Input className="maxWidth"
+                  placeholder="MNTY/NewSD"
                   defaultValue={0}
                   value={this.state.price}
                   onChange={this.priceChange.bind(this)}
                 />
               </Col>
-              <Col span={6}>
-                NEWSD/MNTY
-              </Col>
             </Row>
 
             <Row style={{ 'marginTop': '10px' }}>
-              <Col span={6}>
-                <Button onClick={() => this.props.reload()} className="btn-margin-top submit-button maxWidth">Reload</Button>
+              <Col span={5}>
+                <Button onClick={() => this.props.reload()} className="btn-margin-top submit-button maxWidth">RELOAD</Button>
               </Col>
-              <Col span={12}/>
-              <Col span={6}>
+              <Col span={1}/>
+              <Col span={7}>
+                <Input className="maxWidth"
+                  placeholder="NewSD to absorb"
+                  defaultValue={0}
+                  value={this.state.absorption}
+                  onChange={this.absorptionChange.bind(this)}
+                />
+              </Col>
+              <Col span={5}>
+                <Button onClick={() => this.absorb()}
+                  className="btn-margin-top submit-button maxWidth">
+                    ABSORB
+                </Button>
+              </Col>
+              <Col span={2}/>
+              <Col span={4}>
                 <Button onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
               </Col>
             </Row>
@@ -277,6 +289,12 @@ withdraw() {
   this.props.withdraw(wei)
 }
 
+absorb() {
+  const amount = this.state.absorption;
+  const wei = nusdToWei(amount);
+  this.props.absorb(wei);
+}
+
 idChange(e) {
     this.setState({
         id: e.target.value
@@ -312,4 +330,11 @@ mntyChange(e) {
     mnty: e.target.value
   })
 }
+
+absorptionChange(e) {
+  this.setState({
+    absorption: e.target.value
+  })
+}
+
 }

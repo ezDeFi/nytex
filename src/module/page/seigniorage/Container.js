@@ -45,7 +45,6 @@ export default createContainer(Component, (state) => {
     exStb: state.user.exStb,
   }
 }, () => {
-  const userService = new UserService()
   const volatileTokenService = new VolatileTokenService()
   const stableTokenService = new StableTokenService()
   const seigniorageService = new SeigniorageService()
@@ -65,6 +64,9 @@ export default createContainer(Component, (state) => {
     },
     async withdraw(amount) {
       return await volatileTokenService.withdraw(amount)
+    },
+    async absorb(amount) {
+      return await seigniorageService.absorb(amount)
     },
     // TEST
     async reload() {
