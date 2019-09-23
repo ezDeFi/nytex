@@ -115,8 +115,11 @@ export default class extends LoggedInPage {
 
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={6}>
+                Exchange:
               </Col>
-              <Col span={12}/>
+              <Col span={12}>
+                {thousands(weiToMNTY(this.props.exVol))} MNTY + {thousands(weiToNUSD(this.props.exStb))} NewSD
+              </Col>
               <Col span={6}>
                 <Button onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
               </Col>

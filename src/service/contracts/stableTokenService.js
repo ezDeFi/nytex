@@ -10,6 +10,8 @@ export default class extends BaseService {
         const store = this.store.getState()
         let methods = store.contracts.stableToken.methods
         let wallet = store.user.wallet
+        const exStb = await methods.balanceOf(store.contracts.seigniorage._address).call()
+        this.dispatch(userRedux.actions.exStb_update(exStb))
         let _stableTokenBalance = await methods.balanceOf(wallet).call()
         await this.dispatch(userRedux.actions.stableTokenBalance_update(_stableTokenBalance))
         return await _stableTokenBalance

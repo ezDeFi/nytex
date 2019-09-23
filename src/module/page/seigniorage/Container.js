@@ -41,6 +41,8 @@ export default createContainer(Component, (state) => {
     bids: state.seigniorage.bids,
     asks: state.seigniorage.asks,
     inflated: state.user.inflated,
+    exVol: state.user.exVol,
+    exStb: state.user.exStb,
   }
 }, () => {
   const userService = new UserService()
