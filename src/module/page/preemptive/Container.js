@@ -22,6 +22,10 @@ export default createContainer(Component, (state) => {
 
     volatileTokenService.loadMyVolatileTokenBalance()
     stableTokenService.loadMyStableTokenBalance()
+
+    // Approve
+    volatileTokenService.loadVolatileTokenAllowance()
+    stableTokenService.loadStableTokenAllowance()
   }
 
   if (state.user.wallet !== curWallet && !curWallet) {
@@ -37,7 +41,10 @@ export default createContainer(Component, (state) => {
     balance: state.user.balance,
     volatileTokenBalance: state.user.volatileTokenBalance,
     stableTokenBalance: state.user.stableTokenBalance,
-    proposals: state.seigniorage.proposals
+    proposals: state.seigniorage.proposals,
+    // Approve
+    volatileTokenAllowance: state.user.volatileTokenAllowance,
+    stableTokenAllowance: state.user.stableTokenAllowance
   }
 }, () => {
   const volatileTokenService = new VolatileTokenService()
@@ -57,6 +64,14 @@ export default createContainer(Component, (state) => {
     // TEST
     async reload() {
       return await seigniorageService.loadProposals()
-    }
+    },
+    // Approve
+    async approve(spender, amount, isVolatile) {
+      if (isVolatile) {
+        return await volatileTokenService.approve(spender, amount) 
+      } else {
+        return await stableTokenService.approve(spender, amount)
+      } 
+    },
   }
 })

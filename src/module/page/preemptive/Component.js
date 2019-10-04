@@ -10,7 +10,7 @@ import { DECIMALS } from '@/constant'
 
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Breadcrumb, Table, Input } from 'antd' // eslint-disable-line
 
 const BN = web3.utils.BN;
 
@@ -22,6 +22,9 @@ export default class extends LoggedInPage {
     amount: 100,
     slashingDuration: 0,
     lockdownExpiration: 0,
+    spender: '0x0000000000000000000000000000000000023456',
+    selectedTokenToApprove: '',
+    amountApprove: 99,
   }
 
   async componentDidMount() {
@@ -120,8 +123,8 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
             <Row style={{ 'marginTop': '8px' }}>
-              <Col span={6} />
-              <Col span={12}>
+              <Col span={8} />
+              <Col span={8}>
                 <Button type="primary" onClick={() => this.propose()}
                   className="btn-margin-top submit-button maxWidth">Submit</Button>
               </Col>
@@ -140,6 +143,52 @@ export default class extends LoggedInPage {
                   className="btn-margin-top submit-button maxWidth">Reload</Button>
               </Col>
             </Row>
+            
+            <div className="ebp-header-divider dashboard-rate-margin">
+            </div>
+
+            <h3 className="text-center">Approve</h3>
+
+            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+              <Col span={8}>Token: </Col>
+              <Col span={16}>
+                {this.props.proposals ? this.tokenApproveRender() : ''}
+              </Col>
+            </Row>
+            {/* <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+              <Col span={8}>Spender :</Col>
+              <Col span={16}>
+                {this.state.spender}
+              </Col>
+            </Row> */}
+            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+              <Col span={8}>Amount :</Col>
+              <Col span={16}>
+                <Input className="maxWidth"
+                  defaultValue={0}
+                  value={this.state.amountApprove}
+                  onChange={this.amountApproveChange.bind(this)}
+                />
+              </Col>
+            </Row>
+
+            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+              <Col span={8}>
+                Allowance:
+              </Col>
+              <Col span={16}>
+                {this.allowanceRender()} {this.tokenApproveRender()}
+              </Col>
+            </Row>
+
+            <Row style={{ 'marginTop': '8px' }}>
+              <Col span={8} />
+              <Col span={8}>
+                <Button onClick={() => this.approve()}
+                  className="btn-margin-top submit-button maxWidth">Approve</Button>
+              </Col>
+            </Row>
+
           </div>
         </div>
       </div>
@@ -254,21 +303,21 @@ reload() {
 }
 
 idChange(e) {
-    this.setState({
-        id: e.target.value
-    })
+  this.setState({
+      id: e.target.value
+  })
 }
 
 toWalletChange(e) {
-    this.setState({
-        toWallet: e.target.value
-    })
+  this.setState({
+      toWallet: e.target.value
+  })
 }
 
 transferAmountChange(amount) {
-    this.setState({
-        transferAmount: amount
-    })
+  this.setState({
+      transferAmount: amount
+  })
 }
 
 stakeChange(e) {
@@ -293,6 +342,64 @@ lockdownExpirationChange(e) {
   this.setState({
      lockdownExpiration: e.target.value
   })
+}
+
+// Approve feature
+amountApproveChange(e) {
+  this.setState({
+    amountApprove: e.target.value
+  });
+}
+
+tokenApproveRender(){
+  const proposals = Object.values(this.props.proposals)
+  let tokenRender = '...';
+  proposals.map((value, key)=> {
+    if (value.maker.toLowerCase() === this.props.wallet) {
+      if (value.amount[0] !== '-') {
+        tokenRender = 'MNTY'
+      } else {
+        tokenRender = 'NEWSD'
+      }
+    }
+  })
+  return tokenRender
+}
+
+approve() {
+  const spender = this.state.spender;
+  const amountApprove = this.state.amountApprove;
+  console.log('--- spender approve: ', spender);
+  console.log('--- amount approve: ', amountApprove);
+
+  const proposals = Object.values(this.props.proposals)
+  let amount;
+  let isVolatileToken = true;
+  proposals.map((value, key)=> {
+    if (value.maker.toLowerCase() === this.props.wallet) {
+      if (value.amount[0] !== '-') {
+        amount = mntyToWei(amountApprove, DECIMALS.mnty);
+      } else {
+        isVolatileToken = false;
+        amount = nusdToWei(amountApprove, DECIMALS.nusd);
+      }
+    }
+  })
+  if (isVolatileToken) this.props.approve(spender, amount, true)
+  else this.props.approve(spender, amount, false)
+}
+
+allowanceRender() {
+  const token = this.tokenApproveRender();
+  let allowanceRender = ''
+  if (token === 'MNTY') {
+    allowanceRender = thousands(weiToMNTY(this.props.volatileTokenAllowance))
+  } else if (token === 'NEWSD') {
+    allowanceRender = thousands(weiToNUSD(this.props.stableTokenAllowance))
+  } else {
+    allowanceRender = ''
+  }
+  return allowanceRender
 }
 
 }

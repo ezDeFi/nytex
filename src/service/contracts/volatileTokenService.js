@@ -13,8 +13,6 @@ export default class extends BaseService {
         let wallet = store.user.wallet
         const inflated = await methods.totalInflated().call()
         this.dispatch(userRedux.actions.inflated_update(inflated))
-        const exVol = await methods.balanceOf(store.contracts.seigniorage._address).call()
-        this.dispatch(userRedux.actions.exVol_update(exVol))
         let _volatileTokenBalance = await methods.balanceOf(wallet).call()
         await this.dispatch(userRedux.actions.volatileTokenBalance_update(_volatileTokenBalance))
         return await _volatileTokenBalance
@@ -62,5 +60,25 @@ export default class extends BaseService {
         const wallet = store.user.wallet
         const methods = store.contracts.volatileToken.methods
         await methods.withdraw(_amount).send({from: wallet})
+    }
+
+    async approve(spender, amount) {
+        const store = this.store.getState()
+        const wallet = store.user.wallet
+        const methods = store.contracts.volatileToken.methods
+        await methods.approve(spender, amount).send({from: wallet})
+    }
+    
+    async loadVolatileTokenAllowance () {
+        const userRedux = this.store.getRedux('user')
+        const store = this.store.getState()
+        let methods = store.contracts.volatileToken.methods
+        let wallet = store.user.wallet
+        let spender = '0x0000000000000000000000000000000000023456'
+        const inflated = await methods.totalInflated().call()
+        this.dispatch(userRedux.actions.inflated_update(inflated))
+        let _volatileTokenAllowance = await methods.allowance(wallet, spender).call()
+        await this.dispatch(userRedux.actions.volatileTokenAllowance_update(_volatileTokenAllowance))
+        return await _volatileTokenAllowance
     }
 }
