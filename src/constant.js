@@ -42,7 +42,7 @@ export const CONTRACTS =
 export const WEB3 = {
   // HTTP: 'http://rpc.testnet.nexty.io:8545', // testnet
   // HTTP: 'http://13.228.68.50:8545', // mainnet
-  HTTP: 'http://localhost:8545', // localhost
+  HTTP: 'http://45.76.153.252:8545', // localhost
   NETWORK_ID: NetId // testnet
 }
 
