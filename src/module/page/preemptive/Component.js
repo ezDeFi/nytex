@@ -1,20 +1,12 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
-import Footer from '@/module/layout/Footer/Container' // eslint-disable-line
-import Tx from 'ethereumjs-tx' // eslint-disable-line
 import { Link } from 'react-router-dom' // eslint-disable-line
 import { cutString, thousands, weiToMNTY, weiToNUSD, decShift, mntyToWei, nusdToWei } from '../../../util/help.js'
-import web3 from 'web3'
-import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { DECIMALS } from '@/constant'
 
 import './style.scss'
 
 import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'antd' // eslint-disable-line
-
-const BN = web3.utils.BN;
-
-var BigNumber = require('big-number');
 
 export default class extends LoggedInPage {
   state = {
@@ -81,42 +73,54 @@ export default class extends LoggedInPage {
 
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
               <Col span={8}>Stake (MNTY):</Col>
-              <Col span={16}>
+              <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
                   value={this.state.stake}
                   onChange={this.stakeChange.bind(this)}
                 />
               </Col>
+              <Col span={6} style={{ textAlign: 'right' }}>
+                {thousands(weiToMNTY(this.props.globalParams.stake))}
+              </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
               <Col span={8}>Amount (NEWSD):</Col>
-              <Col span={16}>
+              <Col span={8}>
                 <Input className="maxWidth"
                   defaultValue={0}
                   value={this.state.amount}
                   onChange={this.amountChange.bind(this)}
                 />
               </Col>
+              <Col span={8} style={{ textAlign: 'right' }}>
+                {thousands(weiToMNTY(weiToMNTY(this.props.globalParams.rank)))}
+              </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
               <Col span={8}>Slashing Duration:</Col>
-              <Col span={16}>
+              <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
                   value={this.state.slashingDuration}
                   onChange={this.slashingDurationChange.bind(this)}
                 />
               </Col>
+              <Col span={6} style={{ textAlign: 'right' }}>
+                {this.props.globalParams.slashingDuration}
+              </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
               <Col span={8}>Lockdown Expiration:</Col>
-              <Col span={16}>
+              <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
                   value={this.state.lockdownExpiration}
                   onChange={this.lockdownExpirationChange.bind(this)}
                 />
+              </Col>
+              <Col span={6} style={{ textAlign: 'right' }}>
+                {this.props.globalParams.lockdownExpiration}
               </Col>
             </Row>
             <Row style={{ 'marginTop': '8px' }}>

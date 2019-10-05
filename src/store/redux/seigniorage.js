@@ -35,6 +35,13 @@ class SeigniorageRedux extends BaseRedux {
                 //     lockdownExpiration: 390,
                 // },
             },
+
+            globalParams: {
+                // stake: 0,
+                // slashingDuration: 0,
+                // lockdownExpiration: 0,
+                // rank: 0,
+            }
         };
     }
 }

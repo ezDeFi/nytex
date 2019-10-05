@@ -71,6 +71,8 @@ export default class extends BaseService {
                 });
             })
         }
+        const globalParams = await methods.getGlobalParams().call();
+        this.dispatch(seigniorageRedux.actions.globalParams_update(globalParams));
     }
 
     async loadOrders(orderType) {

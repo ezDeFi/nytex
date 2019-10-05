@@ -37,11 +37,11 @@ export default createContainer(Component, (state) => {
     balance: state.user.balance,
     volatileTokenBalance: state.user.volatileTokenBalance,
     stableTokenBalance: state.user.stableTokenBalance,
+    globalParams: state.seigniorage.globalParams,
     proposals: state.seigniorage.proposals
   }
 }, () => {
   const volatileTokenService = new VolatileTokenService()
-  const stableTokenService = new StableTokenService()
   const seigniorageService = new SeigniorageService()
 
   return {
