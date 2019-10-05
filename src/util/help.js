@@ -96,6 +96,9 @@ export function _decShiftPositive(s, d){
 }
 
 export function decShift(s, d) {
+    if (!s) {
+        return "";
+    }
     if (s[0] == '-') {
         return '-' + _decShiftPositive(s.substring(1), d);
     }
