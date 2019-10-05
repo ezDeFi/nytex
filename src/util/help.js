@@ -1,19 +1,13 @@
 import moment from 'moment'
 import web3 from 'web3'
 
-const BN = web3.utils.BN;
+// const BN = web3.utils.BN;
 
-const BN_1e6 = new BN(10).pow(new BN(6));
-const BN_1e18 = new BN(10).pow(new BN(18));
-const BN_1e24 = new BN(10).pow(new BN(24));
-const BN_MAX_BIT = 53;
+// const BN_1e6 = new BN(10).pow(new BN(6));
+// const BN_1e18 = new BN(10).pow(new BN(18));
+// const BN_1e24 = new BN(10).pow(new BN(24));
+// const BN_MAX_BIT = 53;
 const BN_ZOOM_BIT = 18;
-
-const MAX = 88888888888
-
-const pad = (num) => {
-    return ('0' + num).slice(-2);
-}
 
 export function thousands(nStr, decimal = 4) {
     nStr += '';
@@ -208,6 +202,11 @@ export function mul(a, b) {
     return c;
 }
 
+
+const pad = (num) => {
+    return ('0' + num).slice(-2);
+}
+
 export function hhmmss(_secs) {
     var secs = _secs
     var minutes = Math.floor(secs / 60)
@@ -241,30 +240,3 @@ export function getTimeDiff(endTime) {
     return Number(endTime) - now
 }
 
-// dice helper
-
-export function getRoundStatus(_roundInfo) {
-    // console.log('Time Diff. (s) =', getTimeDiff(Number(_roundInfo[6])))
-    // console.log('getCurRoundInfo = ', _roundInfo)
-    // console.log('trueSum', weiToEthS(_roundInfo[0]))
-    // console.log('falseSum', weiToEthS(_roundInfo[1]))
-    // console.log('trueLength', _roundInfo[2])
-    // console.log('falseLength', _roundInfo[3])
-    // console.log('curBlockNr', _roundInfo[4])
-    // console.log('keyBlockNr', _roundInfo[5])
-    // console.log('endTime', _roundInfo[6])
-    // console.log('finalize', _roundInfo[7])
-    // console.log('refunded', _roundInfo[8])
-    // console.log('winTeam', _roundInfo[9])
-    var endTime = Number(_roundInfo[6])
-    var curBlockNr = Number(_roundInfo[4])
-    var keyBlockNr = Number(_roundInfo[5])
-    var finalized = Boolean(_roundInfo[7])
-    if (endTime === MAX) return 'waiting'
-    var timer = getTimeDiff(endTime)
-    if ((timer > 0) && (keyBlockNr > curBlockNr)) return 'running'
-    if (finalized) return 'finalized'
-    // round locked but unable to draw results
-    return 'pending'
-
-}

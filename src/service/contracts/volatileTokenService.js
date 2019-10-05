@@ -1,8 +1,6 @@
 import BaseService from '../../model/BaseService'
-import web3 from 'web3'
 import _ from 'lodash'
 
-const BigNumber = require('big-number');
 const crypto = require('crypto');
 
 export default class extends BaseService {
