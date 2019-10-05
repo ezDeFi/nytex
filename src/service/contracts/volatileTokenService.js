@@ -1,5 +1,6 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
+import { sendTx } from '../../util/help'
 
 const crypto = require('crypto');
 
@@ -20,45 +21,45 @@ export default class extends BaseService {
 
     async propose(amount, stake, slashingDuration, lockdownExpiration) {
         const store = this.store.getState()
-        let wallet = store.user.wallet
-        let methods = store.contracts.volatileToken.methods
+        const contract = store.contracts.volatileToken;
         // console.log('sell MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
-        await methods.propose(amount, stake, slashingDuration, lockdownExpiration).
-            send({from: wallet, value: 0})
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.propose(amount, stake, slashingDuration, lockdownExpiration).encodeABI(),
+        })
     }
 
     async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
-        let wallet = store.user.wallet
-        // let _volatileTokenBalance = BigNumber(store.user.volatileTokenBalance)
-        // let _toDeposit = _haveAmount.gt(_volatileTokenBalance) ? _haveAmount.subtract(_volatileTokenBalance) : 0
-        let methods = store.contracts.volatileToken.methods
-        // console.log('sell MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
+        const contract = store.contracts.volatileToken;
         const index = '0x' + crypto.randomBytes(32).toString('hex');
         console.log('index = ', index)
-        await methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet/*, value: _toDeposit.toString()*/})
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).encodeABI(),
+        })
     }
-
-    // async transfer(_toWallet, _amount) {
-    //     const store = this.store.getState()
-    //     let wallet = store.user.wallet
-    //     let _volatileTokenBalance = BigNumber(store.user.volatileTokenBalance)
-    //     let _toDeposit = _amount.gt(_volatileTokenBalance) ? _amount.subtract(_volatileTokenBalance) : 0
-    //     let methods = store.contracts.volatileToken.methods
-    //     await methods.transfer(_toWallet, _amount.toString()).send({from: wallet, value: _toDeposit.toString()})
-    // }
 
     async deposit(amount) {
         const store = this.store.getState()
-        const wallet = store.user.wallet
-        const methods = store.contracts.volatileToken.methods
-        await methods.deposit().send({from: wallet, value: amount})
+        const contract = store.contracts.volatileToken;
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.deposit().encodeABI(),
+            value: amount,
+        });
     }
 
-    async withdraw(_amount) {
+    async withdraw(amount) {
         const store = this.store.getState()
-        const wallet = store.user.wallet
-        const methods = store.contracts.volatileToken.methods
-        await methods.withdraw(_amount).send({from: wallet})
+        const contract = store.contracts.volatileToken;
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.withdraw(amount).encodeABI(),
+        });
     }
 }

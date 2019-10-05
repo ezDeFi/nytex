@@ -202,6 +202,48 @@ export function mul(a, b) {
     return c;
 }
 
+export async function sendTx(web3, tx) {
+    let res = await web3.eth.call(tx);
+    const msg = lookForSolidityRevertMessage(res);
+    if (msg) {
+        throw "Revert: " + msg;
+    }
+    return web3.eth.sendTransaction(tx);
+}
+
+// Keccak("Error(string)")
+const SolidityErrorSignature = "08c379a0"
+
+function lookForSolidityRevertMessage(res) {
+    if (res.startsWith("0x")) {
+        res = res.substring(2);
+    }
+    // look for solidity revert message
+    if (res.length < 2*(4+32+32)) {
+        return;
+    }
+    if (!res.startsWith(SolidityErrorSignature)) {
+        return;
+    }
+    res = res.substring(4*2);
+    const offset = parseInt(res.substring(0, 32*2), 16) * 2;
+    res = res.substring(32*2);
+    const size = parseInt(res.substring(0, 32*2), 16) * 2;
+    if (res.length < offset+size) {
+        return;
+    }
+    res = res.substring(offset, offset+size);
+    return hex2ASCII(res);
+}
+
+function hex2ASCII(str1) {
+    var hex  = str1.toString();
+    var str = '';
+    for (var n = 0; n < hex.length; n += 2) {
+        str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+    }
+    return str;
+}
 
 const pad = (num) => {
     return ('0' + num).slice(-2);
@@ -239,4 +281,3 @@ export function getTimeDiff(endTime) {
     var now = moment().unix()
     return Number(endTime) - now
 }
-

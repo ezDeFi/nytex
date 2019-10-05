@@ -1,7 +1,7 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
+import { sendTx } from '../../util/help'
 
-const BigNumber = require('big-number');
 const crypto = require('crypto');
 
 export default class extends BaseService {
@@ -19,25 +19,13 @@ export default class extends BaseService {
 
     async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
-        let wallet = store.user.wallet
-        // let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
-        // let _toDeposit = _haveAmount.gt(_stableTokenBalance) ? _haveAmount.subtract(_stableTokenBalance) : 0
-        // console.log('toDeposit', _toDeposit)
-        let methods = store.contracts.stableToken.methods
-        let owner = await methods.owner().call()
-        await console.log('owner = ', owner)
-        console.log('buy MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
+        const contract = store.contracts.stableToken;
         const index = '0x' + crypto.randomBytes(32).toString('hex');
         console.log('index = ', index)
-        await methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).send({from: wallet})
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).encodeABI(),
+        });
     }
-
-    // async transfer(_toWallet, _amount) {
-    //     const store = this.store.getState()
-    //     let wallet = store.user.wallet
-    //     let _stableTokenBalance = BigNumber(store.user.stableTokenBalance)
-    //     let _toDeposit = _amount.gt(_stableTokenBalance) ? _amount.subtract(_stableTokenBalance) : 0
-    //     let methods = store.contracts.stableToken.methods
-    //     await methods.transfer(_toWallet, _amount.toString()).send({from: wallet, value: _toDeposit.toString()})
-    // }
 }

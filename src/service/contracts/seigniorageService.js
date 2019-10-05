@@ -1,23 +1,18 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
-import { empty } from 'glamor';
 import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString} from '../../util/help'
-import { DECIMALS } from '@/constant'
-import web3 from 'web3';
-
-const BN = web3.utils.BN;
-
-// var BigNumber = require('big-number');
-var BigNumber = require('bignumber.js');
+import { sendTx } from '../../util/help'
 
 export default class extends BaseService {
     async cancel(orderType, id) {
         console.log("cancel " + (orderType ? "buy" : "ask") + "ing order: ", id.toString())
         const store = this.store.getState()
-        let wallet = store.user.wallet
-        let methods = store.contracts.seigniorage.methods
-        await methods.cancel(orderType, id).send({from: wallet})
-        return
+        const contract = store.contracts.seigniorage;
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.cancel(orderType, id).encodeABI(),
+        });
     }
 
     async sellVolatileToken(haveAmount, wantAmount) {
@@ -33,25 +28,23 @@ export default class extends BaseService {
     async vote(maker, up){
         console.log(maker.toString(), up)
         const store = this.store.getState()
-        let wallet = store.user.wallet
-        let methods = store.contracts.seigniorage.methods
-        await methods.vote(maker, up).send({from: wallet})
+        const contract = store.contracts.seigniorage;
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.vote(maker, up).encodeABI(),
+        });
     }
 
     async revoke(maker) {
         console.log("revoking proposal: ", maker)
         const store = this.store.getState()
-        let wallet = store.user.wallet
-        let methods = store.contracts.seigniorage.methods
-        store.contracts.seigniorage.events.Revoke({
-            filter: {
-                maker: wallet,
-            },
-            fromBlock: 0,
-        }, function(error, event) {
-            console.log(event);
-        })
-        await methods.revoke(maker).send({from: wallet})
+        const contract = store.contracts.seigniorage;
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.revoke(maker).encodeABI(),
+        });
     }
 
     async loadProposals() {
@@ -133,10 +126,13 @@ export default class extends BaseService {
 
     async absorb(amount) {
         const store = this.store.getState()
-        const wallet = store.user.wallet
-        const methods = store.contracts.seigniorage.methods
+        const contract = store.contracts.seigniorage;
         const zeroAddress = "0x0000000000000000000000000000000000000000"
-        await methods.testAbsorb(amount, zeroAddress).send({from: wallet})
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.testAbsorb(amount, zeroAddress).encodeABI(),
+        });
     }
 
     async reload() {
