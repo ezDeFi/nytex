@@ -140,6 +140,7 @@ contract Preemptivable is Absorbable {
         internal
     {
         require(stake >= globalSuccessStake - globalSuccessStake / PARAM_TOLERANCE, "stake too low");
+        require(amount != 0, "zero absorption");
 
         absn.Proposal memory proposal;
 
