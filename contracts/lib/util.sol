@@ -61,4 +61,20 @@ library util {
         // positive overflown
         return MaxInt256;
     }
+
+    // capped average
+    // if the calculation is overflown, return the max value of uint
+    function avgCap(uint a, uint b) internal pure returns (uint) {
+        uint c = a + b;
+        if (c >= a) {
+            return c >> 1;
+        }
+        // (a+b) is overflown
+        uint d = (a >> 1) + (b >> 1);
+        if (d >= a) {
+            return d;
+        }
+        // (a/2+b/2) is also overflown
+        return MaxUint256;
+    }
 }
