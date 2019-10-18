@@ -3,7 +3,7 @@ export default {
   '0001': 'User',
   '0002': 'Exchange',
   '0003': 'Preemptive',
-  '0004': 'Pool Control',
+  '0004': 'Tx Code',
   '0005': 'Teams',
   '0006': 'Tasks',
   '0007': 'Nexty Management',

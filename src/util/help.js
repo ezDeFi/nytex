@@ -106,6 +106,16 @@ export function decShift(s, d) {
 }
 
 // Number => wei string
+export function ntyToWei(mnty) {
+    let s = decShift(mnty, 18);
+    let p = s.indexOf('.');
+    if (p >= 0) {
+        return s.substring(0, p);
+    }
+    return s;
+}
+
+// Number => wei string
 export function mntyToWei(mnty) {
     let s = decShift(mnty, 24);
     let p = s.indexOf('.');
@@ -206,20 +216,40 @@ export function mul(a, b) {
 }
 
 export async function sendTx(web3, tx) {
-    let res = await web3.eth.call(tx);
-    const msg = lookForSolidityRevertMessage(res);
-    if (msg) {
-        throw "Revert: " + msg;
+    console.debug("tx:", tx);
+    if (tx.gasLimit) {
+        console.log('gasLimit:', tx.gasLimit);
+    } else {
+        // tx.gasLimit = '0xFFFFFFFF';
+        try {
+            let gasLimit = await web3.eth.estimateGas(tx);
+            tx.gasLimit = '0x' + (gasLimit*3/2).toFixed(0).toString(16);
+        } catch (error) {
+            console.error('Unable to estimate tx gas, use block gas limit instead');
+            let block = await web3.eth.getBlock('latest');
+            tx.gasLimit = '0x' + (block.gasLimit/2).toFixed(0).toString(16);
+        }
     }
+    let res = await web3.eth.call(tx);
+    const msg = extractFailureMessage(res);
+    if (msg) {
+        throw msg;
+    }
+    console.log("tx sent:", tx);
     return web3.eth.sendTransaction(tx);
 }
 
 // Keccak("Error(string)")
 const SolidityErrorSignature = "08c379a0"
+// Keccak("Error")
+const GonexErrorSignature = "e342daa4"
 
-function lookForSolidityRevertMessage(res) {
+function extractFailureMessage(res) {
     if (res.startsWith("0x")) {
         res = res.substring(2);
+    }
+    if (res.startsWith(GonexErrorSignature)) {
+        return hex2ASCII(res.substring(4*2));
     }
     // look for solidity revert message
     if (res.length < 2*(4+32+32)) {
