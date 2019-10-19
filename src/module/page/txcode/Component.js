@@ -9,8 +9,6 @@ import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'a
 
 export default class extends LoggedInPage {
   state = {
-    binary: '',
-    maxValue: 0,
   }
 
   async componentDidMount() {
@@ -69,10 +67,10 @@ export default class extends LoggedInPage {
             <h3 className="text-center">Transaction Code</h3>
 
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
-              <Col span={6}>Max Value</Col>
-              <Col span={18}>
+              <Col span={4}>Max Value</Col>
+              <Col span={20}>
                 <Input className="maxWidth"
-                  defaultValue={0}
+                  placeholder="maximum coin to spent by this tx code"
                   value={this.state.maxValue}
                   onChange={this.maxValueChange.bind(this)}
                 />
@@ -80,14 +78,15 @@ export default class extends LoggedInPage {
             </Row>
 
             <Row style={{ 'marginTop': '15px' }}>
-              <Col span={6}>
+              <Col span={4}>
                 Binary
               </Col>
-              <Col span={18}>
+              <Col span={20}>
                 <Input.TextArea className="maxWidth"
+                  placeholder="runtime binary compiled by solc --bin-runtime"
                   value={this.state.binary}
                   onChange={this.binaryChange.bind(this)}
-                  rows={6}
+                  rows={13}
                 />
               </Col>
             </Row>

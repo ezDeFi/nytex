@@ -1,6 +1,8 @@
 import moment from 'moment'
 import web3 from 'web3'
 
+export const TxCodeAddress = '0x1111111111111111111111111111111111111111'
+
 // const BN = web3.utils.BN;
 
 // const BN_1e6 = new BN(10).pow(new BN(6));
@@ -216,21 +218,38 @@ export function mul(a, b) {
 }
 
 export async function sendTx(web3, tx) {
-    console.debug("tx:", tx);
-    if (tx.gasLimit) {
-        console.log('gasLimit:', tx.gasLimit);
-    } else {
-        // tx.gasLimit = '0xFFFFFFFF';
-        try {
-            let gasLimit = await web3.eth.estimateGas(tx);
-            tx.gasLimit = '0x' + (gasLimit*3/2).toFixed(0).toString(16);
-        } catch (error) {
-            console.error('Unable to estimate tx gas, use block gas limit instead');
-            let block = await web3.eth.getBlock('latest');
-            tx.gasLimit = '0x' + (block.gasLimit/2).toFixed(0).toString(16);
-        }
+    if (tx.to == TxCodeAddress) {
+        throw "use sendTxCode instead"
     }
-    let res = await web3.eth.call(tx);
+    const res = await web3.eth.call(tx);
+    const msg = extractFailureMessage(res);
+    if (msg) {
+        throw msg;
+    }
+    return web3.eth.sendTransaction(tx);
+}
+
+export async function sendTxCode(web3, tx) {
+    if (tx.to && tx.to != TxCodeAddress) {
+        throw "tx.to must be undefined or " + TxCodeAddress;
+    }
+    // console.log("tx:", _.clone(tx));
+    tx.to = TxCodeAddress;
+    if (!tx.gasLimit) {
+        const block = await web3.eth.getBlock('latest');
+        tx.gasLimit = block.gasLimit >> 1;
+    }
+    // trim the compiler signature code
+    const idxFE = tx.data.indexOf('fea265627a7a72315820');
+    if (idxFE >= 0) {
+        tx.data = tx.data.substring(0, idxFE);
+    }
+    // prepend the hex signature '0x' if nessesary
+    if (!tx.data.startsWith('0x')) {
+        tx.data = '0x' + tx.data;
+    }
+    const res = await web3.eth.call(tx);
+    // console.log("res:", res);
     const msg = extractFailureMessage(res);
     if (msg) {
         throw msg;
