@@ -270,8 +270,16 @@ propose() {
   const amount = nusdToWei(this.state.amount, DECIMALS.nusd);
   let slashingDuration = this.state.slashingDuration
   let lockdownExpiration = this.state.lockdownExpiration
-  console.log('***** stake MNTY: ', thousands(weiToMNTY(stake)))
-  console.log('*** amount NEWSD: ', thousands(weiToNUSD(amount)))
+  if (slashingDuration < 0) {
+    console.error("negative slashing duration");
+    return;
+  }
+  if (lockdownExpiration < 0) {
+    console.error("negative lockdown expiration");
+    return;
+  }
+  console.log('***** stake MNTY:', thousands(weiToMNTY(stake)))
+  console.log('*** amount NEWSD:', thousands(weiToNUSD(amount)))
   this.props.propose(amount, stake, slashingDuration, lockdownExpiration)
 }
 
