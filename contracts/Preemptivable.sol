@@ -28,6 +28,8 @@ contract Preemptivable is Absorbable {
         uint256 lockdownExpiration,
         uint256 unlockNumber
     );
+    event Slash(address indexed maker, uint256 amount);
+    event Unlock(address indexed maker);
 
     address constant ZERO_ADDRESS = address(0x0);
 
@@ -122,8 +124,66 @@ contract Preemptivable is Absorbable {
         }
         delete votesToClear;
 
+        if (lockdown.unlockable()) {
+            unlock();
+        }
         checkAndTriggerPreemptive();
+
+        if (target > 0) { // absorption block
+            if (lockdown.isLocked()) {
+                // WIP: slash the pre-emptive maker if target goes wrong way
+                uint supply = StablizeToken.totalSupply();
+                int diviation = util.sub(target, supply);
+                if (checkAndSlash(diviation) && last.isPreemptive) {
+                    // lockdown violation, halt the preemptive absorption for this block
+                    return;
+                }
+            }
+        }
         super.onBlockInitialized(target);
+    }
+
+    function unlock() internal {
+        if (!lockdown.exists()) {
+            return;
+        }
+        if (lockdown.stake > 0) {
+            VolatileToken.transfer(lockdown.maker, lockdown.stake);
+        }
+        emit Unlock(lockdown.maker);
+        delete lockdown;
+    }
+
+    /**
+     * @dev slash the initiator whenever the price is moving in
+     * opposition direction with the initiator's direction,
+     * the initiator's deposited balance will be minus by slashed
+     *
+     * slashed = MIN(PeA.Stake, MAX(1, -Diviation/PeA.Amount / PeA.SlashingDuration))
+     *
+     * @return true if the lockdown is violated and get slashed
+     */
+    function checkAndSlash(int diviation) internal returns (bool) {
+        if (!util.inOrder(lockdown.amount, 0, diviation)) {
+            // same direction, no slashing
+            return false;
+        }
+        // lockdown violated
+        uint slashed = uint(-diviation/lockdown.amount) / lockdown.slashingDuration;
+        if (slashed == 0) {
+            slashed = 1; // minimum 1 wei
+        }
+        if (lockdown.stake < slashed) {
+            slashed = lockdown.stake;
+            // there's nothing at stake anymore, clear the lockdown and its absorption
+            stopAbsorption();
+            unlock();
+        }
+        lockdown.stake -= slashed;
+        VolatileToken.dexBurn(slashed);
+        emit Slash(lockdown.maker, slashed);
+        // this slashed NTY will be burnt by the consensus by calling setBalance
+        return true;
     }
 
     /**

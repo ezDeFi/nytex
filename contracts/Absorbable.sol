@@ -15,8 +15,6 @@ contract Absorbable is Orderbook {
 
     event Absorption(int256 amount, uint256 supply, bool emptive);
     event Stop();
-    event Slash(address indexed maker, uint256 amount);
-    event Unlock(address indexed maker);
 
     IToken VolatileToken;
     IToken StablizeToken; // spelling intented
@@ -84,23 +82,12 @@ contract Absorbable is Orderbook {
             // absorption takes no longer than one duration
             stopAbsorption();
         }
-        if (lockdown.unlockable()) {
-            unlock();
-        }
         uint supply = StablizeToken.totalSupply();
         if (target > 0) { // absorption block
             if (shouldTriggerPassive()) {
                 triggerAbsorption(target, supply, false, false);
             } else if (shouldTriggerActive(supply, target)) {
                 triggerAbsorption(target, supply, true, false);
-            }
-            if (lockdown.isLocked()) {
-                // WIP: slash the pre-emptive maker if target goes wrong way
-                int diviation = util.sub(target, supply);
-                if (checkAndSlash(diviation) && last.isPreemptive) {
-                    // lockdown violation, halt the preemptive absorption for this block
-                    return;
-                }
             }
         }
         if (last.isAbsorbing(supply)) {
@@ -163,17 +150,6 @@ contract Absorbable is Orderbook {
         }
     }
 
-    function unlock() internal {
-        if (!lockdown.exists()) {
-            return;
-        }
-        if (lockdown.stake > 0) {
-            VolatileToken.transfer(lockdown.maker, lockdown.stake);
-        }
-        emit Unlock(lockdown.maker);
-        delete lockdown;
-    }
-
     function triggerAbsorption(uint target, uint supply, bool emptive, bool isPreemptive) internal {
         last = absn.Absorption(block.number + EXPIRATION,
             supply,
@@ -200,37 +176,5 @@ contract Absorbable is Orderbook {
             return book.absorbPreemptive(useHaveAmount, util.abs(stableTokenAmount), lockdown.maker);
         }
         return book.absorb(useHaveAmount, util.abs(stableTokenAmount));
-    }
-
-    /**
-     * @dev slash the initiator whenever the price is moving in
-     * opposition direction with the initiator's direction,
-     * the initiator's deposited balance will be minus by slashed
-     *
-     * slashed = MIN(PeA.Stake, MAX(1, -Diviation/PeA.Amount / PeA.SlashingDuration))
-     *
-     * @return true if the lockdown is violated and get slashed
-     */
-    function checkAndSlash(int diviation) internal returns (bool) {
-        if (!util.inOrder(lockdown.amount, 0, diviation)) {
-            // same direction, no slashing
-            return false;
-        }
-        // lockdown violated
-        uint slashed = uint(-diviation/lockdown.amount) / lockdown.slashingDuration;
-        if (slashed == 0) {
-            slashed = 1; // minimum 1 wei
-        }
-        if (lockdown.stake < slashed) {
-            slashed = lockdown.stake;
-            // there's nothing at stake anymore, clear the lockdown and its absorption
-            stopAbsorption();
-            unlock();
-        }
-        lockdown.stake -= slashed;
-        VolatileToken.dexBurn(slashed);
-        emit Slash(lockdown.maker, slashed);
-        // this slashed NTY will be burnt by the consensus by calling setBalance
-        return true;
     }
 }

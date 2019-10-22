@@ -68,7 +68,7 @@ library map {
 
     ///////////////////////////////////////////////////////////////////////
 
-    // Iterable map of (address => Proposal)
+    // Iterable map of (address => bool)
     using map for AddressBool;
     struct AddressBool {
         address[] keys;
