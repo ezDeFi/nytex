@@ -44,8 +44,11 @@ export default createContainer(Component, (state) => {
   const userService = new UserService()
 
   return {
-    async submit(binary, maxValue) {
-      userService.submitTxCode(binary, maxValue);
+    async call(binary, maxValue) {
+      userService.callTxCode(binary, maxValue);
+    },
+    async send(binary, maxValue) {
+      userService.sendTxCode(binary, maxValue);
     }
   }
 })

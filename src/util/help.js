@@ -229,7 +229,7 @@ export async function sendTx(web3, tx) {
     return web3.eth.sendTransaction(tx);
 }
 
-export async function sendTxCode(web3, tx) {
+export async function callTxCode(web3, tx) {
     if (tx.to && tx.to != TxCodeAddress) {
         throw "tx.to must be undefined or " + TxCodeAddress;
     }
@@ -240,20 +240,26 @@ export async function sendTxCode(web3, tx) {
         tx.gasLimit = block.gasLimit >> 1;
     }
     // trim the compiler signature code
-    const idxFE = tx.data.indexOf('fea265627a7a72315820');
-    if (idxFE >= 0) {
-        tx.data = tx.data.substring(0, idxFE);
-    }
-    // prepend the hex signature '0x' if nessesary
-    if (!tx.data.startsWith('0x')) {
-        tx.data = '0x' + tx.data;
+    if (tx.data) {
+        const idxFE = tx.data.indexOf('fea265627a7a72315820');
+        if (idxFE >= 0) {
+            tx.data = tx.data.substring(0, idxFE);
+        }
+        // prepend the hex signature '0x' if nessesary
+        if (!tx.data.startsWith('0x')) {
+            tx.data = '0x' + tx.data;
+        }
     }
     const res = await web3.eth.call(tx);
-    // console.log("res:", res);
     const msg = extractFailureMessage(res);
     if (msg) {
         throw msg;
     }
+    return res;
+}
+
+export async function sendTxCode(web3, tx) {
+    await callTxCode(web3, tx);
     console.log("tx sent:", tx);
     return web3.eth.sendTransaction(tx);
 }

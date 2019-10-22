@@ -92,10 +92,15 @@ export default class extends LoggedInPage {
             </Row>
 
             <Row style={{ 'marginTop': '8px' }}>
-              <Col span={6} />
-              <Col span={12}>
-                <Button type="primary" onClick={() => this.submit()}
-                  className="btn-margin-top submit-button maxWidth">Submit</Button>
+              <Col span={5} />
+              <Col span={8}>
+                <Button onClick={() => this.call()}
+                  className="btn-margin-top submit-button maxWidth">Call</Button>
+              </Col>
+              <Col span={2} />
+              <Col span={8}>
+                <Button type="primary" onClick={() => this.send()}
+                  className="btn-margin-top submit-button maxWidth">Send</Button>
               </Col>
             </Row>
           </div>
@@ -113,8 +118,12 @@ export default class extends LoggedInPage {
     )
   }
 
-submit() {
-  this.props.submit(this.state.binary, this.state.maxValue);
+call() {
+  this.props.call(this.state.binary, this.state.maxValue);
+}
+  
+send() {
+  this.props.send(this.state.binary, this.state.maxValue);
 }
 
 reload() {
