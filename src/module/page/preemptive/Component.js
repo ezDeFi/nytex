@@ -2,11 +2,11 @@ import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
 import { cutString, thousands, weiToMNTY, weiToNUSD, decShift, mntyToWei, nusdToWei } from '../../../util/help.js'
-import { DECIMALS } from '@/constant'
+import { DECIMALS, CONTRACTS } from '@/constant'
 
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Breadcrumb, Table, Input } from 'antd' // eslint-disable-line
 
 export default class extends LoggedInPage {
   state = {
@@ -144,6 +144,28 @@ export default class extends LoggedInPage {
                   className="btn-margin-top submit-button maxWidth">Reload</Button>
               </Col>
             </Row>
+
+            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+              <Col span={7}>
+                {this.tokenApproveRender()} Allowance:
+              </Col>
+              <Col span={7}>
+                {this.allowanceRender()}
+              </Col>
+              <Col span={6}>
+                <Input className="maxWidth"
+                  placeholder={this.tokenApproveRender()}
+                  defaultValue={0}
+                  value={this.state.amountToApprove}
+                  onChange={this.amountToApproveChange.bind(this)}
+                />
+              </Col>
+              <Col span={4}>
+                <Button onClick={() => this.approve()}
+                  className="btn-margin-top submit-button maxWidth">Approve</Button>
+              </Col>
+            </Row>
+
           </div>
         </div>
       </div>
@@ -258,21 +280,21 @@ reload() {
 }
 
 idChange(e) {
-    this.setState({
-        id: e.target.value
-    })
+  this.setState({
+      id: e.target.value
+  })
 }
 
 toWalletChange(e) {
-    this.setState({
-        toWallet: e.target.value
-    })
+  this.setState({
+      toWallet: e.target.value
+  })
 }
 
 transferAmountChange(amount) {
-    this.setState({
-        transferAmount: amount
-    })
+  this.setState({
+      transferAmount: amount
+  })
 }
 
 stakeChange(e) {
@@ -297,6 +319,59 @@ lockdownExpirationChange(e) {
   this.setState({
      lockdownExpiration: e.target.value
   })
+}
+
+// Approve feature
+amountToApproveChange(e) {
+  this.setState({
+    amountToApprove: e.target.value
+  });
+}
+
+approve() {
+  const amountToApprove = this.state.amountToApprove;
+  const proposals = Object.values(this.props.proposals)
+  let amount;
+  let isVolatileToken;
+  proposals.some((value)=> {
+    if (value.maker.toLowerCase() === this.props.wallet) {
+      if (value.amount[0] !== '-') {
+        isVolatileToken = true;
+        amount = mntyToWei(amountToApprove, DECIMALS.mnty);
+      } else {
+        isVolatileToken = false;
+        amount = nusdToWei(amountToApprove, DECIMALS.nusd);
+      }
+      return true;
+    }
+  })
+  this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
+}
+
+allowanceRender() {
+  const token = this.tokenApproveRender();
+  if (token === 'MNTY') {
+    return thousands(weiToMNTY(this.props.volAllowance))
+  } 
+  if (token === 'NEWSD') {
+    return thousands(weiToNUSD(this.props.stbAllowance))
+  }
+}
+
+tokenApproveRender(){
+  const proposals = Object.values(this.props.proposals)
+  let tokenRender;
+  proposals.some((value)=> {
+    if (value.maker.toLowerCase() === this.props.wallet) {
+      if (value.amount[0] !== '-') {
+        tokenRender = 'MNTY'
+      } else {
+        tokenRender = 'NEWSD'
+      }
+      return true;
+    }
+  })
+  return tokenRender
 }
 
 }

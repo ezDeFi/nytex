@@ -24,6 +24,8 @@ class UserRedux extends BaseRedux {
       inflated: 0,
       exVol: 0,
       exStb: 0,
+      volAllowance: 0,
+      stbAllowance: 0,
       loginMetamask: true
     }
   }

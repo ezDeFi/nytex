@@ -37,11 +37,14 @@ export default createContainer(Component, (state) => {
     balance: state.user.balance,
     volatileTokenBalance: state.user.volatileTokenBalance,
     stableTokenBalance: state.user.stableTokenBalance,
+    volAllowance: state.user.volAllowance,
+    stbAllowance: state.user.stbAllowance,
     globalParams: state.seigniorage.globalParams,
     proposals: state.seigniorage.proposals
   }
 }, () => {
   const volatileTokenService = new VolatileTokenService()
+  const stableTokenService = new StableTokenService()
   const seigniorageService = new SeigniorageService()
 
   return {
@@ -57,6 +60,14 @@ export default createContainer(Component, (state) => {
     // TEST
     async reload() {
       return await seigniorageService.loadProposals()
-    }
+    },
+    // Approve
+    async approve(spender, amount, isVolatile) {
+      if (isVolatile) {
+        return await volatileTokenService.approve(spender, amount) 
+      } else {
+        return await stableTokenService.approve(spender, amount)
+      } 
+    },
   }
 })

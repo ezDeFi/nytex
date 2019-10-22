@@ -14,6 +14,8 @@ export default class extends BaseService {
         this.dispatch(userRedux.actions.inflated_update(inflated))
         const exVol = await methods.balanceOf(store.contracts.seigniorage._address).call()
         this.dispatch(userRedux.actions.exVol_update(exVol))
+        let volAllowance = await methods.allowance(wallet, store.contracts.seigniorage._address).call()
+        this.dispatch(userRedux.actions.volAllowance_update(volAllowance))
         let _volatileTokenBalance = await methods.balanceOf(wallet).call()
         await this.dispatch(userRedux.actions.volatileTokenBalance_update(_volatileTokenBalance))
         return await _volatileTokenBalance
@@ -60,6 +62,16 @@ export default class extends BaseService {
             from: store.user.wallet,
             to: contract._address,
             data: contract.methods.withdraw(amount).encodeABI(),
+        });
+    }
+
+    async approve(spender, amount) {
+        const store = this.store.getState()
+        const contract = store.contracts.volatileToken;
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.approve(spender, amount).encodeABI(),
         });
     }
 }

@@ -12,6 +12,8 @@ export default class extends BaseService {
         let wallet = store.user.wallet
         const exStb = await methods.balanceOf(store.contracts.seigniorage._address).call()
         this.dispatch(userRedux.actions.exStb_update(exStb))
+        let stbAllowance = await methods.allowance(wallet, store.contracts.seigniorage._address).call()
+        this.dispatch(userRedux.actions.stbAllowance_update(stbAllowance))
         let _stableTokenBalance = await methods.balanceOf(wallet).call()
         await this.dispatch(userRedux.actions.stableTokenBalance_update(_stableTokenBalance))
         return await _stableTokenBalance
@@ -26,6 +28,16 @@ export default class extends BaseService {
             from: store.user.wallet,
             to: contract._address,
             data: contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).encodeABI(),
+        });
+    }
+
+    async approve(spender, amount) {
+        const store = this.store.getState()
+        const contract = store.contracts.stableToken;
+        await sendTx(store.user.web3, {
+            from: store.user.wallet,
+            to: contract._address,
+            data: contract.methods.approve(spender, amount).encodeABI(),
         });
     }
 }
