@@ -1,5 +1,6 @@
 import moment from 'moment'
 import web3 from 'web3'
+import solc from 'solc'
 
 export const TxCodeAddress = '0x1111111111111111111111111111111111111111'
 
@@ -222,6 +223,13 @@ export async function sendTx(web3, tx) {
         throw msg;
     }
     return web3.eth.sendTransaction(tx);
+}
+
+export async function compileTxCode(code, functions, interfaces) {
+    let src = 'pragma solidity ^0.5.2; contract TxScript { function main() public {' +
+        code + '}' + functions + '}' + interfaces;
+    let binary = solc.compile(src);
+    console.log(binary);
 }
 
 export async function callTxCode(web3, tx) {
