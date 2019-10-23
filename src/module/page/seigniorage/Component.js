@@ -5,7 +5,7 @@ import { thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul } from '../.
 import { DECIMALS, CONTRACTS } from '@/constant'
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber, Checkbox } from 'antd' // eslint-disable-line
 import { util } from 'node-forge'
 
 var BigNumber = require('big-number');
@@ -164,17 +164,46 @@ export default class extends LoggedInPage {
                   onChange={this.absorptionChange.bind(this)}
                 />
               </Col>
+              <Col span={1}>
+                <Checkbox
+                  value={this.state.side}
+                  onChange={this.sideChange.bind(this)}
+                />
+              </Col>
               <Col span={5}>
                 <Button onClick={() => this.absorb()}
                   className="btn-margin-top submit-button maxWidth">
                     ABSORB
                 </Button>
               </Col>
-              <Col span={2}/>
+              <Col span={1}/>
               <Col span={4}>
                 <Button onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
               </Col>
             </Row>
+
+            {this.state.side &&
+            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+              <Col span={7}>
+                {this.tokenToApprove()} Allowance:
+              </Col>
+              <Col span={7}>
+                {this.allowanceRender()}
+              </Col>
+              <Col span={6}>
+                <Input className="maxWidth"
+                  placeholder={this.tokenToApprove()}
+                  defaultValue={0}
+                  value={this.state.amountToApprove}
+                  onChange={this.amountToApproveChange.bind(this)}
+                />
+              </Col>
+              <Col span={4}>
+                <Button onClick={() => this.approve()}
+                  className="btn-margin-top submit-button maxWidth">Approve</Button>
+              </Col>
+            </Row>
+            }
 
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={24}>
@@ -292,7 +321,9 @@ withdraw() {
 absorb() {
   const amount = this.state.absorption;
   const wei = nusdToWei(amount);
-  this.props.absorb(wei);
+  const zeroAddress = "0x0000000000000000000000000000000000000000"
+  const sideAddress = this.state.side ? this.props.wallet : zeroAddress;
+  this.props.absorb(wei, sideAddress);
 }
 
 idChange(e) {
@@ -335,6 +366,50 @@ absorptionChange(e) {
   this.setState({
     absorption: e.target.value
   })
+}
+
+sideChange(e) {
+  this.setState({
+    side: e.target.checked
+  })
+}
+
+// Approve feature
+amountToApproveChange(e) {
+  this.setState({
+    amountToApprove: e.target.value
+  });
+}
+
+approve() {
+  const token = this.tokenToApprove();
+  const amountToApprove = this.state.amountToApprove;
+  let amount;
+  let isVolatileToken = token == 'MNTY';
+  if (isVolatileToken) {
+    amount = mntyToWei(amountToApprove);
+  } else {
+    amount = nusdToWei(amountToApprove);
+  }
+  this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
+}
+
+allowanceRender() {
+  const token = this.tokenToApprove();
+  if (token === 'MNTY') {
+    return thousands(weiToMNTY(this.props.volAllowance))
+  } 
+  if (token === 'NEWSD') {
+    return thousands(weiToNUSD(this.props.stbAllowance))
+  }
+}
+
+tokenToApprove() {
+  if (this.state.absorption && this.state.absorption[0] === '-') {
+    return 'NEWSD'
+  } else {
+    return 'MNTY'
+  }
 }
 
 }

@@ -57,17 +57,16 @@ export default createContainer(Component, (state) => {
     async vote(maker, up) {
       return await seigniorageService.vote(maker, up)
     },
-    // TEST
-    async reload() {
-      return await seigniorageService.loadProposals()
-    },
-    // Approve
     async approve(spender, amount, isVolatile) {
       if (isVolatile) {
         return await volatileTokenService.approve(spender, amount) 
       } else {
         return await stableTokenService.approve(spender, amount)
       } 
+    },
+    // TEST
+    async reload() {
+      return await seigniorageService.loadProposals()
     },
   }
 })

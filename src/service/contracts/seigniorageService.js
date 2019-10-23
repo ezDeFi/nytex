@@ -126,14 +126,14 @@ export default class extends BaseService {
         }
     }
 
-    async absorb(amount) {
+    async absorb(amount, sideAddress) {
+        console.log(sideAddress);
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
-        const zeroAddress = "0x0000000000000000000000000000000000000000"
         await sendTx(store.user.web3, {
             from: store.user.wallet,
             to: contract._address,
-            data: contract.methods.testAbsorb(amount, zeroAddress).encodeABI(),
+            data: contract.methods.testAbsorb(amount, sideAddress).encodeABI(),
         });
     }
 

@@ -147,14 +147,14 @@ export default class extends LoggedInPage {
 
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
               <Col span={7}>
-                {this.tokenApproveRender()} Allowance:
+                {this.tokenToApprove()} Allowance:
               </Col>
               <Col span={7}>
                 {this.allowanceRender()}
               </Col>
               <Col span={6}>
                 <Input className="maxWidth"
-                  placeholder={this.tokenApproveRender()}
+                  placeholder={this.tokenToApprove()}
                   defaultValue={0}
                   value={this.state.amountToApprove}
                   onChange={this.amountToApproveChange.bind(this)}
@@ -330,26 +330,21 @@ amountToApproveChange(e) {
 
 approve() {
   const amountToApprove = this.state.amountToApprove;
-  const proposals = Object.values(this.props.proposals)
+  const token = this.tokenToApprove();
   let amount;
   let isVolatileToken;
-  proposals.some((value)=> {
-    if (value.maker.toLowerCase() === this.props.wallet) {
-      if (value.amount[0] !== '-') {
-        isVolatileToken = true;
-        amount = mntyToWei(amountToApprove, DECIMALS.mnty);
-      } else {
-        isVolatileToken = false;
-        amount = nusdToWei(amountToApprove, DECIMALS.nusd);
-      }
-      return true;
-    }
-  })
+  if (token === 'MNTY') {
+    isVolatileToken = true;
+    amount = mntyToWei(amountToApprove);
+  } else {
+    isVolatileToken = false;
+    amount = nusdToWei(amountToApprove);
+  }
   this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
 }
 
 allowanceRender() {
-  const token = this.tokenApproveRender();
+  const token = this.tokenToApprove();
   if (token === 'MNTY') {
     return thousands(weiToMNTY(this.props.volAllowance))
   } 
@@ -358,7 +353,7 @@ allowanceRender() {
   }
 }
 
-tokenApproveRender(){
+tokenToApprove(){
   const proposals = Object.values(this.props.proposals)
   let tokenRender;
   proposals.some((value)=> {
