@@ -62,7 +62,7 @@ function setupWeb3 () {
   window.web3.eth.getAccounts(async (err, accounts) => {
     if (err) return
     if (accounts.length > 0) {
-        window.web3.version.getNetwork( async (err, networkId) => {
+        window.web3.version.getNetwork((err, networkId) => {
             if (networkId === WEB3.NETWORK_ID) {
                 let web3 = new Web3(window.ethereum)
 
@@ -72,25 +72,28 @@ function setupWeb3 () {
                   Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
                 }
 
+                // detect account switch
+                const wallet = store.getState().user.wallet;
+                isLogined = isLogined && wallet === accounts[0];
+
                 if (!isLogined) {
-                  await store.dispatch(userRedux.actions.loginMetamask_update(true))
+                  store.dispatch(userRedux.actions.loginMetamask_update(true))
+                  store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
+                  store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
+                  store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
+                  store.dispatch(userRedux.actions.web3_update(web3))
 
-                  await store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
-                  await store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
-                  await store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
-
-                  await store.dispatch(userRedux.actions.web3_update(web3))
-                  await userService.metaMaskLogin(accounts[0])
+                  userService.metaMaskLogin(accounts[0])
+                  isLogined = true
 
                   // simple trick: not work for entering .../login directly to the browser
                   if (userService.path.location.pathname === '/login') {
                     userService.path.goBack();
                   }
                 }
-                isLogined = true
             } else if (!isLogined) {
-                await store.dispatch(userRedux.actions.loginMetamask_update(false))
-                await userService.path.push('/login')
+                store.dispatch(userRedux.actions.loginMetamask_update(false))
+                userService.path.push('/login')
             }
         })
     } else {
@@ -98,9 +101,9 @@ function setupWeb3 () {
             isRequest = true
             await window.ethereum.enable()
         }
-        await store.dispatch(userRedux.actions.loginMetamask_update(false))
+        store.dispatch(userRedux.actions.loginMetamask_update(false))
         isLogined = false
-        await userService.path.push('/login')
+        userService.path.push('/login')
     }
   })
 }

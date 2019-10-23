@@ -77,30 +77,32 @@ export default class extends BaseService {
     }
 
     web3.eth.defaultAccount = address
-    await this.dispatch(userRedux.actions.is_login_update(true))
-    await this.dispatch(userRedux.actions.wallet_update(address))
-    await this.dispatch(userRedux.actions.web3_update(web3))
-    await this.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
-    await this.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
-    await this.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
+    this.dispatch(userRedux.actions.is_login_update(true))
+    this.dispatch(userRedux.actions.wallet_update(address))
+    this.dispatch(userRedux.actions.web3_update(web3))
+    this.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
+    this.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
+    this.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
 
     return true
   }
 
-  async loadBlockNumber () {
-    const userRedux = this.store.getRedux('user')
+  loadBlockNumber () {
     const storeUser = this.store.getState().user
     let { web3 } = storeUser
-    const _blockNumber = await web3.eth.getBlockNumber()
-    await this.dispatch(userRedux.actions.blockNumber_update(_blockNumber))
+    web3.eth.getBlockNumber().then((blockNumber) => {
+      const userRedux = this.store.getRedux('user')
+      this.dispatch(userRedux.actions.blockNumber_update(blockNumber))
+    })
   }
 
-  async getBalance () {
-    const userRedux = this.store.getRedux('user')
+  getBalance () {
     const storeUser = this.store.getState().user
     let { web3, wallet } = storeUser
-    const balance = await web3.eth.getBalance(wallet)
-    await this.dispatch(userRedux.actions.balance_update(balance))
+    web3.eth.getBalance(wallet).then((balance) => {
+      const userRedux = this.store.getRedux('user')
+      this.dispatch(userRedux.actions.balance_update(balance))
+    })
   }
 
   async logout () {
@@ -130,7 +132,7 @@ export default class extends BaseService {
 
   async sendTxCode(binary, maxValue) {
     const store = this.store.getState()
-    await sendTxCode(store.user.web3, {
+    return sendTxCode(store.user.web3, {
       from: store.user.wallet,
       data: binary,
       value: ntyToWei(maxValue),
