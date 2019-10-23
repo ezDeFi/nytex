@@ -7,23 +7,29 @@ library map {
 
     // Iterable map of (address => Proposal)
     // index = ordinals[a]-1
-    // vals[index].maker = a
+    // keys[index].maker = a
     using map for ProposalMap;
     struct ProposalMap {
-        absn.Proposal[] vals;
-        mapping (address => uint) ordinals; // map the proposal's maker to (its index + 1)
+        address[] keys;
+        mapping (address => uint) ordinals;      // map the proposal's maker to (its index + 1)
+        mapping (address => absn.Proposal) vals; // maker => proposal
     }
 
     function count(ProposalMap storage this) internal view returns (uint) {
-        return this.vals.length;
+        return this.keys.length;
+    }
+
+    function getKey(ProposalMap storage this, uint index) internal view returns (address) {
+        return this.keys[index];
     }
 
     function get(ProposalMap storage this, uint index) internal view returns (absn.Proposal storage) {
-        return this.vals[index];
+        address key = this.getKey(index);
+        return this.vals[key];
     }
 
     function get(ProposalMap storage this, address maker) internal view returns (absn.Proposal storage) {
-        return this.vals[this.ordinals[maker]-1];
+        return this.vals[maker];
     }
 
     function has(ProposalMap storage this, address maker) internal view returns (bool) {
@@ -31,41 +37,49 @@ library map {
     }
 
     function push(ProposalMap storage this, absn.Proposal memory proposal) internal returns (absn.Proposal storage) {
-        uint ordinal = this.ordinals[proposal.maker];
+        address key = proposal.maker;
+        uint ordinal = this.ordinals[key];
         require (ordinal == 0, "maker already has a proposal");
-        ordinal = this.ordinals[proposal.maker] = this.vals.push(proposal);
-        return this.vals[ordinal-1];
+        this.vals[key] = proposal;
+        this.ordinals[key] = this.keys.push(key);
+        return this.vals[key];
     }
 
     function remove(ProposalMap storage this, address maker) internal returns (bool success) {
         uint ordinal = this.ordinals[maker];
-        if (ordinal == 0) {
-            return false;
-        }
-        this.remove(ordinal-1);
+        require(ordinal > 0, "key not exist");
+        this.remove(ordinal-1, maker);
         return true;
     }
 
     // index is the correct array index, which is (set.ordinals[item]-1)
     function remove(ProposalMap storage this, uint index) internal {
-        delete this.ordinals[this.vals[index].maker];
-        //this.vals[index].clear(); // should be handled differently for user and consensus
+        address key = this.keys[index];
+        require(key != address(0x0), "index not exist");
+        this.remove(index, key);
+    }
 
-        if (this.vals.length-1 != index) {
-            // swap with the last item in the vals
-            this.vals[index] = this.vals[this.vals.length-1];
-            this.ordinals[this.vals[index].maker] = index + 1;
+    // @require keys[index] == maker
+    function remove(ProposalMap storage this, uint index, address maker) internal {
+        delete this.ordinals[maker];
+        delete this.vals[maker];
+
+        if (this.keys.length-1 != index) {
+            // swap with the last item in the keys and delete it
+            this.keys[index] = this.keys[this.keys.length-1];
+            this.ordinals[this.keys[index]] = index + 1;
         }
-        // remove the last item from the array
-        delete this.vals[this.vals.length-1];
-        this.vals.length--;
+        // delete the last item from the array
+        this.keys.length--;
     }
 
     function clear(ProposalMap storage this) internal {
-        for (uint i = 0; i < this.vals.length; i++) {
-            delete this.ordinals[this.vals[i].maker];
+        for (uint i = 0; i < this.keys.length; i++) {
+            address key = this.keys[i];
+            delete this.ordinals[key];
+            delete this.vals[key];
         }
-        delete this.vals;
+        delete this.keys;
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -132,7 +146,7 @@ library map {
         this.remove(index, key);
     }
 
-    // unsafe internal function
+    // @require keys[index] == key
     function remove(AddressBool storage this, uint index, address key) internal {
         delete this.ordinals[key];
         delete this.vals[key];
@@ -142,8 +156,7 @@ library map {
             this.keys[index] = this.keys[this.keys.length-1];
             this.ordinals[this.keys[index]] = index + 1;
         }
-        // remove the last item from the array
-        delete this.keys[this.keys.length-1];
+        // delete the last item from the array
         this.keys.length--;
     }
 
