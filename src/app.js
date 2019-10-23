@@ -56,7 +56,7 @@ const userRedux = store.getRedux('user')
 const contractsRedux = store.getRedux('contracts')
 const userService = new UserService()
 let isRequest = false
-let isLogined = false
+let isLoggedIn = false
 
 function setupWeb3 () {
   window.web3.eth.getAccounts(async (err, accounts) => {
@@ -74,9 +74,9 @@ function setupWeb3 () {
 
                 // detect account switch
                 const wallet = store.getState().user.wallet;
-                isLogined = isLogined && wallet === accounts[0];
+                isLoggedIn = isLoggedIn && wallet === accounts[0];
 
-                if (!isLogined) {
+                if (!isLoggedIn) {
                   store.dispatch(userRedux.actions.loginMetamask_update(true))
                   store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
                   store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
@@ -84,14 +84,14 @@ function setupWeb3 () {
                   store.dispatch(userRedux.actions.web3_update(web3))
 
                   userService.metaMaskLogin(accounts[0])
-                  isLogined = true
+                  isLoggedIn = true
 
                   // simple trick: not work for entering .../login directly to the browser
                   if (userService.path.location.pathname === '/login') {
                     userService.path.goBack();
                   }
                 }
-            } else if (!isLogined) {
+            } else if (!isLoggedIn) {
                 store.dispatch(userRedux.actions.loginMetamask_update(false))
                 userService.path.push('/login')
             }
@@ -102,7 +102,7 @@ function setupWeb3 () {
             await window.ethereum.enable()
         }
         store.dispatch(userRedux.actions.loginMetamask_update(false))
-        isLogined = false
+        isLoggedIn = false
         userService.path.push('/login')
     }
   })
