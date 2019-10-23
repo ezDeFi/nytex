@@ -16,6 +16,7 @@ class UserRedux extends BaseRedux {
       },
 
       web3: null,
+      profile: null,
       blockNumber: 0,
       wallet: null,
       balance: 0,

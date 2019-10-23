@@ -1,7 +1,7 @@
 import React from 'react' // eslint-disable-line
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
-import { BrowserRouter, Route, Switch } from 'react-router-dom' // eslint-disable-line
+import { Route, Switch } from 'react-router-dom' // eslint-disable-line
 import { Provider } from 'react-redux' // eslint-disable-line
 import { ConnectedRouter } from 'react-router-redux' // eslint-disable-line
 import store from '@/store'
@@ -81,7 +81,11 @@ function setupWeb3 () {
 
                   await store.dispatch(userRedux.actions.web3_update(web3))
                   await userService.metaMaskLogin(accounts[0])
-                  //userService.path.push('/home')
+
+                  // simple trick: not work for entering .../login directly to the browser
+                  if (userService.path.location.pathname === '/login') {
+                    userService.path.goBack();
+                  }
                 }
                 isLogined = true
             } else if (!isLogined) {
