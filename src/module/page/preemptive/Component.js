@@ -1,7 +1,7 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { cutString, thousands, weiToMNTY, weiToNUSD, decShift, mntyToWei, nusdToWei } from '../../../util/help.js'
+import { cutString, thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei } from '@/util/help.js'
 import { DECIMALS, CONTRACTS } from '@/constant'
 
 import './style.scss'

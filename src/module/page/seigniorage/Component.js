@@ -1,14 +1,11 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul } from '../../../util/help.js'
-import { DECIMALS, CONTRACTS } from '@/constant'
+import { thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul } from '@/util/help.js'
+import { CONTRACTS } from '@/constant'
 import './style.scss'
 
 import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber, Checkbox } from 'antd' // eslint-disable-line
-import { util } from 'node-forge'
-
-var BigNumber = require('big-number');
 
 export default class extends LoggedInPage {
   state = {

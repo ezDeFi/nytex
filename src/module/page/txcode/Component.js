@@ -1,11 +1,11 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { thousands, weiToMNTY, weiToNUSD, } from '../../../util/help.js'
+import { thousands, weiToMNTY, weiToNUSD, } from '@/util/help.js'
 
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Breadcrumb, Input } from 'antd' // eslint-disable-line
 
 export default class extends LoggedInPage {
   state = {
