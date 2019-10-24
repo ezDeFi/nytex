@@ -355,33 +355,6 @@ library dex {
         }
     }
 
-    // absorb and duplicate the effect to initiator
-    function absorbPreemptive(
-        Book storage book,
-        bool useHaveAmount,
-        uint target,
-        address initiator
-    )
-        internal
-        returns (uint totalBMT, uint totalAMT)
-    {
-        (totalBMT, totalAMT) = book.absorb(useHaveAmount, target);
-        (uint haveAMT, uint wantAMT) = useHaveAmount ? (totalAMT, totalBMT) : (totalBMT, totalAMT);
-        if (haveAMT <= book.haveToken.allowance(initiator, address(this)) &&
-            haveAMT <= book.haveToken.balanceOf(initiator))
-        {
-            book.haveToken.transferFrom(initiator, book.haveToken.dex(), haveAMT);
-            book.haveToken.dexBurn(haveAMT);
-            book.wantToken.dexMint(wantAMT);
-            book.wantToken.transfer(initiator, wantAMT);
-            // accumulate the side-absorb
-            totalAMT += useHaveAmount ? haveAMT : wantAMT;
-            totalBMT += useHaveAmount ? wantAMT : haveAMT;
-            // emit SideFill(initiator, haveAMT, wantAMT);
-        }
-        // not enough allowance for side absorption
-    }
-
     function absorb(
         Book storage book,
         bool useHaveAmount,
@@ -428,37 +401,4 @@ library dex {
         // not enough order, return all we have
         return (totalBMT, totalAMT);
     }
-
-    // amountToAbsorb calculates the amount will be absorbed by absorb()
-    // always be updated with absorb() logic
-    // function amountToAbsorb(
-    //     Book storage book,
-    //     bool useHaveAmount,
-    //     uint target
-    // )
-    //     internal
-    //     view
-    //     returns(uint totalBMT, uint totalAMT)
-    // {
-    //     bytes32 id = book.topID();
-    //     while(id != LAST_ID && totalAMT < target) {
-    //         dex.Order storage order = book.orders[id];
-    //         uint amt = useHaveAmount ? order.haveAmount : order.wantAmount;
-    //         uint bmt = useHaveAmount ? order.wantAmount : order.haveAmount;
-    //         if (totalAMT.add(amt) <= target) {
-    //             id = order.next;
-    //         } else {
-    //             // partial order fill
-    //             uint fillableAMT = target.sub(totalAMT);
-    //             bmt = bmt * fillableAMT / amt;
-    //             amt = fillableAMT;
-    //             // extra step to make sure the loop will stop after this
-    //             id = LAST_ID;
-    //         }
-    //         totalAMT = totalAMT.add(amt);
-    //         totalBMT = totalBMT.add(bmt);
-    //     }
-    //     // not enough order, return all we have
-    //     return (totalBMT, totalAMT);
-    // }
 }
