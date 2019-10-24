@@ -11,7 +11,7 @@ import { api_request } from './util' // eslint-disable-line
 import UserService from '@/service/UserService'
 import {Helmet} from "react-helmet"
 import Web3 from 'web3'
-import { WEB3, CONTRACTS } from '@/constant'
+import { CONTRACTS } from '@/constant'
 
 import './boot'
 import './style/index.scss'
@@ -63,38 +63,37 @@ function setupWeb3 () {
     if (err) return
     if (accounts.length > 0) {
         window.web3.version.getNetwork((err, networkId) => {
-            if (networkId === WEB3.NETWORK_ID) {
-                let web3 = new Web3(window.ethereum)
+          if (err) {
+            console.error(err);
+            return;
+          }
+          let web3 = new Web3(window.ethereum)
 
-                const contracts = {
-                  VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
-                  StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
-                  Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
-                }
+          const contracts = {
+            VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
+            StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
+            Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
+          }
 
-                // detect account switch
-                const wallet = store.getState().user.wallet;
-                isLoggedIn = isLoggedIn && wallet === accounts[0];
+          // detect account switch
+          const wallet = store.getState().user.wallet;
+          isLoggedIn = isLoggedIn && wallet === accounts[0];
 
-                if (!isLoggedIn) {
-                  store.dispatch(userRedux.actions.loginMetamask_update(true))
-                  store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
-                  store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
-                  store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
-                  store.dispatch(userRedux.actions.web3_update(web3))
+          if (!isLoggedIn) {
+            store.dispatch(userRedux.actions.loginMetamask_update(true))
+            store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
+            store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
+            store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
+            store.dispatch(userRedux.actions.web3_update(web3))
 
-                  userService.metaMaskLogin(accounts[0])
-                  isLoggedIn = true
+            userService.metaMaskLogin(accounts[0])
+            isLoggedIn = true
 
-                  // simple trick: not work for entering .../login directly to the browser
-                  if (userService.path.location.pathname === '/login') {
-                    userService.path.goBack();
-                  }
-                }
-            } else if (!isLoggedIn) {
-                store.dispatch(userRedux.actions.loginMetamask_update(false))
-                userService.path.push('/login')
+            // simple trick: not work for entering .../login directly to the browser
+            if (userService.path.location.pathname === '/login') {
+              userService.path.goBack();
             }
+          }
         })
     } else {
         if (!isRequest) {

@@ -2,7 +2,7 @@ import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
 import { cutString, thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei } from '@/util/help.js'
-import { DECIMALS, CONTRACTS } from '@/constant'
+import { CONTRACTS } from '@/constant'
 
 import './style.scss'
 
@@ -266,8 +266,8 @@ proposalsRender() {
 }
 
 propose() {
-  const stake = mntyToWei(this.state.stake, DECIMALS.mnty);
-  const amount = nusdToWei(this.state.amount, DECIMALS.nusd);
+  const stake = mntyToWei(this.state.stake);
+  const amount = nusdToWei(this.state.amount);
   let slashingDuration = this.state.slashingDuration
   let lockdownExpiration = this.state.lockdownExpiration
   if (slashingDuration < 0) {

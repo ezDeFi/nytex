@@ -15,11 +15,6 @@ export const USER_ROLE = {
   COUNCIL: 'COUNCIL'
 }
 
-export const DECIMALS = {
-  mnty: 24,
-  nusd: 6
-}
-
 export const CONTRACTS =
   {
     'VolatileToken':
@@ -38,15 +33,6 @@ export const CONTRACTS =
         'address': ConsensusDeploy ? SeigniorageAddress : Seigniorage.networks[NetId].address
       },
   }
-
-export const WEB3 = {
-  // HTTP: 'http://rpc.testnet.nexty.io:8545', // testnet
-  // HTTP: 'http://13.228.68.50:8545', // mainnet
-  HTTP: 'http://localhost:8545', // localhost
-  NETWORK_ID: NetId // testnet
-}
-
-// To change WEB3 ABI ADDRESS
 
 export const USER_LANGUAGE = {
   en: 'en',
@@ -124,5 +110,3 @@ export const CONTRIB_CATEGORY = {
 export const DEFAULT_IMAGE = {
   TASK: '/assets/images/task_thumbs/12.jpg'
 }
-
-export const MIN_VALUE_DEPOSIT = 500000
