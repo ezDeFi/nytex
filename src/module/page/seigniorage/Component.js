@@ -5,7 +5,7 @@ import { thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul } from '@/ut
 import { CONTRACTS } from '@/constant'
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input, InputNumber, Checkbox } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Breadcrumb, Table, Input } from 'antd' // eslint-disable-line
 
 export default class extends LoggedInPage {
   state = {
@@ -116,11 +116,11 @@ export default class extends LoggedInPage {
                 {thousands(weiToMNTY(this.props.exVol))} MNTY + {thousands(weiToNUSD(this.props.exStb))} NewSD
               </Col>
               <Col span={4}>
-                <Button onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
+                <Button type='primary' onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
               </Col>
             </Row>
 
-            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+            <Row type="flex" align="middle" style={{ 'marginTop': '5px' }}>
               <Col span={2}>
                 MNTY:
               </Col>
@@ -148,12 +148,26 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
 
-            <Row style={{ 'marginTop': '10px' }}>
+            <Row style={{ 'marginTop': '5px' }}>
               <Col span={5}>
                 <Button onClick={() => this.props.reload()} className="btn-margin-top submit-button maxWidth">RELOAD</Button>
               </Col>
-              <Col span={1}/>
+              <Col span={4}/>
               <Col span={7}>
+                <Button onClick={() => this.toggleDebug()} className="btn-margin-top submit-button maxWidth">
+                  DEBUG
+                </Button>
+              </Col>
+              <Col span={4}/>
+              <Col span={4}>
+                <Button type='primary' onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
+              </Col>
+            </Row>
+
+            {this.state.debug &&
+            <Row style={{ 'marginTop': '15px' }}>
+              <Col span={7}/>
+              <Col span={10}>
                 <Input className="maxWidth"
                   placeholder="NewSD to absorb"
                   defaultValue={0}
@@ -161,26 +175,23 @@ export default class extends LoggedInPage {
                   onChange={this.absorptionChange.bind(this)}
                 />
               </Col>
-              <Col span={1}>
-                <Checkbox
-                  value={this.state.side}
-                  onChange={this.sideChange.bind(this)}
-                />
-              </Col>
-              <Col span={5}>
+              <Col span={4}>
                 <Button onClick={() => this.absorb()}
                   className="btn-margin-top submit-button maxWidth">
                     ABSORB
                 </Button>
               </Col>
-              <Col span={1}/>
-              <Col span={4}>
-                <Button onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
+              <Col span={3}>
+                <Button onClick={() => this.absorbPeA()}
+                  className="btn-margin-top submit-button maxWidth">
+                    PeA
+                </Button>
               </Col>
             </Row>
+            }
 
-            {this.state.side &&
-            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+            {this.state.debug &&
+            <Row type="flex" align="middle" style={{ 'marginTop': '5px' }}>
               <Col span={7}>
                 {this.tokenToApprove()} Allowance:
               </Col>
@@ -319,8 +330,13 @@ absorb() {
   const amount = this.state.absorption;
   const wei = nusdToWei(amount);
   const zeroAddress = "0x0000000000000000000000000000000000000000"
-  const sideAddress = this.state.side ? this.props.wallet : zeroAddress;
-  this.props.absorb(wei, sideAddress);
+  this.props.absorb(wei, zeroAddress);
+}
+
+absorbPeA() {
+  const amount = this.state.absorption;
+  const wei = nusdToWei(amount);
+  this.props.absorb(wei, this.props.wallet);
 }
 
 idChange(e) {
@@ -359,15 +375,15 @@ mntyChange(e) {
   })
 }
 
-absorptionChange(e) {
+toggleDebug(e) {
   this.setState({
-    absorption: e.target.value
+    debug: !this.state.debug
   })
 }
 
-sideChange(e) {
+absorptionChange(e) {
   this.setState({
-    side: e.target.checked
+    absorption: e.target.value
   })
 }
 
