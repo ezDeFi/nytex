@@ -140,7 +140,7 @@ export default class extends LoggedInPage {
               <Col span={1}/>
               <Col span={8}>
                 <Input className="maxWidth"
-                  placeholder="MNTY/NewSD"
+                  placeholder="NewSD/MNTY"
                   defaultValue={0}
                   value={this.state.price}
                   onChange={this.priceChange.bind(this)}
