@@ -147,7 +147,7 @@ export default class extends LoggedInPage {
   ord_renderBreadcrumb () { // eslint-disable-line
     return (
       <Breadcrumb style={{ 'marginLeft': '16px', 'marginTop': '16px', float: 'right' }}>
-        <Breadcrumb.Item><Link to="/userdata"><Icon type="home" /> Home</Link></Breadcrumb.Item>
+        <Breadcrumb.Item><Link to="/home"><Icon type="home" /> Home</Link></Breadcrumb.Item>
         <Breadcrumb.Item>User's control</Breadcrumb.Item>
       </Breadcrumb>
     )
