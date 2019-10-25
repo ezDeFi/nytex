@@ -97,6 +97,9 @@ export default class extends BaseComponent {
           <Menu.Item key="preemptive">
             <Icon type="credit-card" /> {I18N.get('0003')}
           </Menu.Item>
+          <Menu.Item key="feeder">
+            <Icon type="dollar" /> {I18N.get('0017')}
+          </Menu.Item>
           <Menu.Item key="txcode">
             <Icon type="code" /> {I18N.get('0004')}
           </Menu.Item>
@@ -111,6 +114,7 @@ export default class extends BaseComponent {
       'home',
       'exchange',
       'preemptive',
+      'feeder',
       'txcode'
     ], key)) {
       this.props.history.push('/' + e.key)
@@ -137,6 +141,7 @@ export default class extends BaseComponent {
       'home',
       'exchange',
       'preemptive',
+      'feeder',
       'txcode'
     ]
 

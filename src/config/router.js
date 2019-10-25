@@ -1,5 +1,6 @@
 import SeignioragePage from '@/module/page/seigniorage/Container'
 import PreemptivePage from '@/module/page/preemptive/Container'
+import FeederPage from '@/module/page/feeder/Container'
 import TxCodePage from '@/module/page/txcode/Container'
 import LoginPage from '@/module/page/login/Container'
 import NotFound from '@/module/page/error/NotFound'
@@ -20,6 +21,10 @@ export default [
   {
     path: '/preemptive',
     page: PreemptivePage
+  },
+  {
+    path: '/feeder',
+    page: FeederPage
   },
   {
     path: '/txcode',
