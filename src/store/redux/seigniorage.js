@@ -24,21 +24,21 @@ class SeigniorageRedux extends BaseRedux {
                 //     maker: '0xxxxxxcba1eb33dc4b8c6dcbfcc6352f0a253285d',
                 //     stake: 345,
                 //     amount: 123,
-                //     slashingDuration: 13,
+                //     slashingPace: 13,
                 //     lockdownExpiration: 39,
                 // },
                 // 1: {
                 //     maker: '0x12345cba1eb33dc4b8c6dcbfcc6352f0a253285d',
                 //     stake: 345000,
                 //     amount: 123000,
-                //     slashingDuration: 130,
+                //     slashingPace: 130,
                 //     lockdownExpiration: 390,
                 // },
             },
 
             globalParams: {
                 // stake: 0,
-                // slashingDuration: 0,
+                // slashingPace: 0,
                 // lockdownExpiration: 0,
                 // rank: 0,
             }

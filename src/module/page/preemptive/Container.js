@@ -48,8 +48,8 @@ export default createContainer(Component, (state) => {
   const seigniorageService = new SeigniorageService()
 
   return {
-    async propose(amount, stake, slashingDuration, lockdownExpiration) {
-      return await volatileTokenService.propose(amount, stake, slashingDuration, lockdownExpiration)
+    async propose(amount, stake, slashingPace, lockdownExpiration) {
+      return await volatileTokenService.propose(amount, stake, slashingPace, lockdownExpiration)
     },
     async revoke(maker) {
       return await seigniorageService.revoke(maker)

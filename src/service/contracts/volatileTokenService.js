@@ -21,14 +21,14 @@ export default class extends BaseService {
         return await _volatileTokenBalance
     }
 
-    async propose(amount, stake, slashingDuration, lockdownExpiration) {
+    async propose(amount, stake, slashingPace, lockdownExpiration) {
         const store = this.store.getState()
         const contract = store.contracts.volatileToken;
         // console.log('sell MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
         await sendTx(store.user.web3, {
             from: store.user.wallet,
             to: contract._address,
-            data: contract.methods.propose(amount, stake, slashingDuration, lockdownExpiration).encodeABI(),
+            data: contract.methods.propose(amount, stake, slashingPace, lockdownExpiration).encodeABI(),
         })
     }
 

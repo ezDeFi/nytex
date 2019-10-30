@@ -9,13 +9,13 @@ contract Seigniorage is Preemptivable {
     constructor (
         uint absorptionDuration,
         uint absorptionExpiration,
-        uint initialSlashingDuration,
+        uint initialSlashingPace,
         uint initialLockdownExpiration
     )
         Preemptivable(
             absorptionDuration,
             absorptionExpiration,
-            initialSlashingDuration,
+            initialSlashingPace,
             initialLockdownExpiration
         )
         public

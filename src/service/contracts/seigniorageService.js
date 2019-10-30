@@ -60,7 +60,7 @@ export default class extends BaseService {
                     'maker': res.maker,
                     'stake': thousands(weiToMNTY(res.stake)),
                     'amount': thousands(weiToNUSD(res.amount)),
-                    'slashingDuration': res.slashingDuration,
+                    'slashingPace': res.slashingPace,
                     'lockdownExpiration': res.lockdownExpiration,
                 }}));
                 methods.totalVote(res.maker).call().then(totalVote => {

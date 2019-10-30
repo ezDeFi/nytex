@@ -12,7 +12,7 @@ export default class extends LoggedInPage {
   state = {
     stake: 200,
     amount: 100,
-    slashingDuration: 0,
+    slashingPace: 0,
     lockdownExpiration: 0,
   }
 
@@ -98,16 +98,16 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
-              <Col span={8}>Slashing Duration:</Col>
+              <Col span={8}>Slashing Pace:</Col>
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
-                  value={this.state.slashingDuration}
-                  onChange={this.slashingDurationChange.bind(this)}
+                  value={this.state.slashingPace}
+                  onChange={this.slashingPaceChange.bind(this)}
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                {this.props.globalParams.slashingDuration}
+                {this.props.globalParams.slashingPace}
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
@@ -228,9 +228,9 @@ proposalsRender() {
           key: 'amount',
         },
         {
-          title: 'SD',
-          dataIndex: 'slashingDuration',
-          key: 'slashingDuration',
+          title: 'SP',
+          dataIndex: 'slashingPace',
+          key: 'slashingPace',
         },
         {
           title: 'LE',
@@ -268,9 +268,9 @@ proposalsRender() {
 propose() {
   const stake = mntyToWei(this.state.stake);
   const amount = nusdToWei(this.state.amount);
-  let slashingDuration = this.state.slashingDuration
+  let slashingPace = this.state.slashingPace
   let lockdownExpiration = this.state.lockdownExpiration
-  if (slashingDuration < 0) {
+  if (slashingPace < 0) {
     console.error("negative slashing duration");
     return;
   }
@@ -280,7 +280,7 @@ propose() {
   }
   console.log('***** stake MNTY:', thousands(weiToMNTY(stake)))
   console.log('*** amount NEWSD:', thousands(weiToNUSD(amount)))
-  this.props.propose(amount, stake, slashingDuration, lockdownExpiration)
+  this.props.propose(amount, stake, slashingPace, lockdownExpiration)
 }
 
 reload() {
@@ -317,9 +317,9 @@ amountChange(e) {
   })
 }
 
-slashingDurationChange(e) {
+slashingPaceChange(e) {
   this.setState({
-     slashingDuration: e.target.value
+     slashingPace: e.target.value
   })
 }
 
