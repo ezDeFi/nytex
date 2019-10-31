@@ -145,23 +145,46 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
 
-            <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
-              <Col span={7}>
-                {this.tokenToApprove()} Allowance:
+            <h3 className="text-center">Allowance</h3>
+
+            <Row type="flex" align="middle">
+              <Col span={4}>
+                MNTY:
               </Col>
-              <Col span={7}>
-                {this.allowanceRender()}
+              <Col span={8}>
+                {thousands(weiToMNTY(this.props.volAllowance))}
               </Col>
-              <Col span={6}>
+              <Col span={8}>
                 <Input className="maxWidth"
-                  placeholder={this.tokenToApprove()}
+                  placeholder='MNTY'
                   defaultValue={0}
-                  value={this.state.amountToApprove}
-                  onChange={this.amountToApproveChange.bind(this)}
+                  value={this.state.volToApprove}
+                  onChange={this.volToApproveChange.bind(this)}
                 />
               </Col>
               <Col span={4}>
-                <Button onClick={() => this.approve()}
+                <Button onClick={() => this.approve(true)}
+                  className="btn-margin-top submit-button maxWidth">Approve</Button>
+              </Col>
+            </Row>
+
+            <Row type="flex" align="middle">
+              <Col span={4}>
+                NEWSD:
+              </Col>
+              <Col span={8}>
+                {thousands(weiToNUSD(this.props.stbAllowance))}
+              </Col>
+              <Col span={8}>
+                <Input className="maxWidth"
+                  placeholder='NEWSD'
+                  defaultValue={0}
+                  value={this.state.stbToApprove}
+                  onChange={this.stbToApproveChange.bind(this)}
+                />
+              </Col>
+              <Col span={4}>
+                <Button onClick={() => this.approve(false)}
                   className="btn-margin-top submit-button maxWidth">Approve</Button>
               </Col>
             </Row>
@@ -329,52 +352,22 @@ lockdownExpirationChange(e) {
   })
 }
 
-// Approve feature
-amountToApproveChange(e) {
+volToApproveChange(e) {
   this.setState({
-    amountToApprove: e.target.value
+    volToApprove: e.target.value
   });
 }
 
-approve() {
-  const amountToApprove = this.state.amountToApprove;
-  const token = this.tokenToApprove();
-  let amount;
-  let isVolatileToken;
-  if (token === 'MNTY') {
-    isVolatileToken = true;
-    amount = mntyToWei(amountToApprove);
-  } else {
-    isVolatileToken = false;
-    amount = nusdToWei(amountToApprove);
-  }
+stbToApproveChange(e) {
+  this.setState({
+    stbToApprove: e.target.value
+  });
+}
+
+approve(isVolatileToken) {
+  const amount = isVolatileToken ?
+    mntyToWei(this.state.volToApprove) : nusdToWei(this.state.stbToApprove);
   this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
-}
-
-allowanceRender() {
-  const token = this.tokenToApprove();
-  if (token === 'MNTY') {
-    return thousands(weiToMNTY(this.props.volAllowance))
-  } 
-  if (token === 'NEWSD') {
-    return thousands(weiToNUSD(this.props.stbAllowance))
-  }
-}
-
-tokenToApprove(){
-  const proposals = Object.values(this.props.proposals)
-  let tokenRender;
-  proposals.some((value)=> {
-    if (value.maker.toLowerCase() === this.props.wallet) {
-      if (value.amount[0] !== '-') {
-        tokenRender = 'MNTY'
-      } else {
-        tokenRender = 'NEWSD'
-      }
-      return true;
-    }
-  })
-  return tokenRender
 }
 
 }
