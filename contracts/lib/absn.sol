@@ -13,6 +13,7 @@ library absn {
         uint deadline; // the last block the absorption is valid
         uint supply;   // StablizeToken supply at the activation block
         uint target;   // StablizeToken target supply for the active
+        bool isHalted;
         bool isPreemptive;
     }
 
@@ -26,6 +27,7 @@ library absn {
 
     function isAbsorbing(Absorption storage this, uint supply) internal view returns(bool) {
         return this.exists() &&
+            !this.isHalted &&                               // not halted
             supply != this.target &&                        // target not reached &&
             util.inOrder(this.supply, supply, this.target); // not over-absorbed
     }

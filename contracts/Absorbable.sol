@@ -156,6 +156,7 @@ contract Absorbable is Orderbook {
         last = absn.Absorption(block.number + EXPIRATION,
             supply,
             target,
+            false,
             isPreemptive);
         int amount = util.sub(target, supply);
         emit Absorption(amount, supply, emptive);
