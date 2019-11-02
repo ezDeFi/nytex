@@ -43,9 +43,9 @@ library absn {
         // NTY amount staked for the preemptive proposal
         uint stake;
 
-        // SlashingPace = 1 / SlashingRate
-        // slashed = -Deviation/Amount / SlashingPace
-        uint slashingPace;
+        // slashingDivisor = stake * slashingRate / ZOOM / |amount
+        // toSlash = |deviation| / slashingDivisor
+        uint slashingRate;
 
         // lockdown duration (in blocks from the activation)
         uint lockdownExpiration;
@@ -73,7 +73,7 @@ library absn {
         address maker;
         int amount;
         uint stake;
-        uint slashingPace;
+        uint slashingFactor;
 
         // block number the lockdown will end
         uint unlockNumber;
