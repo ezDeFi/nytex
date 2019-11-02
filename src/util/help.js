@@ -34,7 +34,7 @@ export function cutString (s) {
     return first5 + '...' + last3
 }
 
-export function intShift(s, d) {
+function intShift(s, d) {
     s = s.toString();
     if (d === 0) {
         return s;
@@ -49,7 +49,7 @@ export function intShift(s, d) {
     }
 }
 
-export function _decShiftPositive(s, d){
+function _decShiftPositive(s, d){
     s = s.toString();
     if (d == 0) {
         return s;
@@ -108,33 +108,18 @@ export function decShift(s, d) {
 }
 
 // Number => wei string
-export function ntyToWei(mnty) {
-    let s = decShift(mnty, 18);
-    let p = s.indexOf('.');
-    if (p >= 0) {
-        return s.substring(0, p);
-    }
-    return s;
+export function ntyToWei(coin) {
+    return truncateShift(coin, 18);
 }
 
 // Number => wei string
-export function mntyToWei(mnty) {
-    let s = decShift(mnty, 24);
-    let p = s.indexOf('.');
-    if (p >= 0) {
-        return s.substring(0, p);
-    }
-    return s;
+export function mntyToWei(coin) {
+    return truncateShift(coin, 24);
 }
 
 // Number => wei string
-export function nusdToWei(mnty) {
-    let s = decShift(mnty, 6);
-    let p = s.indexOf('.');
-    if (p >= 0) {
-        return s.substring(0, p);
-    }
-    return s;
+export function nusdToWei(coin) {
+    return truncateShift(coin, 6);
 }
 
 export function weiToMNTY(wei) {
@@ -143,6 +128,16 @@ export function weiToMNTY(wei) {
 
 export function weiToNUSD(wei) {
     return decShift(wei, -6);
+}
+
+// n must be positive
+export function truncateShift(a, n) {
+    let s = decShift(a, n);
+    let p = s.indexOf('.');
+    if (p >= 0) {
+        return s.substring(0, p);
+    }
+    return s;
 }
 
 export function weiToPrice(mnty, nusd) {
