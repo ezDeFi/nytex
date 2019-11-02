@@ -1,6 +1,6 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
-import { sendTx } from '../../util/help'
+import { sendTx, truncateShift, thousands, weiToMNTY, weiToNUSD } from '../../util/help'
 
 const crypto = require('crypto');
 
@@ -21,14 +21,15 @@ export default class extends BaseService {
         return await _volatileTokenBalance
     }
 
-    async propose(amount, stake, slashingPace, lockdownExpiration) {
+    async propose(amount, stake, slashingRate, lockdownExpiration) {
+        slashingRate = truncateShift(slashingRate, 3);
+        console.log('propose', thousands(weiToNUSD(amount)), thousands(weiToMNTY(stake)), slashingRate, lockdownExpiration);
         const store = this.store.getState()
         const contract = store.contracts.volatileToken;
-        // console.log('sell MNTY haveA=',_haveAmount.toString(), ' wantA=', _wantAmount.toString())
         await sendTx(store.user.web3, {
             from: store.user.wallet,
             to: contract._address,
-            data: contract.methods.propose(amount, stake, slashingPace, lockdownExpiration).encodeABI(),
+            data: contract.methods.propose(amount, stake, slashingRate, lockdownExpiration).encodeABI(),
         })
     }
 

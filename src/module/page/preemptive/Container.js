@@ -40,6 +40,7 @@ export default createContainer(Component, (state) => {
     volAllowance: state.user.volAllowance,
     stbAllowance: state.user.stbAllowance,
     globalParams: state.seigniorage.globalParams,
+    lockdown: state.seigniorage.lockdown,
     proposals: state.seigniorage.proposals
   }
 }, () => {
@@ -48,8 +49,8 @@ export default createContainer(Component, (state) => {
   const seigniorageService = new SeigniorageService()
 
   return {
-    async propose(amount, stake, slashingPace, lockdownExpiration) {
-      return await volatileTokenService.propose(amount, stake, slashingPace, lockdownExpiration)
+    async propose(amount, stake, slashingRate, lockdownExpiration) {
+      return await volatileTokenService.propose(amount, stake, slashingRate, lockdownExpiration)
     },
     async revoke(maker) {
       return await seigniorageService.revoke(maker)

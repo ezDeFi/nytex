@@ -1,6 +1,6 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
-import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString} from '../../util/help'
+import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift } from '../../util/help'
 import { sendTx } from '../../util/help'
 
 export default class extends BaseService {
@@ -51,28 +51,42 @@ export default class extends BaseService {
         const store = this.store.getState()
         let methods = store.contracts.seigniorage.methods
         const seigniorageRedux = this.store.getRedux('seigniorage')
+
+        methods.getGlobalParams().call()
+            .then((globalParams) => {
+                console.log(globalParams);
+                this.dispatch(seigniorageRedux.actions.globalParams_update(globalParams));
+            });
+
+        methods.getLockdown().call()
+            .then((lockdown) => {
+                // const zeroAddress = "0x0000000000000000000000000000000000000000";
+                // if (lockdown.maker === zeroAddress) {
+                //     return;
+                // }
+                this.dispatch(seigniorageRedux.actions.lockdown_update(lockdown));
+            });
+
         const count = await methods.getProposalCount().call()
         this.dispatch(seigniorageRedux.actions.proposals_reset());
         for (let i = 0; i < count; ++i) {
             methods.getProposal(i).call().then(res => {
-                console.log(res);
+                // console.log(res);
                 this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
                     'maker': res.maker,
                     'stake': thousands(weiToMNTY(res.stake)),
                     'amount': thousands(weiToNUSD(res.amount)),
-                    'slashingPace': res.slashingPace,
+                    'slashingRate': decShift(res.slashingRate, -3),
                     'lockdownExpiration': res.lockdownExpiration,
                 }}));
                 methods.totalVote(res.maker).call().then(totalVote => {
-                    console.log(totalVote);
+                    // console.log(totalVote);
                     this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
                         'totalVote': thousands(weiToMNTY(totalVote)),
                     }}));
                 });
             })
         }
-        const globalParams = await methods.getGlobalParams().call();
-        this.dispatch(seigniorageRedux.actions.globalParams_update(globalParams));
     }
 
     async loadOrders(orderType) {

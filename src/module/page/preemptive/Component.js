@@ -1,7 +1,7 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { cutString, thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei } from '@/util/help.js'
+import { cutString, thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, decShift, truncateShift } from '@/util/help.js'
 import { CONTRACTS } from '@/constant'
 
 import './style.scss'
@@ -12,7 +12,7 @@ export default class extends LoggedInPage {
   state = {
     stake: 200,
     amount: 100,
-    slashingPace: 0,
+    slashingRate: 1.0,
     lockdownExpiration: 0,
   }
 
@@ -98,16 +98,16 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
-              <Col span={8}>Slashing Pace:</Col>
+              <Col span={8}>Slashing Rate:</Col>
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
-                  value={this.state.slashingPace}
+                  value={this.state.slashingRate}
                   onChange={this.slashingPaceChange.bind(this)}
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                {this.props.globalParams.slashingPace}
+                {decShift(this.props.globalParams.slashingRate, -3)}
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
@@ -189,6 +189,18 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
 
+            <h3 className="text-center">Lockdown</h3>
+
+            <Row type="flex" align="middle">
+              <Col span={24}>
+                Maker({cutString(this.props.lockdown.maker)})
+                Stake({thousands(weiToMNTY(this.props.lockdown.stake))})
+                Amount({thousands(weiToNUSD(this.props.lockdown.amount))})
+                SF({decShift(this.props.lockdown.slashingFactor,-18)})
+                UN({this.props.lockdown.unlockNumber})
+              </Col>
+            </Row>
+
           </div>
         </div>
       </div>
@@ -251,9 +263,9 @@ proposalsRender() {
           key: 'amount',
         },
         {
-          title: 'SP',
-          dataIndex: 'slashingPace',
-          key: 'slashingPace',
+          title: 'SR',
+          dataIndex: 'slashingRate',
+          key: 'slashingRate',
         },
         {
           title: 'LE',
@@ -291,9 +303,9 @@ proposalsRender() {
 propose() {
   const stake = mntyToWei(this.state.stake);
   const amount = nusdToWei(this.state.amount);
-  let slashingPace = this.state.slashingPace
+  let slashingRate = this.state.slashingRate
   let lockdownExpiration = this.state.lockdownExpiration
-  if (slashingPace < 0) {
+  if (slashingRate < 0) {
     console.error("negative slashing duration");
     return;
   }
@@ -303,7 +315,7 @@ propose() {
   }
   console.log('***** stake MNTY:', thousands(weiToMNTY(stake)))
   console.log('*** amount NEWSD:', thousands(weiToNUSD(amount)))
-  this.props.propose(amount, stake, slashingPace, lockdownExpiration)
+  this.props.propose(amount, stake, slashingRate, lockdownExpiration)
 }
 
 reload() {
@@ -342,7 +354,7 @@ amountChange(e) {
 
 slashingPaceChange(e) {
   this.setState({
-     slashingPace: e.target.value
+     slashingRate: e.target.value
   })
 }
 
