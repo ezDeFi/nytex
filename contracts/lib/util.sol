@@ -49,7 +49,7 @@ library util {
             return 0;
         }
 
-        int256 c = a * b;
+        int c = a * b;
         if (c / a == b) {
             return c;
         }
@@ -60,6 +60,25 @@ library util {
         }
         // positive overflown
         return MaxInt256;
+    }
+
+    // unsigned capped multiply
+    // if the calculation is overflown, return the max value of uint256
+    function mulCap(uint a, uint b) internal pure returns (uint) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+        if (a == 0) {
+            return 0;
+        }
+
+        uint c = a * b;
+        if (c / a == b) {
+            return c;
+        }
+
+        // overflown
+        return MaxUint256;
     }
 
     // capped average
