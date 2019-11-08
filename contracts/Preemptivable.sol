@@ -294,7 +294,7 @@ contract Preemptivable is Absorbable {
             return oldValue;
         }
         uint value = util.avgCap(oldValue, newValue);
-        if (newValue < oldValue) {
+        if (newValue < oldValue || oldValue == 0) {
             return value;
         }
         uint change = value - oldValue; // safe
