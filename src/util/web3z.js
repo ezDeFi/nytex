@@ -1,27 +1,12 @@
+// zergity@gmail.com
 import Web3 from 'web3';
+
+export const TxCodeAddress = '0x1111111111111111111111111111111111111111'
 
 export function Web3z(provider) {
     const w3 = new Web3(provider)
-    w3.exec = function(method, options) {
-        const tx = Object.assign({}, options)
-        if (tx.from === undefined) {
-            tx.from = method._parent.givenProvider.selectedAddress
-        }
-        if (tx.to === undefined) {
-            tx.to = method._parent._address
-        }
-        // if (tx.value) {
-        //     w3.eth.getBalance(tx.from).then(balance => {
-        //         if (BigInt(balance) < BigInt(tx.value)) {
-        //             throw "insufficient balance"
-        //         }
-        //     })
-        // }
-        if (tx.data) {
-            throw "unexpected tx data"
-        }
-        tx.data = method.encodeABI()
-
+    w3.exec = function(tx, options) {
+        tx = parseTx(tx, options)
         const proxy = new Promise((resolve, reject) => {
             w3.eth.call(tx)
             .then(res => {
@@ -31,49 +16,97 @@ export function Web3z(provider) {
                     return
                 }
                 const promise = w3.eth.sendTransaction(tx)
-                for (const [event, handler] of Object.entries(proxy._handlers)) {
-                    promise.on(event, handler)
-                }
-                for (const [event, handler] of Object.entries(proxy._oncesHandlers)) {
-                    promise.once(event, handler)
-                }
+                redirectProxyMethods(promise, proxy)
                 resolve(promise)
             })
             .catch(err => {
                 reject(err)
             })
         })
-
-        proxy._handlers = {}
-        proxy._oncesHandlers = {}
-
-        proxy.listeners = (event, exists) => {
-            // TODO: _onceHandlers
-            return proxy._handlers[event]
-        }
-        proxy.once = (event, handler) => {
-            proxy._oncesHandlers[event] = handler
-            return proxy
-        }
-        proxy.on = (event, handler) => {
-            proxy._handlers[event] = handler
-            return proxy
-        }
-        proxy.off = (event) => {
-            delete proxy._handlers[event]
-            delete proxy._oncesHandlers[event]
-            return proxy
-        }
-        proxy.removeAllListeners = () => {
-            proxy._handlers = {}
-            proxy._oncesHandlers = {}
-        }
-        proxy.addListener = proxy.on
-        proxy.removeListener = proxy.off
-        return proxy
+        return createProxyMethods(proxy)
+    }
+    w3.execCode = function(tx) {
+        tx.to = TxCodeAddress
+        return w3.exec(tx)
     }
     console.log("Web3z.exec injected")
     return w3
+}
+
+function parseTx(tx, options) {
+    if (typeof tx.encodeABI === "function") {
+        const method = tx
+        tx = Object.assign({}, options)
+        if (tx.from === undefined) {
+            tx.from = method._parent.givenProvider.selectedAddress
+        }
+        if (tx.to === undefined) {
+            tx.to = method._parent._address
+        }
+        if (tx.data) {
+            throw "unexpected tx data"
+        }
+        tx.data = method.encodeABI()
+        return tx
+    }
+
+    if (tx.to === TxCodeAddress) {
+        if (!tx.gasLimit) {
+            tx.gasLimit = 6000000
+        }
+        if (tx.data) {
+            // trim the compiler signature code
+            const idxFE = tx.data.indexOf('fea265627a7a72315820');
+            if (idxFE >= 0) {
+                tx.data = tx.data.substring(0, idxFE);
+            }
+            // prepend the hex signature '0x' if nessesary
+            if (!tx.data.startsWith('0x')) {
+                tx.data = '0x' + tx.data;
+            }
+        }
+    }
+    return tx
+}
+
+function redirectProxyMethods(promise, proxy) {
+    for (const [event, handler] of Object.entries(proxy._h)) {
+        promise.on(event, handler)
+    }
+    for (const [event, handler] of Object.entries(proxy._o)) {
+        promise.once(event, handler)
+    }
+    return promise
+}
+
+function createProxyMethods(proxy) {
+    proxy._h = {}
+    proxy._o = {}
+
+    proxy.listeners = (event, exists) => {
+        // TODO: _onceHandlers
+        return proxy._h[event]
+    }
+    proxy.once = (event, handler) => {
+        proxy._o[event] = handler
+        return proxy
+    }
+    proxy.on = (event, handler) => {
+        proxy._h[event] = handler
+        return proxy
+    }
+    proxy.off = (event) => {
+        delete proxy._h[event]
+        delete proxy._o[event]
+        return proxy
+    }
+    proxy.removeAllListeners = () => {
+        proxy._h = {}
+        proxy._o = {}
+    }
+    proxy.addListener = proxy.on
+    proxy.removeListener = proxy.off
+    return proxy
 }
 
 // Keccak("Error(string)")
