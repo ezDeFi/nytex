@@ -10,7 +10,7 @@ import { USER_ROLE } from '@/constant'
 import { api_request } from './util' // eslint-disable-line
 import UserService from '@/service/UserService'
 import {Helmet} from "react-helmet"
-import Web3 from 'web3'
+import { Web3z } from '@/util/web3z'
 import { CONTRACTS } from '@/constant'
 
 import './boot'
@@ -67,7 +67,7 @@ function setupWeb3 () {
             console.error(err);
             return;
           }
-          let web3 = new Web3(window.ethereum)
+          const web3 = new Web3z(window.ethereum)
 
           const contracts = {
             VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),

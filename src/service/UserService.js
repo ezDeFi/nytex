@@ -1,5 +1,6 @@
 import BaseService from '../model/BaseService'
 import Web3 from 'web3'
+import { Web3z } from '../util/web3z'
 import _ from 'lodash' // eslint-disable-line
 import WalletService from '@/service/WalletService'
 import { WEB3, CONTRACTS } from '@/constant'
@@ -9,7 +10,7 @@ export default class extends BaseService {
   async decryptWallet (privatekey) {
     const userRedux = this.store.getRedux('user')
 
-    let web3 = new Web3(new Web3.providers.HttpProvider(WEB3.HTTP))
+    let web3 = new Web3z(new Web3.providers.HttpProvider(WEB3.HTTP))
 
     const NTFToken = web3.eth.contract(WEB3.PAGE['NTFToken'].ABI)
     const NTFTokenContract = NTFToken.at(WEB3.PAGE['NTFToken'].ADDRESS)
@@ -68,7 +69,7 @@ export default class extends BaseService {
     const userRedux = this.store.getRedux('user')
     const contractsRedux = this.store.getRedux('contracts')
     // let web3 = new Web3(new Web3.providers.HttpProvider(WEB3.HTTP))
-    let web3 = new Web3(window.ethereum)
+    let web3 = new Web3z(window.ethereum)
 
     const contracts = {
       VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),

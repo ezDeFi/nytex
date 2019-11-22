@@ -47,23 +47,29 @@ export default class extends BaseService {
 
     async deposit(amount) {
         const store = this.store.getState()
-        const contract = store.contracts.volatileToken;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.deposit().encodeABI(),
-            value: amount,
-        });
+        const web3 = store.user.web3
+        const contract = store.contracts.volatileToken
+        await web3.exec(contract.methods.deposit(), {value: amount})
     }
 
     async withdraw(amount) {
         const store = this.store.getState()
-        const contract = store.contracts.volatileToken;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.withdraw(amount).encodeABI(),
-        });
+        const web3 = store.user.web3
+        const contract = store.contracts.volatileToken
+        await web3.exec(contract.methods.withdraw(amount))
+        // .on('transactionHash', (hash) => {
+        //     console.log("hash", hash)
+        // }).on('receipt', (receipt) => {
+        //     console.log("receipt", receipt)
+        // }).on('error', (error) => {
+        //     console.error("error", error)
+        // }).on('confirmation', (conf) => {
+        //     console.log(conf)
+        // }).then(x => {
+        //     console.log(x)
+        // }).catch(x => {
+        //     console.error(x)
+        // })
     }
 
     async approve(spender, amount) {
