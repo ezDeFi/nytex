@@ -67,19 +67,20 @@ function setupWeb3 () {
             console.error(err);
             return;
           }
-          const web3 = new Web3z(window.ethereum)
-
-          const contracts = {
-            VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
-            StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
-            Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
-          }
 
           // detect account switch
           const wallet = store.getState().user.wallet;
           isLoggedIn = isLoggedIn && wallet === accounts[0];
 
           if (!isLoggedIn) {
+            const web3 = new Web3z(window.ethereum)
+
+            const contracts = {
+              VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
+              StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
+              Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
+            }
+
             store.dispatch(userRedux.actions.loginMetamask_update(true))
             store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
             store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
