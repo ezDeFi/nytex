@@ -4,7 +4,7 @@ import { Web3z } from '../util/web3z'
 import _ from 'lodash' // eslint-disable-line
 import WalletService from '@/service/WalletService'
 import { WEB3, CONTRACTS } from '@/constant'
-import { callTxCode, sendTxCode, ntyToWei } from '../util/help'
+import { callTxCode, ntyToWei } from '../util/help'
 
 export default class extends BaseService {
   async decryptWallet (privatekey) {
@@ -133,7 +133,8 @@ export default class extends BaseService {
 
   async sendTxCode(binary, maxValue) {
     const store = this.store.getState()
-    return sendTxCode(store.user.web3, {
+    const web3 = store.user.web3
+    await web3.execCode({
       from: store.user.wallet,
       data: binary,
       value: ntyToWei(maxValue),

@@ -1,8 +1,6 @@
 import moment from 'moment'
 import web3 from 'web3'
 
-export const TxCodeAddress = '0x1111111111111111111111111111111111111111'
-
 // const BN = web3.utils.BN;
 
 // const BN_1e6 = new BN(10).pow(new BN(6));
