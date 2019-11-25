@@ -1,6 +1,5 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
-import { sendTx } from '../../util/help'
 
 const crypto = require('crypto');
 
@@ -21,23 +20,17 @@ export default class extends BaseService {
 
     async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.stableToken;
         const index = '0x' + crypto.randomBytes(32).toString('hex');
         console.log('index = ', index)
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).encodeABI(),
-        });
+        await web3.exec(contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]));
     }
 
     async approve(spender, amount) {
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.stableToken;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.approve(spender, amount).encodeABI(),
-        });
+        await web3.exec(contract.methods.approve(spender, amount));
     }
 }

@@ -1,18 +1,14 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
-import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift } from '../../util/help'
-import { sendTx } from '../../util/help'
+import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift } from '@/util/help'
 
 export default class extends BaseService {
     async cancel(orderType, id) {
         console.log("cancel " + (orderType ? "buy" : "ask") + "ing order: ", id.toString())
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.cancel(orderType, id).encodeABI(),
-        });
+        await web3.exec(contract.methods.cancel(orderType, id))
     }
 
     async sellVolatileToken(haveAmount, wantAmount) {
@@ -28,23 +24,17 @@ export default class extends BaseService {
     async vote(maker, up){
         console.log(maker.toString(), up)
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.vote(maker, up).encodeABI(),
-        });
+        await web3.exec(contract.methods.vote(maker, up));
     }
 
     async revoke(maker) {
         console.log("revoking proposal: ", maker)
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.revoke(maker).encodeABI(),
-        });
+        await web3.exec(contract.methods.revoke(maker));
     }
 
     async loadProposals() {
@@ -143,12 +133,9 @@ export default class extends BaseService {
     async absorb(amount, sideAddress) {
         console.log(sideAddress);
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.testAbsorb(amount, sideAddress).encodeABI(),
-        });
+        await web3.exec(contract.methods.testAbsorb(amount, sideAddress));
     }
 
     async reload() {

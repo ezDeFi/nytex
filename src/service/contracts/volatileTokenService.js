@@ -1,6 +1,6 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
-import { sendTx, truncateShift, thousands, weiToMNTY, weiToNUSD } from '../../util/help'
+import { truncateShift, thousands, weiToMNTY, weiToNUSD } from '@/util/help'
 
 const crypto = require('crypto');
 
@@ -25,24 +25,18 @@ export default class extends BaseService {
         slashingRate = truncateShift(slashingRate, 3);
         console.log('propose', thousands(weiToNUSD(amount)), thousands(weiToMNTY(stake)), slashingRate, lockdownExpiration);
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.volatileToken;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.propose(amount, stake, slashingRate, lockdownExpiration).encodeABI(),
-        })
+        await web3.exec(contract.methods.propose(amount, stake, slashingRate, lockdownExpiration))
     }
 
     async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.volatileToken;
         const index = '0x' + crypto.randomBytes(32).toString('hex');
         console.log('index = ', index)
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).encodeABI(),
-        })
+        await web3.exec(contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]))
     }
 
     async deposit(amount) {
@@ -74,11 +68,8 @@ export default class extends BaseService {
 
     async approve(spender, amount) {
         const store = this.store.getState()
+        const web3 = store.user.web3
         const contract = store.contracts.volatileToken;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.approve(spender, amount).encodeABI(),
-        });
+        await web3.exec(contract.methods.approve(spender, amount));
     }
 }

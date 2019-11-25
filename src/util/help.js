@@ -210,18 +210,6 @@ export function mul(a, b) {
     return c;
 }
 
-export async function sendTx(web3, tx) {
-    if (tx.to == TxCodeAddress) {
-        throw "use sendTxCode instead"
-    }
-    const res = await web3.eth.call(tx);
-    const msg = extractFailureMessage(res);
-    if (msg) {
-        throw msg;
-    }
-    return web3.eth.sendTransaction(tx);
-}
-
 export async function callTxCode(web3, tx) {
     if (tx.to && tx.to != TxCodeAddress) {
         throw "tx.to must be undefined or " + TxCodeAddress;
