@@ -1,18 +1,14 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
-import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift } from '../../util/help'
-import { sendTx } from '../../util/help'
+import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift } from '@/util/help'
 
 export default class extends BaseService {
     async cancel(orderType, id) {
         console.log("cancel " + (orderType ? "buy" : "ask") + "ing order: ", id.toString())
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.cancel(orderType, id).encodeABI(),
-        });
+        await contract.methods.cancel(orderType, id)
+            .send({from:store.user.wallet})
     }
 
     async sellVolatileToken(haveAmount, wantAmount) {
@@ -29,22 +25,16 @@ export default class extends BaseService {
         console.log(maker.toString(), up)
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.vote(maker, up).encodeABI(),
-        });
+        await contract.methods.vote(maker, up)
+            .send({from:store.user.wallet})
     }
 
     async revoke(maker) {
         console.log("revoking proposal: ", maker)
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.revoke(maker).encodeABI(),
-        });
+        await contract.methods.revoke(maker)
+            .send({from:store.user.wallet})
     }
 
     async loadProposals() {
@@ -144,11 +134,8 @@ export default class extends BaseService {
         console.log(sideAddress);
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
-        await sendTx(store.user.web3, {
-            from: store.user.wallet,
-            to: contract._address,
-            data: contract.methods.testAbsorb(amount, sideAddress).encodeABI(),
-        });
+        await contract.methods.testAbsorb(amount, sideAddress)
+            .send({from:store.user.wallet})
     }
 
     async reload() {
