@@ -25,51 +25,38 @@ export default class extends BaseService {
         slashingRate = truncateShift(slashingRate, 3);
         console.log('propose', thousands(weiToNUSD(amount)), thousands(weiToMNTY(stake)), slashingRate, lockdownExpiration);
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.volatileToken;
-        await web3.exec(contract.methods.propose(amount, stake, slashingRate, lockdownExpiration))
+        await contract.methods.propose(amount, stake, slashingRate, lockdownExpiration)
+            .send({from:store.user.wallet})
     }
 
     async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.volatileToken;
         const index = '0x' + crypto.randomBytes(32).toString('hex');
         console.log('index = ', index)
-        await web3.exec(contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]))
+        await contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0])
+            .send({from:store.user.wallet})
     }
 
     async deposit(amount) {
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.volatileToken
-        await web3.exec(contract.methods.deposit(), {value: amount})
+        await contract.methods.deposit()
+            .send({from: store.user.wallet, value: amount})
     }
 
     async withdraw(amount) {
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.volatileToken
-        await web3.exec(contract.methods.withdraw(amount))
-        // .on('transactionHash', (hash) => {
-        //     console.log("hash", hash)
-        // }).on('receipt', (receipt) => {
-        //     console.log("receipt", receipt)
-        // }).on('error', (error) => {
-        //     console.error("error", error)
-        // }).on('confirmation', (conf) => {
-        //     console.log(conf)
-        // }).then(x => {
-        //     console.log(x)
-        // }).catch(x => {
-        //     console.error(x)
-        // })
+        await contract.methods.withdraw(amount)
+            .send({from: store.user.wallet})
     }
 
     async approve(spender, amount) {
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.volatileToken;
-        await web3.exec(contract.methods.approve(spender, amount));
+        await contract.methods.approve(spender, amount)
+            .send({from:store.user.wallet})
     }
 }

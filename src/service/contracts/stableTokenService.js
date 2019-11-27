@@ -20,17 +20,17 @@ export default class extends BaseService {
 
     async trade(_haveAmount, _wantAmount) {
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.stableToken;
         const index = '0x' + crypto.randomBytes(32).toString('hex');
         console.log('index = ', index)
-        await web3.exec(contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]));
+        await contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0])
+            .send({from:store.user.wallet})
     }
 
     async approve(spender, amount) {
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.stableToken;
-        await web3.exec(contract.methods.approve(spender, amount));
+        await contract.methods.approve(spender, amount)
+            .send({from:store.user.wallet})
     }
 }

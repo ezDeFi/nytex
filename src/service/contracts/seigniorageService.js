@@ -6,9 +6,9 @@ export default class extends BaseService {
     async cancel(orderType, id) {
         console.log("cancel " + (orderType ? "buy" : "ask") + "ing order: ", id.toString())
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await web3.exec(contract.methods.cancel(orderType, id))
+        await contract.methods.cancel(orderType, id)
+            .send({from:store.user.wallet})
     }
 
     async sellVolatileToken(haveAmount, wantAmount) {
@@ -24,17 +24,17 @@ export default class extends BaseService {
     async vote(maker, up){
         console.log(maker.toString(), up)
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await web3.exec(contract.methods.vote(maker, up));
+        await contract.methods.vote(maker, up)
+            .send({from:store.user.wallet})
     }
 
     async revoke(maker) {
         console.log("revoking proposal: ", maker)
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await web3.exec(contract.methods.revoke(maker));
+        await contract.methods.revoke(maker)
+            .send({from:store.user.wallet})
     }
 
     async loadProposals() {
@@ -133,9 +133,9 @@ export default class extends BaseService {
     async absorb(amount, sideAddress) {
         console.log(sideAddress);
         const store = this.store.getState()
-        const web3 = store.user.web3
         const contract = store.contracts.seigniorage;
-        await web3.exec(contract.methods.testAbsorb(amount, sideAddress));
+        await contract.methods.testAbsorb(amount, sideAddress)
+            .send({from:store.user.wallet})
     }
 
     async reload() {
