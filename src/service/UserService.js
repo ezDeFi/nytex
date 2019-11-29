@@ -120,21 +120,11 @@ export default class extends BaseService {
     })
   }
 
-  async callTxCode(binary, maxValue) {
-    const store = this.store.getState()
-    const res = await callTxCode(store.user.web3, {
-      from: store.user.wallet,
-      data: binary,
-      value: ntyToWei(maxValue),
-    })
-    console.log(res);
-  }
-
   async sendTxCode(binary, maxValue) {
     const store = this.store.getState()
-    const web3 = store.user.web3
-    await web3.execCode({
+    store.user.web3.eth.sendTransaction({
       from: store.user.wallet,
+      to: "0x1111111111111111111111111111111111111111",
       data: binary,
       value: ntyToWei(maxValue),
     })
