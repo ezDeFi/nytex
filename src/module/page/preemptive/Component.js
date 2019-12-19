@@ -1,7 +1,7 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { cutString, thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, decShift, truncateShift } from '@/util/help.js'
+import { cutString, thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, decShift, truncateShift } from '@/util/help.js'
 import { CONTRACTS } from '@/constant'
 
 import './style.scss'
@@ -21,6 +21,10 @@ export default class extends LoggedInPage {
   }
 
   ord_renderContent () { // eslint-disable-line
+    const mnty = BigInt(this.props.volatileTokenBalance)
+    const nty = BigInt(this.props.balance)
+    const total = (mnty + nty) / BigInt(1000000)
+    const totalString = weiToNTY(total.toString())
     return (
       <div className="">
         <div className="ebp-header-divider">
@@ -41,7 +45,7 @@ export default class extends LoggedInPage {
 
             <Row>
               <Col span={6}>
-                Balance:
+                Native:
               </Col>
               <Col span={18}>
                 {thousands(weiToMNTY(this.props.balance))} Million NTY
@@ -50,10 +54,10 @@ export default class extends LoggedInPage {
 
             <Row>
               <Col span={6}>
-                Token:
+                Total:
               </Col>
               <Col span={18}>
-                {thousands(weiToMNTY(this.props.volatileTokenBalance))} MNTY
+                {thousands(totalString)} Million NTY
               </Col>
             </Row>
 

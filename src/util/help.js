@@ -120,6 +120,10 @@ export function nusdToWei(coin) {
     return truncateShift(coin, 6);
 }
 
+export function weiToNTY(wei) {
+    return decShift(wei, -18);
+}
+
 export function weiToMNTY(wei) {
     return decShift(wei, -24);
 }
