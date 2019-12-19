@@ -57,31 +57,37 @@ export default createContainer(Component, (state) => {
     },
     async sellVolatileToken(haveAmount, wantAmount) {
       const have = BigInt(haveAmount)
-      const balance = BigInt(this.volatileTokenBalance)
+      const mnty = BigInt(this.volatileTokenBalance)
       let value = undefined
-      if (have > balance) {
-        value = (have - balance).toString()
+      if (have > mnty) {
+        value = (have - mnty)
+        if (value > BigInt(this.balance)) {
+          throw "insufficient balance"
+        }
+        value = value.toString()
       }
       return await volatileTokenService.trade(haveAmount, wantAmount, value)
     },
     async sellStableToken(haveAmount, wantAmount) {
+      if (BigInt(haveAmount) > BigInt(this.stableTokenBalance)) {
+        throw "insufficient balance"
+      }
       return await stableTokenService.trade(haveAmount, wantAmount)
     },
     async deposit(amount) {
+      if (BigInt(amount) > BigInt(this.balance)) {
+        throw "insufficient balance"
+      }
       return await volatileTokenService.deposit(amount)
     },
     async withdraw(amount) {
+      if (BigInt(amount) > BigInt(this.volatileTokenBalance)) {
+        throw "insufficient balance"
+      }
       return await volatileTokenService.withdraw(amount)
     },
     async absorb(amount, sideAbsorbAddress) {
       return await seigniorageService.absorb(amount, sideAbsorbAddress)
-    },
-    async approve(spender, amount, isVolatile) {
-      if (isVolatile) {
-        return await volatileTokenService.approve(spender, amount) 
-      } else {
-        return await stableTokenService.approve(spender, amount)
-      } 
     },
     // TEST
     async reload() {
