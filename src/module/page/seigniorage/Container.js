@@ -62,7 +62,8 @@ export default createContainer(Component, (state) => {
       if (have > mnty) {
         value = (have - mnty)
         if (value > BigInt(this.balance)) {
-          throw "insufficient balance"
+          alert("insufficient NTY")
+          throw "insufficient NTY"
         }
         value = value.toString()
       }
@@ -70,19 +71,22 @@ export default createContainer(Component, (state) => {
     },
     async sellStableToken(haveAmount, wantAmount) {
       if (BigInt(haveAmount) > BigInt(this.stableTokenBalance)) {
-        throw "insufficient balance"
+        alert("insufficient NEWSD")
+        throw "insufficient NEWSD"
       }
       return await stableTokenService.trade(haveAmount, wantAmount)
     },
     async deposit(amount) {
       if (BigInt(amount) > BigInt(this.balance)) {
-        throw "insufficient balance"
+        alert("insufficient native NTY")
+        throw "insufficient native NTY"
       }
       return await volatileTokenService.deposit(amount)
     },
     async withdraw(amount) {
       if (BigInt(amount) > BigInt(this.volatileTokenBalance)) {
-        throw "insufficient balance"
+        alert("insufficient MNTY")
+        throw "insufficient MNTY"
       }
       return await volatileTokenService.withdraw(amount)
     },

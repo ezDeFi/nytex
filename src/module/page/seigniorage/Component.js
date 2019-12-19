@@ -294,8 +294,8 @@ sellVolatileToken() {
     const wantAmount = mul(haveAmount, price);
     const wantWei = nusdToWei(wantAmount);
     if (wantWei === '0') {
-      console.error("Want amount too small");
-      return;
+      alert("Want amount too small");
+      throw "Want amount too small"
     }
     const haveWei = mntyToWei(haveAmount);
     console.log('*** have NTY: ', thousands(haveWei))
@@ -309,8 +309,8 @@ buyVolatileToken() {
     const haveAmount = mul(wantAmount, price);
     const haveWei = nusdToWei(haveAmount);
     if (haveWei === '0') {
-      console.error("Have amount too small");
-      return;
+      alert("Have amount too small");
+      throw "Have amount too small"
     }
     const wantWei = mntyToWei(wantAmount);
     console.log('*** have USD: ', thousands(haveWei))

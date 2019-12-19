@@ -223,11 +223,11 @@ lockdownRender() {
       <h3 className="text-center">Lockdown</h3>
       <Row type="flex" align="middle">
         <Col span={24}>
-    <span class='prop'>Maker({cutString(this.props.lockdown.maker)})</span>
-    <span class='prop'>Stake({thousands(weiToMNTY(this.props.lockdown.stake))})</span>
-    <span class='prop'>Amount({thousands(weiToNUSD(this.props.lockdown.amount))})</span>
-    <span class='prop'>SlashingFactor({decShift(this.props.lockdown.slashingFactor,-18)})</span>
-    <span class='prop'>UnlockNumber({this.props.lockdown.unlockNumber})</span>
+          <span class='prop'>Maker({cutString(this.props.lockdown.maker)})</span>
+          <span class='prop'>Stake({thousands(weiToMNTY(this.props.lockdown.stake))})</span>
+          <span class='prop'>Amount({thousands(weiToNUSD(this.props.lockdown.amount))})</span>
+          <span class='prop'>SlashingFactor({decShift(this.props.lockdown.slashingFactor,-18)})</span>
+          <span class='prop'>UnlockNumber({this.props.lockdown.unlockNumber})</span>
         </Col>
       </Row>
     </div>
@@ -320,12 +320,12 @@ propose() {
   let slashingRate = this.state.slashingRate
   let lockdownExpiration = this.state.lockdownExpiration
   if (slashingRate < 0) {
-    console.error("negative slashing duration");
-    return;
+    alert("slashing duration cannot be negative");
+    throw "slashing duration cannot be negative"
   }
   if (lockdownExpiration < 0) {
-    console.error("negative lockdown expiration");
-    return;
+    alert("lockdown expiration cannot be negative");
+    throw "lockdown expiration cannot be negative"
   }
   console.log('***** stake MNTY:', thousands(weiToMNTY(stake)))
   console.log('*** amount NEWSD:', thousands(weiToNUSD(amount)))
@@ -393,6 +393,10 @@ stbToApproveChange(e) {
 approve(isVolatileToken) {
   const amount = isVolatileToken ?
     mntyToWei(this.state.volToApprove) : nusdToWei(this.state.stbToApprove);
+  if (BigInt(amount) < 0) {
+    alert("allowance cannot be negative")
+    throw "allowance cannot be negative"
+  }
   this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
 }
 

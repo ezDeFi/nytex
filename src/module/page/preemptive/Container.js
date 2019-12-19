@@ -56,7 +56,8 @@ export default createContainer(Component, (state) => {
       if (have > mnty) {
         value = (have - mnty)
         if (value > BigInt(this.balance)) {
-          throw "insufficient balance"
+          alert("insufficient fund to stake")
+          throw "insufficient fund to stake"
         }
         value = value.toString()
       }
