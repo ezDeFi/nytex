@@ -21,6 +21,13 @@ export default class extends BaseService {
         return await _volatileTokenBalance
     }
 
+    async deposit(amount) {
+        const store = this.store.getState()
+        const contract = store.contracts.volatileToken
+        await contract.methods.deposit()
+            .send({from: store.user.wallet, value: amount})
+    }
+
     async propose(amount, stake, slashingRate, lockdownExpiration) {
         slashingRate = truncateShift(slashingRate, 3);
         console.log('propose', thousands(weiToNUSD(amount)), thousands(weiToMNTY(stake)), slashingRate, lockdownExpiration);
@@ -29,21 +36,21 @@ export default class extends BaseService {
         await contract.methods.propose(amount, stake, slashingRate, lockdownExpiration)
             .send({from:store.user.wallet})
     }
+        await propose(amount, stake, slashingRate, lockdownExpiration).send(sendOpts)
+    }
 
-    async trade(_haveAmount, _wantAmount) {
+    async trade(_haveAmount, _wantAmount, value) {
         const store = this.store.getState()
         const contract = store.contracts.volatileToken;
         const index = '0x' + crypto.randomBytes(32).toString('hex');
         console.log('index = ', index)
-        await contract.methods.trade(index, _haveAmount.toString(), _wantAmount.toString(), [0])
-            .send({from:store.user.wallet})
-    }
-
-    async deposit(amount) {
-        const store = this.store.getState()
-        const contract = store.contracts.volatileToken
-        await contract.methods.deposit()
-            .send({from: store.user.wallet, value: amount})
+        const sendOpts = {from:store.user.wallet}
+        let trade = contract.methods.trade
+        if (value !== undefined) {
+            sendOpts.value = value
+            trade = contract.methods.depositAndTrade
+        }
+        await trade(index, _haveAmount.toString(), _wantAmount.toString(), [0]).send(sendOpts)
     }
 
     async withdraw(amount) {

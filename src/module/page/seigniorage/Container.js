@@ -56,7 +56,13 @@ export default createContainer(Component, (state) => {
       return await seigniorageService.cancel(orderType, id)
     },
     async sellVolatileToken(haveAmount, wantAmount) {
-      return await volatileTokenService.trade(haveAmount, wantAmount)
+      const have = BigInt(haveAmount)
+      const balance = BigInt(this.volatileTokenBalance)
+      let value = undefined
+      if (have > balance) {
+        value = (have - balance).toString()
+      }
+      return await volatileTokenService.trade(haveAmount, wantAmount, value)
     },
     async sellStableToken(haveAmount, wantAmount) {
       return await stableTokenService.trade(haveAmount, wantAmount)
