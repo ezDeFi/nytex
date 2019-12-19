@@ -28,14 +28,17 @@ export default class extends BaseService {
             .send({from: store.user.wallet, value: amount})
     }
 
-    async propose(amount, stake, slashingRate, lockdownExpiration) {
+    async propose(amount, stake, slashingRate, lockdownExpiration, value) {
         slashingRate = truncateShift(slashingRate, 3);
         console.log('propose', thousands(weiToNUSD(amount)), thousands(weiToMNTY(stake)), slashingRate, lockdownExpiration);
         const store = this.store.getState()
         const contract = store.contracts.volatileToken;
-        await contract.methods.propose(amount, stake, slashingRate, lockdownExpiration)
-            .send({from:store.user.wallet})
-    }
+        let propose = contract.methods.propose
+        const sendOpts = {from:store.user.wallet}
+        if (value !== undefined) {
+            sendOpts.value = value
+            propose = contract.methods.depositAndPropose
+        }
         await propose(amount, stake, slashingRate, lockdownExpiration).send(sendOpts)
     }
 

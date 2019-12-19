@@ -50,7 +50,17 @@ export default createContainer(Component, (state) => {
 
   return {
     async propose(amount, stake, slashingRate, lockdownExpiration) {
-      return await volatileTokenService.propose(amount, stake, slashingRate, lockdownExpiration)
+      const have = BigInt(stake)
+      const mnty = BigInt(this.volatileTokenBalance)
+      let value = undefined
+      if (have > mnty) {
+        value = (have - mnty)
+        if (value > BigInt(this.balance)) {
+          throw "insufficient balance"
+        }
+        value = value.toString()
+      }
+      return await volatileTokenService.propose(amount, stake, slashingRate, lockdownExpiration, value)
     },
     async revoke(maker) {
       return await seigniorageService.revoke(maker)
