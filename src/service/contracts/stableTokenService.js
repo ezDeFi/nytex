@@ -4,18 +4,20 @@ import _ from 'lodash'
 const crypto = require('crypto');
 
 export default class extends BaseService {
-    async loadMyStableTokenBalance () {
+    loadMyStableTokenBalance () {
         const userRedux = this.store.getRedux('user')
         const store = this.store.getState()
         let methods = store.contracts.stableToken.methods
         let wallet = store.user.wallet
-        const exStb = await methods.balanceOf(store.contracts.seigniorage._address).call()
-        this.dispatch(userRedux.actions.exStb_update(exStb))
-        let stbAllowance = await methods.allowance(wallet, store.contracts.seigniorage._address).call()
-        this.dispatch(userRedux.actions.stbAllowance_update(stbAllowance))
-        let _stableTokenBalance = await methods.balanceOf(wallet).call()
-        await this.dispatch(userRedux.actions.stableTokenBalance_update(_stableTokenBalance))
-        return await _stableTokenBalance
+        methods.balanceOf(store.contracts.seigniorage._address).call().then(exStb => {
+            this.dispatch(userRedux.actions.exStb_update(exStb))
+        })
+        methods.allowance(wallet, store.contracts.seigniorage._address).call().then(stbAllowance => {
+            this.dispatch(userRedux.actions.stbAllowance_update(stbAllowance))
+        })
+        methods.balanceOf(wallet).call().then(_stableTokenBalance => {
+            this.dispatch(userRedux.actions.stableTokenBalance_update(_stableTokenBalance))
+        })
     }
 
     async trade(_haveAmount, _wantAmount) {
