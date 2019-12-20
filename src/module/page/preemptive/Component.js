@@ -149,7 +149,9 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
 
-            <h3 className="text-center">Allowance</h3>
+            {this.lockdownRender()}
+
+            <h4 className="text-center">Allowance</h4>
 
             <Row type="flex" align="middle">
               <Col span={4}>
@@ -192,19 +194,6 @@ export default class extends LoggedInPage {
                   className="btn-margin-top submit-button maxWidth">Approve</Button>
               </Col>
             </Row>
-
-            <h3 className="text-center">Lockdown</h3>
-
-            <Row type="flex" align="middle">
-              <Col span={24}>
-                Maker({cutString(this.props.lockdown.maker)})
-                Stake({thousands(weiToMNTY(this.props.lockdown.stake))})
-                Amount({thousands(weiToNUSD(this.props.lockdown.amount))})
-                SF({decShift(this.props.lockdown.slashingFactor,-18)})
-                UN({this.props.lockdown.unlockNumber})
-              </Col>
-            </Row>
-
           </div>
         </div>
       </div>
@@ -223,6 +212,27 @@ export default class extends LoggedInPage {
 onCopy = () => {
   this.setState({copied: true});
 };
+
+lockdownRender() {
+  const zeroAddress = "0x0000000000000000000000000000000000000000"
+  if (!this.props.lockdown.maker || this.props.lockdown.maker === zeroAddress) {
+    return
+  }
+  return(
+    <div class='lockdown'>
+      <h3 className="text-center">Lockdown</h3>
+      <Row type="flex" align="middle">
+        <Col span={24}>
+    <span class='prop'>Maker({cutString(this.props.lockdown.maker)})</span>
+    <span class='prop'>Stake({thousands(weiToMNTY(this.props.lockdown.stake))})</span>
+    <span class='prop'>Amount({thousands(weiToNUSD(this.props.lockdown.amount))})</span>
+    <span class='prop'>SlashingFactor({decShift(this.props.lockdown.slashingFactor,-18)})</span>
+    <span class='prop'>UnlockNumber({this.props.lockdown.unlockNumber})</span>
+        </Col>
+      </Row>
+    </div>
+  )
+}
 
 proposalsRender() {
   //const data = [{'fromAmountWnty' : 0, 'toAmountWnty' : 1, 'fromAmountNusd' : 2, 'toAmountNusd' : 3}];
