@@ -1,7 +1,7 @@
 import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { cutString, thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, decShift, truncateShift } from '@/util/help.js'
+import { cutString, thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, decShift } from '@/util/help.js'
 import { CONTRACTS } from '@/constant'
 
 import './style.scss'
@@ -85,20 +85,17 @@ export default class extends LoggedInPage {
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                {thousands(weiToMNTY(this.props.globalParams.stake))}
+                <code>> {thousands(weiToMNTY(this.props.globalParams.stake)*2/3)}</code>
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
-              <Col span={8}>Amount (NEWSD):</Col>
-              <Col span={8}>
+              <Col span={8}>Absorption (NEWSD):</Col>
+              <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
                   value={this.state.amount}
                   onChange={this.amountChange.bind(this)}
                 />
-              </Col>
-              <Col span={8} style={{ textAlign: 'right' }}>
-                {thousands(weiToMNTY(weiToMNTY(this.props.globalParams.rank)))}
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
@@ -111,7 +108,7 @@ export default class extends LoggedInPage {
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                {decShift(this.props.globalParams.slashingRate, -3)}
+                <code>> {Math.floor(this.props.globalParams.slashingRate*2/3)/1000}</code>
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
@@ -124,7 +121,7 @@ export default class extends LoggedInPage {
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                {this.props.globalParams.lockdownExpiration}
+                <code>> {Math.floor(this.props.globalParams.lockdownExpiration*2/3)}</code>
               </Col>
             </Row>
             <Row style={{ 'marginTop': '8px' }}>
@@ -241,7 +238,7 @@ proposalsRender() {
       title: 'Proposals',
       children: [
         {
-          title: 'maker',
+          title: 'Maker',
           dataIndex: 'maker',
           key: 'maker',
           render: (text, record) => (
@@ -258,29 +255,51 @@ proposalsRender() {
           )
         },
         {
-          title: 'stake',
+          title: 'Stake',
           dataIndex: 'stake',
           key: 'stake',
+          render: (text, record) => (
+            <span>
+              {thousands(weiToMNTY(text))}
+            </span>
+          )
         },
         {
-          title: 'amount',
+          title: 'Absorption',
           dataIndex: 'amount',
           key: 'amount',
         },
         {
-          title: 'SR',
+          title: 'Slashing Rate',
           dataIndex: 'slashingRate',
           key: 'slashingRate',
         },
         {
-          title: 'LE',
+          title: 'Lockdown Expiration',
           dataIndex: 'lockdownExpiration',
           key: 'lockdownExpiration',
         },
         {
-          title: 'TV',
+          title: 'Total Vote',
           dataIndex: 'totalVote',
           key: 'totalVote',
+          render: (text, record) => (
+            <span>
+              {thousands(weiToMNTY(text))}
+            </span>
+          )
+        },
+        {
+          title: 'Rank',
+          dataIndex: 'rank',
+          key: 'rank',
+          render: (text, record) => (
+            record.totalVote && this.props.globalParams.rank > 0 &&
+              <span>{
+                // rank = (totalVote * stake) / (2/3*globalRank)
+                (BigInt(record.totalVote) * BigInt(record.stake) * BigInt(150) / BigInt(this.props.globalParams.rank)).toString()
+              }%</span>
+          )
         },
         {
           title: 'Vote',

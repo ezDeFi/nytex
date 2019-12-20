@@ -64,7 +64,7 @@ export default class extends BaseService {
                 // console.log(res);
                 this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
                     'maker': res.maker,
-                    'stake': thousands(weiToMNTY(res.stake)),
+                    'stake': res.stake,
                     'amount': thousands(weiToNUSD(res.amount)),
                     'slashingRate': decShift(res.slashingRate, -3),
                     'lockdownExpiration': res.lockdownExpiration,
@@ -72,7 +72,7 @@ export default class extends BaseService {
                 methods.totalVote(res.maker).call().then(totalVote => {
                     // console.log(totalVote);
                     this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
-                        'totalVote': thousands(weiToMNTY(totalVote)),
+                        'totalVote': totalVote,
                     }}));
                 });
             })
