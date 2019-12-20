@@ -39,8 +39,13 @@ export default createContainer(Component, (state) => {
     balance: state.user.balance,
     volatileTokenBalance: state.user.volatileTokenBalance,
     stableTokenBalance: state.user.stableTokenBalance,
+    volAllowance: state.user.volAllowance,
+    stbAllowance: state.user.stbAllowance,
     bids: state.seigniorage.bids,
     asks: state.seigniorage.asks,
+    inflated: state.user.inflated,
+    exVol: state.user.exVol,
+    exStb: state.user.exStb,
   }
 }, () => {
   const volatileTokenService = new VolatileTokenService()
@@ -81,6 +86,9 @@ export default createContainer(Component, (state) => {
         throw "insufficient MNTY"
       }
       return volatileTokenService.withdraw(amount)
+    },
+    async absorb(amount, sideAbsorbAddress) {
+      return await seigniorageService.absorb(amount, sideAbsorbAddress)
     },
     // TEST
     reload() {

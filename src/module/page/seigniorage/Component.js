@@ -96,6 +96,18 @@ export default class extends LoggedInPage {
             <div className="ebp-header-divider dashboard-rate-margin">
             </div>
 
+            <Row>
+              <Col span={4}>
+                Inflated:
+              </Col>
+              <Col span={18}>
+                {thousands(weiToMNTY(this.props.inflated))} MNTY
+              </Col>
+            </Row>
+
+            <div className="ebp-header-divider dashboard-rate-margin">
+            </div>
+
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={24}>
                 {this.ordersRender(false)}
@@ -104,8 +116,10 @@ export default class extends LoggedInPage {
 
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={6}>
+                Exchange:
               </Col>
               <Col span={14}>
+                {thousands(weiToMNTY(this.props.exVol))} MNTY + {thousands(weiToNUSD(this.props.exStb))} NewSD
               </Col>
               <Col span={4}>
                 <Button type='primary' onClick={() => this.sellVolatileToken()} className="btn-margin-top submit-button maxWidth">SELL</Button>
@@ -146,12 +160,64 @@ export default class extends LoggedInPage {
               </Col>
               <Col span={4} />
               <Col span={7}>
+                <Button onClick={() => this.toggleDebug()} className="btn-margin-top submit-button maxWidth">
+                  DEBUG
+                </Button>
               </Col>
               <Col span={4} />
               <Col span={4}>
                 <Button type='primary' onClick={() => this.buyVolatileToken()} className="btn-margin-top submit-button maxWidth">BUY</Button>
               </Col>
             </Row>
+
+            {this.state.debug &&
+            <Row style={{ 'marginTop': '15px' }}>
+              <Col span={7}/>
+              <Col span={10}>
+                <Input className="maxWidth"
+                  placeholder="NewSD to absorb"
+                  defaultValue={0}
+                  value={this.state.absorption}
+                  onChange={this.absorptionChange.bind(this)}
+                />
+              </Col>
+              <Col span={4}>
+                <Button onClick={() => this.absorb()}
+                  className="btn-margin-top submit-button maxWidth">
+                    ABSORB
+                </Button>
+              </Col>
+              <Col span={3}>
+                <Button onClick={() => this.absorbPeA()}
+                  className="btn-margin-top submit-button maxWidth">
+                    PeA
+                </Button>
+              </Col>
+            </Row>
+            }
+
+            {this.state.debug &&
+            <Row type="flex" align="middle" style={{ 'marginTop': '5px' }}>
+              <Col span={7}>
+                {this.tokenToApprove()} Allowance:
+              </Col>
+              <Col span={7}>
+                {this.allowanceRender()}
+              </Col>
+              <Col span={6}>
+                <Input className="maxWidth"
+                  placeholder={this.tokenToApprove()}
+                  defaultValue={0}
+                  value={this.state.amountToApprove}
+                  onChange={this.amountToApproveChange.bind(this)}
+                />
+              </Col>
+              <Col span={4}>
+                <Button onClick={() => this.approve()}
+                  className="btn-margin-top submit-button maxWidth">Approve</Button>
+              </Col>
+            </Row>
+            }
 
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={24}>
@@ -394,6 +460,19 @@ export default class extends LoggedInPage {
     }
   }
 
+  absorb() {
+    const amount = this.state.absorption;
+    const wei = nusdToWei(amount);
+    const zeroAddress = "0x0000000000000000000000000000000000000000"
+    this.props.absorb(wei, zeroAddress);
+  }
+
+  absorbPeA() {
+    const amount = this.state.absorption;
+    const wei = nusdToWei(amount);
+    this.props.absorb(wei, this.props.wallet);
+  }
+
   idChange(e) {
     this.setState({
       id: e.target.value
@@ -429,5 +508,55 @@ export default class extends LoggedInPage {
       mnty: e.target.value
     })
   }
+
+toggleDebug(e) {
+  this.setState({
+    debug: !this.state.debug
+  })
+}
+
+absorptionChange(e) {
+  this.setState({
+    absorption: e.target.value
+  })
+}
+
+// Approve feature
+amountToApproveChange(e) {
+  this.setState({
+    amountToApprove: e.target.value
+  });
+}
+
+approve() {
+  const token = this.tokenToApprove();
+  const amountToApprove = this.state.amountToApprove;
+  let amount;
+  let isVolatileToken = token == 'MNTY';
+  if (isVolatileToken) {
+    amount = mntyToWei(amountToApprove);
+  } else {
+    amount = nusdToWei(amountToApprove);
+  }
+  this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
+}
+
+allowanceRender() {
+  const token = this.tokenToApprove();
+  if (token === 'MNTY') {
+    return thousands(weiToMNTY(this.props.volAllowance))
+  } 
+  if (token === 'NEWSD') {
+    return thousands(weiToNUSD(this.props.stbAllowance))
+  }
+}
+
+tokenToApprove() {
+  if (this.state.absorption && this.state.absorption[0] === '-') {
+    return 'NEWSD'
+  } else {
+    return 'MNTY'
+  }
+}
 
 }
