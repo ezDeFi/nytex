@@ -241,27 +241,18 @@ proposalsRender() {
       title: 'Proposals',
       children: [
         {
-          title: 'cancel',
-          dataIndex: 'cancel',
-          key: 'cancel',
+          title: 'maker',
+          dataIndex: 'maker',
+          key: 'maker',
           render: (text, record) => (
-            <span>
-              {record.maker.toLowerCase() === this.props.wallet &&
+            (record.maker.toLowerCase() === this.props.wallet)
+              ?
                 <Button
                   onClick={() => this.props.revoke(record.maker)}
                   className="btn-margin-top submit-button maxWidth">
                     Revoke
                 </Button>
-              }
-            </span>
-          )
-        },
-        {
-          title: 'maker',
-          dataIndex: 'maker',
-          key: 'maker',
-          render: (text, record) => (
-            <span>
+              : <span>
               {cutString(record.maker)}
             </span>
           )
