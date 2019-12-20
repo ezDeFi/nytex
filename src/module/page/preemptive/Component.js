@@ -253,8 +253,8 @@ proposalsRender() {
                     Revoke
                 </Button>
               : <span>
-              {cutString(record.maker)}
-            </span>
+                  {cutString(record.maker)}
+                </span>
           )
         },
         {
@@ -283,17 +283,13 @@ proposalsRender() {
           key: 'totalVote',
         },
         {
-          title: 'vote',
+          title: 'Vote',
           dataIndex: 'vote',
           key: 'vote',
           render: (text, record) => (
             <span>
-              {
-                <span>
-                  <Button onClick={() => this.props.vote(record.maker, true)}>UP</Button>
-                  <Button onClick={() => this.props.vote(record.maker, false)}>DOWN</Button>
-                </span>
-              }
+              {<Button onClick={() => this.props.vote(record.maker, true)}>&#128077;</Button>}
+              {<Button onClick={() => this.props.vote(record.maker, false)}>&#128078;</Button>}
             </span>
           )
         },
