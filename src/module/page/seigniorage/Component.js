@@ -126,12 +126,12 @@ export default class extends LoggedInPage {
 
             <Row type="flex" align="middle" style={{ 'marginTop': '5px' }}>
               <Col span={2}>
-                MNTY:
+                Amount:
               </Col>
               <Col span={1}/>
               <Col span={8}>
                 <Input className="maxWidth"
-                  placeholder="Amount"
+                  placeholder="MNTY"
                   defaultValue={0}
                   value={this.state.amount}
                   onChange={this.amountChange.bind(this)}
@@ -144,7 +144,7 @@ export default class extends LoggedInPage {
               <Col span={1}/>
               <Col span={8}>
                 <Input className="maxWidth"
-                  placeholder="NewSD/MNTY"
+                  placeholder="MNTY/NEWSD"
                   defaultValue={0}
                   value={this.state.price}
                   onChange={this.priceChange.bind(this)}
