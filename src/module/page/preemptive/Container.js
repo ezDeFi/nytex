@@ -49,36 +49,35 @@ export default createContainer(Component, (state) => {
   const seigniorageService = new SeigniorageService()
 
   return {
-    async propose(amount, stake, slashingRate, lockdownExpiration) {
+    propose(amount, stake, slashingRate, lockdownExpiration) {
       const have = BigInt(stake)
       const mnty = BigInt(this.volatileTokenBalance)
       let value = undefined
       if (have > mnty) {
         value = (have - mnty)
         if (value > BigInt(this.balance)) {
-          alert("insufficient fund to stake")
           throw "insufficient fund to stake"
         }
         value = value.toString()
       }
-      return await volatileTokenService.propose(amount, stake, slashingRate, lockdownExpiration, value)
+      return volatileTokenService.propose(amount, stake, slashingRate, lockdownExpiration, value)
     },
-    async revoke(maker) {
-      return await seigniorageService.revoke(maker)
+    revoke(maker) {
+      return seigniorageService.revoke(maker)
     },
-    async vote(maker, up) {
-      return await seigniorageService.vote(maker, up)
+    vote(maker, up) {
+      return seigniorageService.vote(maker, up)
     },
-    async approve(spender, amount, isVolatile) {
+    approve(spender, amount, isVolatile) {
       if (isVolatile) {
-        return await volatileTokenService.approve(spender, amount) 
+        return volatileTokenService.approve(spender, amount) 
       } else {
-        return await stableTokenService.approve(spender, amount)
+        return stableTokenService.approve(spender, amount)
       } 
     },
     // TEST
-    async reload() {
-      return await seigniorageService.loadProposals()
+    reload() {
+      return seigniorageService.loadProposals()
     },
   }
 })

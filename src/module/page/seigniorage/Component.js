@@ -9,6 +9,8 @@ import { Col, Row, Icon, Button, Breadcrumb, Table, Input } from 'antd' // eslin
 
 export default class extends LoggedInPage {
   state = {
+    amount: '',
+    price: '',
     data: [],
   }
 
@@ -223,45 +225,123 @@ ordersRender(_orderType) {
 }
 
 sellVolatileToken() {
-    const haveAmount = this.state.amount
-    const price = this.state.price
-    const wantAmount = mul(haveAmount, price);
-    const wantWei = nusdToWei(wantAmount);
-    if (wantWei === '0') {
-      alert("Want amount too small");
-      throw "Want amount too small"
+  try {
+    let haveAmount, haveWei, wantWei
+    try {
+      haveAmount = this.state.amount.trim()
+      haveWei = mntyToWei(haveAmount);
+      BigInt(haveWei)
+    } catch (e) {
+      console.error(e)
+      throw 'invalid amount'
     }
-    const haveWei = mntyToWei(haveAmount);
+    try {
+      const price = this.state.price.trim()
+      const wantAmount = mul(haveAmount, price);
+      wantWei = nusdToWei(wantAmount);
+    } catch(e) {
+      console.error(e)
+      throw 'invalid price'
+    }
+    if (wantWei === '0') {
+      throw "amount or price too small"
+    }
     console.log('*** have NTY: ', thousands(haveWei))
     console.log('*** want USD: ', thousands(wantWei))
     this.props.sellVolatileToken(haveWei, wantWei)
+  } catch(e) {
+    if (typeof e === 'string') {
+      alert(e)
+    } else {
+      console.error(e)
+      alert('unable to create sell order')
+    }
+  }
 }
 
 buyVolatileToken() {
-    const wantAmount = this.state.amount;
-    const price = this.state.price;
-    const haveAmount = mul(wantAmount, price);
-    const haveWei = nusdToWei(haveAmount);
-    if (haveWei === '0') {
-      alert("Have amount too small");
-      throw "Have amount too small"
+  try {
+    let wantAmount, wantWei, haveWei
+    try {
+      wantAmount = this.state.amount.trim();
+      wantWei = mntyToWei(wantAmount);
+      BigInt(wantWei)
+    } catch(e) {
+      console.error(e)
+      throw 'invalid amount'
     }
-    const wantWei = mntyToWei(wantAmount);
+    try {
+      const price = this.state.price;
+      const haveAmount = mul(wantAmount, price);
+      haveWei = nusdToWei(haveAmount);
+    } catch(e) {
+      console.error(e)
+      throw 'invalid price'
+    }
+    if (haveWei === '0') {
+      throw "amount or price too small"
+    }
     console.log('*** have USD: ', thousands(haveWei))
     console.log('*** want NTY: ', thousands(wantWei))
     this.props.sellStableToken(haveWei, wantWei)
+  } catch(e) {
+    if (typeof e === 'string') {
+      alert(e)
+    } else {
+      console.error(e)
+      alert('unable to create buy order')
+    }
+  }
 }
 
 deposit() {
-  let mnty = this.state.mnty;
-  let wei = mntyToWei(mnty);
-  this.props.deposit(wei)
+  try {
+    const mnty = this.state.mnty
+    const wei = BigInt(mntyToWei(mnty))
+    if (wei <= 0) {
+      throw 'amount must be positive'
+    }
+    this.props.deposit(wei)
+      .catch(e => {
+        if (typeof e === 'string') {
+          alert(e)
+        } else {
+          console.error(e)
+        }
+      })
+  } catch(e) {
+    if (typeof e === 'string') {
+      alert(e)
+    } else {
+      console.error(e)
+      alert('invalid amount')
+    }
+  }
 }
 
 withdraw() {
-  let mnty = this.state.mnty;
-  let wei = mntyToWei(mnty);
-  this.props.withdraw(wei)
+  try {
+    const mnty = this.state.mnty
+    const wei = BigInt(mntyToWei(mnty))
+    if (wei <= 0) {
+      throw 'amount must be positive'
+    }
+    this.props.withdraw(wei)
+      .catch(e => {
+        if (typeof e === 'string') {
+          alert(e)
+        } else {
+          console.error(e)
+        }
+      })
+  } catch(e) {
+    if (typeof e === 'string') {
+      alert(e)
+    } else {
+      console.error(e)
+      alert('invalid amount')
+    }
+  }
 }
 
 idChange(e) {
@@ -271,27 +351,27 @@ idChange(e) {
 }
 
 toWalletChange(e) {
-    this.setState({
-        toWallet: e.target.value
-    })
+  this.setState({
+    toWallet: e.target.value
+  })
 }
 
 transferAmountChange(amount) {
-    this.setState({
-        transferAmount: amount
-    })
+  this.setState({
+    transferAmount: amount
+  })
 }
 
 amountChange(e) {
-    this.setState({
-        amount: e.target.value
-    })
+  this.setState({
+    amount: e.target.value
+  })
 }
 
 priceChange(e) {
-    this.setState({
-        price: e.target.value
-    })
+  this.setState({
+    price: e.target.value
+  })
 }
 
 mntyChange(e) {

@@ -10,10 +10,12 @@ import { Col, Row, Icon, Button, Breadcrumb, Table, Input } from 'antd' // eslin
 
 export default class extends LoggedInPage {
   state = {
-    stake: 200,
-    amount: 100,
-    slashingRate: 1.0,
-    lockdownExpiration: 0,
+    stake: '',
+    amount: '',
+    slashingRate: '',
+    lockdownExpiration: '',
+    volToApprove: '',
+    stbToApprove: '',
   }
 
   async componentDidMount() {
@@ -80,6 +82,7 @@ export default class extends LoggedInPage {
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
+                  placeholder={this.props.globalParams.stake}
                   value={this.state.stake}
                   onChange={this.stakeChange.bind(this)}
                 />
@@ -93,6 +96,7 @@ export default class extends LoggedInPage {
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
+                  placeholder='+/- amount'
                   value={this.state.amount}
                   onChange={this.amountChange.bind(this)}
                 />
@@ -103,8 +107,9 @@ export default class extends LoggedInPage {
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
+                  placeholder={this.props.globalParams.slashingRate/1000}
                   value={this.state.slashingRate}
-                  onChange={this.slashingPaceChange.bind(this)}
+                  onChange={this.slashingRateChange.bind(this)}
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
@@ -116,6 +121,7 @@ export default class extends LoggedInPage {
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
+                  placeholder={this.props.globalParams.lockdownExpiration + ' blocks'}
                   value={this.state.lockdownExpiration}
                   onChange={this.lockdownExpirationChange.bind(this)}
                 />
@@ -321,43 +327,74 @@ proposalsRender() {
 }
 
 propose() {
-  const stake = mntyToWei(this.state.stake);
-  const amount = nusdToWei(this.state.amount);
-  let slashingRate = this.state.slashingRate
-  let lockdownExpiration = this.state.lockdownExpiration
-  if (slashingRate < 0) {
-    alert("slashing duration cannot be negative");
-    throw "slashing duration cannot be negative"
+  try {
+    let stake, amount
+    try {
+      stake = BigInt(mntyToWei(this.state.stake.trim()) )
+    } catch (e) {
+      console.error(e)
+      throw 'invalid stake'
+    }
+    if (stake <= BigInt(this.props.globalParams.stake)*BigInt(2)/BigInt(3)) {
+      throw "stake too small"
+    }
+    try {
+      amount = BigInt(nusdToWei(this.state.amount.trim()))
+    } catch (e) {
+      console.error(e)
+      throw 'invalid absorption amount'
+    }
+    if (!amount) {
+      throw "absorption amount unspecified"
+    }
+    let slashingRate = this.state.slashingRate
+    let lockdownExpiration = this.state.lockdownExpiration
+    if (slashingRate && slashingRate*1000 <= this.props.globalParams.slashingRate*2/3) {
+      throw "slashing rate too small"
+    }
+    if (lockdownExpiration && lockdownExpiration <= this.props.globalParams.lockdownExpiration*2/3) {
+      throw "lockdown expiration too small"
+    }
+    this.props.propose(amount.toString(), stake.toString(), slashingRate, lockdownExpiration)
+  } catch (e) {
+    if (typeof e === 'string') {
+      alert(e)
+    } else {
+      console.error(e)
+      alert('unable to propose')
+    }
   }
-  if (lockdownExpiration < 0) {
-    alert("lockdown expiration cannot be negative");
-    throw "lockdown expiration cannot be negative"
+}
+
+approve(isVolatileToken) {
+  try{
+    const amount = isVolatileToken ?
+      mntyToWei(this.state.volToApprove.trim()) : nusdToWei(this.state.stbToApprove.trim());
+    if (BigInt(amount) < 0) {
+      throw "allowance cannot be negative"
+    }
+    try{
+      this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
+    } catch(e) {
+      if (typeof e === 'string') {
+        alert(e)
+      } else {
+        console.error(e)
+        alert('unable to approve allowance')
+      }
+    }
+  } catch(e) {
+    if (typeof e === 'string') {
+      alert(e)
+    } else {
+      console.error(e)
+      alert('invalid amount')
+    }
   }
-  console.log('***** stake MNTY:', thousands(weiToMNTY(stake)))
-  console.log('*** amount NEWSD:', thousands(weiToNUSD(amount)))
-  this.props.propose(amount, stake, slashingRate, lockdownExpiration)
 }
 
 reload() {
   this.props.reload();
-}
-
-idChange(e) {
-  this.setState({
-      id: e.target.value
-  })
-}
-
-toWalletChange(e) {
-  this.setState({
-      toWallet: e.target.value
-  })
-}
-
-transferAmountChange(amount) {
-  this.setState({
-      transferAmount: amount
-  })
 }
 
 stakeChange(e) {
@@ -372,7 +409,7 @@ amountChange(e) {
   })
 }
 
-slashingPaceChange(e) {
+slashingRateChange(e) {
   this.setState({
      slashingRate: e.target.value
   })
@@ -394,16 +431,6 @@ stbToApproveChange(e) {
   this.setState({
     stbToApprove: e.target.value
   });
-}
-
-approve(isVolatileToken) {
-  const amount = isVolatileToken ?
-    mntyToWei(this.state.volToApprove) : nusdToWei(this.state.stbToApprove);
-  if (BigInt(amount) < 0) {
-    alert("allowance cannot be negative")
-    throw "allowance cannot be negative"
-  }
-  this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
 }
 
 }
