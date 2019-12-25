@@ -313,8 +313,8 @@ proposalsRender() {
           key: 'vote',
           render: (text, record) => (
             <span>
-              {text !== true && <Button onClick={() => this.props.vote(record.maker, true)}>&#128077;</Button>}
-              {text !== false && <Button onClick={() => this.props.vote(record.maker, false)}>&#128078;</Button>}
+              {text !== true && <Icon type='like' onClick={() => this.props.vote(record.maker, true)} />}
+              {text !== false && <Icon type='dislike' onClick={() => this.props.vote(record.maker, false)} />}
             </span>
           )
         },
