@@ -75,8 +75,73 @@ export default class extends BaseService {
                         'totalVote': totalVote,
                     }}));
                 });
+                this.loadVote(res.maker)
             })
         }
+    }
+
+    loadVote(maker) {
+        const store = this.store.getState()
+        const seigniorageRedux = this.store.getRedux('seigniorage')
+
+        const bytes32 = x => {
+            return '0x' + x.replace(/^0x/, '').padStart(64, '0')
+        }
+        const index = (p, k) => {
+            return sha3(bytes32(k) + bytes32(p).replace(/^0x/, ''))
+        }
+        const offset = (p, o) => {
+            return bytes32((BigInt(o) + BigInt(p)).toString(16))
+        }
+        const web3 = store.user.web3
+        const sha3 = web3.utils.sha3
+
+        const voter = store.user.wallet
+
+        let key = offset(18, 2) // Preemptive.proposals.vals (maker => Proposal)
+        key = index(key, maker) // vals[maker]
+        // check the votes map ordinal
+        let keyOrd = offset(key, 6+1) // Proposal.votes.ordinals (address => uint)
+        keyOrd = index(keyOrd, voter) // ordinals[voter]
+        web3.eth.getStorageAt(store.contracts.seigniorage._address, keyOrd).then(res => {
+            const ord = BigInt(res)
+            if (ord == 0) {
+                this.dispatch(seigniorageRedux.actions.proposals_update({[maker]: {
+                    'vote': undefined,
+                }}));
+                return
+            }
+            // cross-check with keys array
+            let keyKey = offset(key, 6+0) // Proposal.votes.keys
+            web3.eth.getStorageAt(store.contracts.seigniorage._address, keyKey).then(res => {
+                const len = BigInt(res)
+                if (ord > len) {
+                    this.dispatch(seigniorageRedux.actions.proposals_update({[maker]: {
+                        'vote': undefined,
+                    }}));
+                    return
+                }
+                // keyKey = index(keyKey, (ord - BigInt(1)).toString(16)) // keys[ordinal-1]
+                // web3.eth.getStorageAt(store.contracts.seigniorage._address, key).then(res => {
+                //     console.error('keys[ordinal-1]', res, bytes32(voter), bytes32(voter) === res)
+                //     if (bytes32(voter) !== res) {
+                //         this.dispatch(seigniorageRedux.actions.proposals_update({[maker]: {
+                //             'vote': undefined,
+                //         }}));
+                //         return
+                //     }
+                    // get the vote direction
+                    let keyVal = offset(key, 6+2) // Proposal.votes.vals (address => bool)
+                    keyVal = index(keyVal, voter) // vals[voter]
+                    web3.eth.getStorageAt(store.contracts.seigniorage._address, keyVal).then(res => {
+                        console.error('vals[voter]', keyVal, '=', res)
+                        this.dispatch(seigniorageRedux.actions.proposals_update({[maker]: {
+                            'vote': BigInt(res) != 0,
+                        }}));
+                    })
+                // })
+            })
+        })
     }
 
     async loadOrders(orderType) {

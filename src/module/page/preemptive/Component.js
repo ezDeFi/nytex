@@ -82,7 +82,7 @@ export default class extends LoggedInPage {
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
-                  placeholder={this.props.globalParams.stake}
+                  placeholder={thousands(weiToMNTY(this.props.globalParams.stake))}
                   value={this.state.stake}
                   onChange={this.stakeChange.bind(this)}
                 />
@@ -313,8 +313,8 @@ proposalsRender() {
           key: 'vote',
           render: (text, record) => (
             <span>
-              {<Button onClick={() => this.props.vote(record.maker, true)}>&#128077;</Button>}
-              {<Button onClick={() => this.props.vote(record.maker, false)}>&#128078;</Button>}
+              {text !== true && <Button onClick={() => this.props.vote(record.maker, true)}>&#128077;</Button>}
+              {text !== false && <Button onClick={() => this.props.vote(record.maker, false)}>&#128078;</Button>}
             </span>
           )
         },
