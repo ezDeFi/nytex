@@ -301,7 +301,7 @@ deposit() {
     if (wei <= 0) {
       throw 'amount must be positive'
     }
-    this.props.deposit(wei)
+    this.props.deposit(wei.toString())
       .catch(e => {
         if (typeof e === 'string') {
           alert(e)
@@ -326,7 +326,7 @@ withdraw() {
     if (wei <= 0) {
       throw 'amount must be positive'
     }
-    this.props.withdraw(wei)
+    this.props.withdraw(wei.toString())
       .catch(e => {
         if (typeof e === 'string') {
           alert(e)
