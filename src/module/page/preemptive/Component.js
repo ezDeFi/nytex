@@ -361,12 +361,14 @@ propose() {
       Modal.error({
         title: 'New Proposal',
         content: e,
+        maskClosable: true,
       })
     } else {
       console.error(e)
       Modal.error({
         title: 'New Proposal',
         content: 'unable to propose',
+        maskClosable: true,
       })
     }
   }
@@ -386,12 +388,14 @@ approve(isVolatileToken) {
         Modal.error({
           title: 'Approve Allowance',
           content: e,
+          maskClosable: true,
         })
       } else {
         console.error(e)
         Modal.error({
           title: 'Set Token Allowance',
           content: 'unable to approve allowance',
+          maskClosable: true,
         })
       }
     }
@@ -400,12 +404,14 @@ approve(isVolatileToken) {
       Modal.error({
         title: 'Approve Allowance',
         content: e,
+        maskClosable: true,
       })
     } else {
       console.error(e)
       Modal.error({
         title: 'Set Token Allowance',
         content: 'invalid amount',
+        maskClosable: true,
       })
     }
   }

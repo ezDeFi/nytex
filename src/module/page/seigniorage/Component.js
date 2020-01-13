@@ -254,12 +254,14 @@ sellVolatileToken() {
       Modal.error({
         title: 'New Sell Order',
         content: e,
+        maskClosable: true,
       })
     } else {
       console.error(e)
       Modal.error({
         title: 'New Sell Order',
         content: 'unable to create sell order',
+        maskClosable: true,
       })
     }
   }
@@ -295,12 +297,14 @@ buyVolatileToken() {
       Modal.error({
         title: 'New Buy Order',
         content: e,
+        maskClosable: true,
       })
     } else {
       console.error(e)
       Modal.error({
         title: 'New Buy Order',
         content: 'unable to create buy order',
+        maskClosable: true,
       })
     }
   }
@@ -319,12 +323,14 @@ deposit() {
           Modal.error({
             title: 'Deposit NTY',
             content: e,
+            maskClosable: true,
           })
         } else {
           console.error(e)
           Modal.error({
             title: 'Deposit NTY',
             content: 'unable to deposit NTY',
+            maskClosable: true,
           })
         }
       })
@@ -333,12 +339,14 @@ deposit() {
       Modal.error({
         title: 'Deposit NTY',
         content: e,
+        maskClosable: true,
       })
     } else {
       console.error(e)
       Modal.error({
         title: 'Deposit NTY',
         content: 'invalid amount',
+        maskClosable: true,
       })
     }
   }
@@ -357,12 +365,14 @@ withdraw() {
           Modal.error({
             title: 'Withdraw NTY',
             content: e,
+            maskClosable: true,
           })
         } else {
           console.error(e)
           Modal.error({
             title: 'Withdraw NTY',
             content: 'unable to withdraw NTY',
+            maskClosable: true,
           })
         }
       })
@@ -371,12 +381,14 @@ withdraw() {
       Modal.error({
         title: 'Withdraw NTY',
         content: e,
+        maskClosable: true,
       })
     } else {
       console.error(e)
       Modal.error({
         title: 'Withdraw NTY',
         content: 'invaild amount',
+        maskClosable: true,
       })
     }
   }
