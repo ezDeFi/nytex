@@ -1,6 +1,5 @@
 import React from 'react' // eslint-disable-line
 import StandardPage from '../StandardPage'
-import LoginForm from '@/module/form/LoginForm/Container' // eslint-disable-line
 import { Col, Spin } from 'antd' // eslint-disable-line
 
 import './style.scss'
@@ -16,9 +15,12 @@ export default class extends StandardPage {
               </Spin>
             </div>}
             {(!this.props.loginMetamask) && <div className="login-metamask">
-              <img src="/assets/images/metamask.svg" with="100px" height="100px" /><h2>Login with <a href="https://metamask.io/" target="_blank">MetaMask</a> or Private Key</h2>
+              <img src="/assets/images/metamask.svg" with="100px" height="100px" />
+              <h3>Login with
+                <span> </span><a href="https://metamask.io/" target="_blank">MetaMask</a> or
+                <span> </span><a href="https://ezdefi.com" target="_blank">ezDeFi Extension (Alpha)</a>
+              </h3>
             </div>}
-             <LoginForm />
           </Col>
 
         </div>
