@@ -6,7 +6,7 @@ import { CONTRACTS } from '@/constant'
 
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Breadcrumb, Table, Input, Modal } from 'antd' // eslint-disable-line
 
 export default class extends LoggedInPage {
   state = {
@@ -358,10 +358,16 @@ propose() {
     this.props.propose(amount.toString(), stake.toString(), slashingRate, lockdownExpiration)
   } catch (e) {
     if (typeof e === 'string') {
-      alert(e)
+      Modal.error({
+        title: 'New Proposal',
+        content: e,
+      })
     } else {
       console.error(e)
-      alert('unable to propose')
+      Modal.error({
+        title: 'New Proposal',
+        content: 'unable to propose',
+      })
     }
   }
 }
@@ -377,18 +383,30 @@ approve(isVolatileToken) {
       this.props.approve(CONTRACTS.Seigniorage.address, amount, isVolatileToken);
     } catch(e) {
       if (typeof e === 'string') {
-        alert(e)
+        Modal.error({
+          title: 'Approve Allowance',
+          content: e,
+        })
       } else {
         console.error(e)
-        alert('unable to approve allowance')
+        Modal.error({
+          title: 'Set Token Allowance',
+          content: 'unable to approve allowance',
+        })
       }
     }
   } catch(e) {
     if (typeof e === 'string') {
-      alert(e)
+      Modal.error({
+        title: 'Approve Allowance',
+        content: e,
+      })
     } else {
       console.error(e)
-      alert('invalid amount')
+      Modal.error({
+        title: 'Set Token Allowance',
+        content: 'invalid amount',
+      })
     }
   }
 }

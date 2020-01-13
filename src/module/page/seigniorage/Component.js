@@ -5,7 +5,7 @@ import { thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul } 
 import { CONTRACTS } from '@/constant'
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Breadcrumb, Table, Input, Modal } from 'antd' // eslint-disable-line
 
 export default class extends LoggedInPage {
   state = {
@@ -251,10 +251,16 @@ sellVolatileToken() {
     this.props.sellVolatileToken(haveWei, wantWei)
   } catch(e) {
     if (typeof e === 'string') {
-      alert(e)
+      Modal.error({
+        title: 'New Sell Order',
+        content: e,
+      })
     } else {
       console.error(e)
-      alert('unable to create sell order')
+      Modal.error({
+        title: 'New Sell Order',
+        content: 'unable to create sell order',
+      })
     }
   }
 }
@@ -286,10 +292,16 @@ buyVolatileToken() {
     this.props.sellStableToken(haveWei, wantWei)
   } catch(e) {
     if (typeof e === 'string') {
-      alert(e)
+      Modal.error({
+        title: 'New Buy Order',
+        content: e,
+      })
     } else {
       console.error(e)
-      alert('unable to create buy order')
+      Modal.error({
+        title: 'New Buy Order',
+        content: 'unable to create buy order',
+      })
     }
   }
 }
@@ -304,17 +316,30 @@ deposit() {
     this.props.deposit(wei.toString())
       .catch(e => {
         if (typeof e === 'string') {
-          alert(e)
+          Modal.error({
+            title: 'Deposit NTY',
+            content: e,
+          })
         } else {
           console.error(e)
+          Modal.error({
+            title: 'Deposit NTY',
+            content: 'unable to deposit NTY',
+          })
         }
       })
   } catch(e) {
     if (typeof e === 'string') {
-      alert(e)
+      Modal.error({
+        title: 'Deposit NTY',
+        content: e,
+      })
     } else {
       console.error(e)
-      alert('invalid amount')
+      Modal.error({
+        title: 'Deposit NTY',
+        content: 'invalid amount',
+      })
     }
   }
 }
@@ -329,17 +354,30 @@ withdraw() {
     this.props.withdraw(wei.toString())
       .catch(e => {
         if (typeof e === 'string') {
-          alert(e)
+          Modal.error({
+            title: 'Withdraw NTY',
+            content: e,
+          })
         } else {
           console.error(e)
+          Modal.error({
+            title: 'Withdraw NTY',
+            content: 'unable to withdraw NTY',
+          })
         }
       })
   } catch(e) {
     if (typeof e === 'string') {
-      alert(e)
+      Modal.error({
+        title: 'Withdraw NTY',
+        content: e,
+      })
     } else {
       console.error(e)
-      alert('invalid amount')
+      Modal.error({
+        title: 'Withdraw NTY',
+        content: 'invaild amount',
+      })
     }
   }
 }
