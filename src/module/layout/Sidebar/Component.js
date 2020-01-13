@@ -108,7 +108,6 @@ export default class extends BaseComponent {
   clickItem (e) {
     const key = e.key
     if (_.includes([
-      'home',
       'exchange',
       'preemptive',
       'txcode'
@@ -134,7 +133,6 @@ export default class extends BaseComponent {
     let url = window.location.pathname
 
     let sidebar = [
-      'home',
       'exchange',
       'preemptive',
       'txcode'
