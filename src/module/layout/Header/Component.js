@@ -11,7 +11,7 @@ const { Header } = Layout // eslint-disable-line
 
 export default class extends BaseComponent {
   componentDidMount () {
-    document.title = 'Nexty ...'
+    document.title = 'NewSD: Stablecoin Protocol of Nexty'
   }
 
   buildAcctDropdown () {
@@ -55,8 +55,7 @@ export default class extends BaseComponent {
     } else {
       return (
         <div className="xlogo" style={{ background: '#0d47a1' }}>
-
-          <link rel="shortcut icon" href="assets/images/btc.gif"/>
+          <img src='/assets/images/logo.svg' />
         </div>
 
       )

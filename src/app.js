@@ -109,11 +109,12 @@ function setupWeb3 () {
 }
 
 if (window.ethereum) {
-    setupWeb3()
-
+  setupWeb3()
+  if (window.web3.currentProvider.publicConfigStore) {
     window.web3.currentProvider.publicConfigStore.on('update', async () => {
       setupWeb3()
     })
+  }
 } else {
   store.dispatch(userRedux.actions.loginMetamask_update(false))
 }

@@ -13,9 +13,12 @@ export default class extends BaseComponent {
           <Row className="d_rowFooter">
             <Col xs={24} sm={24} md={12} span={12}>
               <div className="d_footerSection">
-                <b>WHAT IS ...?</b>
-                <p className="margin-left-15"></p>
-                <a href="/assets/howtouse.pdf" target="_blank"><b>HOW TO USE</b></a>
+                <b>NewSD: Stablecoin protocol</b>
+                <p className="margin-left-5">
+                  <a target="_blank" href="https://hackmd.io/FYPsDvdVRYWOLfRpypS4nw">Technical Paper</a>
+                  <br></br>
+                  <a target="_blank" href="https://medium.com/nextyplatform/newsd-exchange-guidelines-bbccab418bc8">Get Started!</a>
+                </p>
               </div>
             </Col>
             <Col xs={24} sm={24} md={12} span={12}>
@@ -23,8 +26,8 @@ export default class extends BaseComponent {
                 <b>FOLLOW US ON</b><br />
                 <br />
                 <p>
-                  <a href="https://bitcointalk.org/index.php?topic=2498919"><img src="/assets/images/btc.png" width="25px" /></a>&nbsp; &nbsp;
-                  <a href="https://www.facebook.com/nextycoin"><Icon type="facebook" style={{ fontSize: 22 }} /></a>&nbsp; &nbsp;
+                  <a href="https://bitcointalk.org/index.php?topic=2498919"><Icon type="usergroup-add" style={{ fontSize: 22 }}/></a>&nbsp; &nbsp;
+                  <a href="https://www.facebook.com/nextyio"><Icon type="facebook" style={{ fontSize: 22 }} /></a>&nbsp; &nbsp;
                   <a href="https://twitter.com/nextyio"><Icon type="twitter" style={{ fontSize: 22 }} /></a>
                 </p>
                 <b>Email</b>

@@ -1,0 +1,13 @@
+server {
+        include /etc/nginx/mime.types;
+    listen       80;
+    listen       [::]:80;
+    server_name  faucet.testnet.nexty.io;
+    root         /var/www/faucet/build;
+    # Load configuration files for the default server block.
+    location / {
+        root /var/www/faucet/build;
+        index index.html index.html;
+        try_files $uri $uri/ /index.html =404;
+      }
+}
