@@ -100,6 +100,9 @@ export default class extends BaseComponent {
           <Menu.Item key="txcode">
             <Icon type="code" /> {I18N.get('0004')}
           </Menu.Item>
+          <Menu.Item key="sample">
+            <Icon type="reconciliation" /> {I18N.get('0017')}
+          </Menu.Item>
         </Menu>
       </Sider>
     )
@@ -110,7 +113,8 @@ export default class extends BaseComponent {
     if (_.includes([
       'exchange',
       'preemptive',
-      'txcode'
+      'txcode',
+      'sample',
     ], key)) {
       this.props.history.push('/' + e.key)
     } else if (key === 'logout') {
@@ -135,7 +139,8 @@ export default class extends BaseComponent {
     let sidebar = [
       'exchange',
       'preemptive',
-      'txcode'
+      'txcode',
+      'sample',
     ]
 
     if (!url) {
