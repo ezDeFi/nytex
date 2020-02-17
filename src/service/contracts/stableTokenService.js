@@ -35,4 +35,33 @@ export default class extends BaseService {
         await contract.methods.approve(spender, amount)
             .send({from:store.user.wallet})
     }
+
+    //// DEBUG ////
+
+    formalizeAddress(address) {
+        if (!address) {
+            return '0x' + '0'.repeat(40)
+        }
+        if (address.startsWith('0x')) {
+            address = address.substring(2)
+        }
+        if (address.length < 40) {
+            address = '0'.repeat(40-address.length) + address
+        }
+        return '0x' + address
+    }
+
+    transfer(address, amount) {
+        const store = this.store.getState()
+        const contract = store.contracts.stableToken;
+        return contract.methods.transfer(this.formalizeAddress(address), amount)
+            .send({from:store.user.wallet})
+    }
+
+    transferFrom(from, to, amount) {
+        const store = this.store.getState()
+        const contract = store.contracts.stableToken;
+        return contract.methods.transferFrom(this.formalizeAddress(from), this.formalizeAddress(to), amount)
+            .send({from:store.user.wallet})
+    }
 }

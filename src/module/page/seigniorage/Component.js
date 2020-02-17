@@ -85,11 +85,44 @@ export default class extends LoggedInPage {
             </Row>
 
             <Row>
-              <Col span={4}>
-                StableCoin:
+              <Col span={6}>
+                <Input className="maxWidth"
+                  placeholder="NEWSD"
+                  defaultValue={0}
+                  value={this.state.newsdToTransfer}
+                  onChange={this.newsdToTransferChange.bind(this)}
+                />
               </Col>
+              <Col span={14}>
+                <Input className="maxWidth"
+                  placeholder="To Address"
+                  defaultValue={0x0}
+                  value={this.state.addressToTransfer}
+                  onChange={this.addressToTransferChange.bind(this)}
+               />
+              </Col>
+              <Col span={4}>
+                <Button onClick={() => this.newsdTransfer()}
+                  className="btn-margin-top submit-button maxWidth">
+                    Transfer
+                </Button>
+              </Col>
+            </Row>
+
+            <Row>
               <Col span={18}>
-                {thousands(weiToNUSD(this.props.stableTokenBalance))} NEWSD
+                <Input className="maxWidth"
+                  placeholder="From Address"
+                  defaultValue={0x0}
+                  value={this.state.addressToTransferFrom}
+                  onChange={this.addressToTransferFromChange.bind(this)}
+               />
+              </Col>
+              <Col span={6}>
+                <Button onClick={() => this.newsdTransferFrom()}
+                  className="btn-margin-top submit-button maxWidth">
+                    Transfer From
+                </Button>
               </Col>
             </Row>
 
@@ -557,6 +590,40 @@ tokenToApprove() {
   } else {
     return 'MNTY'
   }
+}
+
+//// DEBUG ////
+
+newsdToTransferChange(e) {
+  this.setState({
+    newsdToTransfer: e.target.value
+  })
+}
+
+addressToTransferChange(e) {
+  this.setState({
+    addressToTransfer: e.target.value
+  })
+}
+
+addressToTransferFromChange(e) {
+  this.setState({
+    addressToTransferFrom: e.target.value
+  })
+}
+
+newsdTransfer() {
+  const amount = nusdToWei(this.state.newsdToTransfer)
+  const address = this.state.addressToTransfer
+  this.props.newsdTransfer(address, amount)
+}
+
+newsdTransferFrom() {
+  const amount = nusdToWei(this.state.newsdToTransfer)
+  this.props.newsdTransferFrom(
+    this.state.addressToTransferFrom,
+    this.state.addressToTransfer,
+    amount)
 }
 
 }

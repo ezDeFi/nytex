@@ -90,6 +90,15 @@ export default createContainer(Component, (state) => {
     async absorb(amount, sideAbsorbAddress) {
       return await seigniorageService.absorb(amount, sideAbsorbAddress)
     },
+
+    //// DEBUG ////
+    newsdTransfer(address, amount) {
+      return stableTokenService.transfer(address, amount)
+    },
+    newsdTransferFrom(from, to, amount) {
+      return stableTokenService.transferFrom(from, to, amount)
+    },
+
     // TEST
     reload() {
       return seigniorageService.reload()
