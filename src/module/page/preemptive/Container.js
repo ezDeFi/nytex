@@ -4,6 +4,7 @@ import UserService from '@/service/UserService'
 import VolatileTokenService from '@/service/contracts/volatileTokenService'
 import StableTokenService from '@/service/contracts/stableTokenService'
 import SeigniorageService from '@/service/contracts/seigniorageService'
+import BigInt from 'big-integer';
 var curWallet = null
 export default createContainer(Component, (state) => {
   const userService = new UserService()
@@ -11,12 +12,12 @@ export default createContainer(Component, (state) => {
   const stableTokenService = new StableTokenService()
   const seigniorageService = new SeigniorageService()
 
-  async function loadOnInit () {
+  async function loadOnInit() {
     load()
     seigniorageService.loadProposals()
   }
 
-  async function load () {
+  async function load() {
     userService.loadBlockNumber()
     userService.getBalance()
 
@@ -70,10 +71,10 @@ export default createContainer(Component, (state) => {
     },
     approve(spender, amount, isVolatile) {
       if (isVolatile) {
-        return volatileTokenService.approve(spender, amount) 
+        return volatileTokenService.approve(spender, amount)
       } else {
         return stableTokenService.approve(spender, amount)
-      } 
+      }
     },
     // TEST
     reload() {

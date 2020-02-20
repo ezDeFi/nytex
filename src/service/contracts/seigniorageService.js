@@ -1,14 +1,14 @@
 import BaseService from '../../model/BaseService'
 import _ from 'lodash'
 import { thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift } from '@/util/help'
-
+import BigInt from 'big-integer';
 export default class extends BaseService {
     async cancel(orderType, id) {
         console.log("cancel " + (orderType ? "buy" : "ask") + "ing order: ", id.toString())
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
         await contract.methods.cancel(orderType, id)
-            .send({from:store.user.wallet})
+            .send({ from: store.user.wallet })
     }
 
     async sellVolatileToken(haveAmount, wantAmount) {
@@ -21,12 +21,12 @@ export default class extends BaseService {
         return
     }
 
-    async vote(maker, up){
+    async vote(maker, up) {
         console.log(maker.toString(), up)
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
         await contract.methods.vote(maker, up)
-            .send({from:store.user.wallet})
+            .send({ from: store.user.wallet })
     }
 
     async revoke(maker) {
@@ -34,7 +34,7 @@ export default class extends BaseService {
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
         await contract.methods.revoke(maker)
-            .send({from:store.user.wallet})
+            .send({ from: store.user.wallet })
     }
 
     async loadProposals() {
@@ -62,18 +62,22 @@ export default class extends BaseService {
         for (let i = 0; i < count; ++i) {
             methods.getProposal(i).call().then(res => {
                 // console.log(res);
-                this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
-                    'maker': res.maker,
-                    'stake': res.stake,
-                    'amount': thousands(weiToNUSD(res.amount)),
-                    'slashingRate': decShift(res.slashingRate, -3),
-                    'lockdownExpiration': res.lockdownExpiration,
-                }}));
+                this.dispatch(seigniorageRedux.actions.proposals_update({
+                    [res.maker]: {
+                        'maker': res.maker,
+                        'stake': res.stake,
+                        'amount': thousands(weiToNUSD(res.amount)),
+                        'slashingRate': decShift(res.slashingRate, -3),
+                        'lockdownExpiration': res.lockdownExpiration,
+                    }
+                }));
                 methods.totalVote(res.maker).call().then(totalVote => {
                     // console.log(totalVote);
-                    this.dispatch(seigniorageRedux.actions.proposals_update({[res.maker]: {
-                        'totalVote': totalVote,
-                    }}));
+                    this.dispatch(seigniorageRedux.actions.proposals_update({
+                        [res.maker]: {
+                            'totalVote': totalVote,
+                        }
+                    }));
                 });
                 this.loadVote(res.maker)
             })
@@ -101,24 +105,28 @@ export default class extends BaseService {
         let key = offset(18, 2) // Preemptive.proposals.vals (maker => Proposal)
         key = index(key, maker) // vals[maker]
         // check the votes map ordinal
-        let keyOrd = offset(key, 6+1) // Proposal.votes.ordinals (address => uint)
+        let keyOrd = offset(key, 6 + 1) // Proposal.votes.ordinals (address => uint)
         keyOrd = index(keyOrd, voter) // ordinals[voter]
         web3.eth.getStorageAt(store.contracts.seigniorage._address, keyOrd).then(res => {
             const ord = BigInt(res)
             if (ord == 0) {
-                this.dispatch(seigniorageRedux.actions.proposals_update({[maker]: {
-                    'vote': undefined,
-                }}));
+                this.dispatch(seigniorageRedux.actions.proposals_update({
+                    [maker]: {
+                        'vote': undefined,
+                    }
+                }));
                 return
             }
             // cross-check with keys array
-            let keyKey = offset(key, 6+0) // Proposal.votes.keys
+            let keyKey = offset(key, 6 + 0) // Proposal.votes.keys
             web3.eth.getStorageAt(store.contracts.seigniorage._address, keyKey).then(res => {
                 const len = BigInt(res)
                 if (ord > len) {
-                    this.dispatch(seigniorageRedux.actions.proposals_update({[maker]: {
-                        'vote': undefined,
-                    }}));
+                    this.dispatch(seigniorageRedux.actions.proposals_update({
+                        [maker]: {
+                            'vote': undefined,
+                        }
+                    }));
                     return
                 }
                 // keyKey = index(keyKey, (ord - BigInt(1)).toString(16)) // keys[ordinal-1]
@@ -130,15 +138,17 @@ export default class extends BaseService {
                 //         }}));
                 //         return
                 //     }
-                    // get the vote direction
-                    let keyVal = offset(key, 6+2) // Proposal.votes.vals (address => bool)
-                    keyVal = index(keyVal, voter) // vals[voter]
-                    web3.eth.getStorageAt(store.contracts.seigniorage._address, keyVal).then(res => {
-                        console.error('vals[voter]', keyVal, '=', res)
-                        this.dispatch(seigniorageRedux.actions.proposals_update({[maker]: {
+                // get the vote direction
+                let keyVal = offset(key, 6 + 2) // Proposal.votes.vals (address => bool)
+                keyVal = index(keyVal, voter) // vals[voter]
+                web3.eth.getStorageAt(store.contracts.seigniorage._address, keyVal).then(res => {
+                    console.error('vals[voter]', keyVal, '=', res)
+                    this.dispatch(seigniorageRedux.actions.proposals_update({
+                        [maker]: {
                             'vote': BigInt(res) != 0,
-                        }}));
-                    })
+                        }
+                    }));
+                })
                 // })
             })
         })
@@ -168,9 +178,9 @@ export default class extends BaseService {
                     'price': '',
                 };
                 if (orderType) {
-                    this.dispatch(seigniorageRedux.actions.bids_update({[i]: order}));
+                    this.dispatch(seigniorageRedux.actions.bids_update({ [i]: order }));
                 } else {
-                    this.dispatch(seigniorageRedux.actions.asks_update({[MAX_ITEMS-1-i]: order}));
+                    this.dispatch(seigniorageRedux.actions.asks_update({ [MAX_ITEMS - 1 - i]: order }));
                 }
                 continue;
             }
@@ -187,9 +197,9 @@ export default class extends BaseService {
             };
             // console.log(order);
             if (orderType) {
-                this.dispatch(seigniorageRedux.actions.bids_update({[i]: order}));
+                this.dispatch(seigniorageRedux.actions.bids_update({ [i]: order }));
             } else {
-                this.dispatch(seigniorageRedux.actions.asks_update({[MAX_ITEMS-1-i]: order}));
+                this.dispatch(seigniorageRedux.actions.asks_update({ [MAX_ITEMS - 1 - i]: order }));
             }
             id = res[4];
         }
@@ -200,7 +210,7 @@ export default class extends BaseService {
         const store = this.store.getState()
         const contract = store.contracts.seigniorage;
         await contract.methods.testAbsorb(amount, sideAddress)
-            .send({from:store.user.wallet})
+            .send({ from: store.user.wallet })
     }
 
     async reload() {
