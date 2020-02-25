@@ -3,6 +3,7 @@ import PreemptivePage from '@/module/page/preemptive/Container'
 import TxCodePage from '@/module/page/txcode/Container'
 import LoginPage from '@/module/page/login/Container'
 import NotFound from '@/module/page/error/NotFound'
+import History from '@/module/page/history/Container'
 
 export default [
   {
@@ -28,6 +29,10 @@ export default [
   {
     path: '/login',
     page: LoginPage
+  },
+  {
+    path: '/history',
+    page: History
   },
   {
     page: NotFound

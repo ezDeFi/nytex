@@ -16,6 +16,7 @@ export default {
   '0014': 'Withdraw',
   '0015': 'Manage',
   '0016': 'Transfer',
+  '0017': 'History',
 
   '0100': 'Developer',
   '0101': 'Social',
