@@ -1,3 +1,4 @@
+import HomePage from '@/module/page/home/Container'
 import SeignioragePage from '@/module/page/seigniorage/Container'
 import PreemptivePage from '@/module/page/preemptive/Container'
 import TxCodePage from '@/module/page/txcode/Container'
@@ -11,7 +12,7 @@ export default [
   },
   {
     path: '/home',
-    page: SeignioragePage
+    page: HomePage
   },
   {
     path: '/exchange',

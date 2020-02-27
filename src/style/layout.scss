@@ -1,5 +1,5 @@
 .ant-layout{
-  background: #fff;
+  background: #252C3F;
 }
 .ant-layout-content{
   text-align: center;
@@ -10,12 +10,12 @@
 
   > .ant-dropdown-menu-item {
     padding: 8px 48px 8px 32px;
-    color: rgba(0, 0, 0, 1);
+    color: #ffffff;
   }
 }
 
 .c_Header{
-  background: #fff;
+  background: #252C3F;
   height: $header_height;
   padding: 0;
   text-align: center;
@@ -23,7 +23,7 @@
 
   .c_Header_Menu.ant-menu {
     max-width: $main_width;
-    background-color: #fff;
+    background-color: #252C3F;
 
     padding-top: 0;
   }
@@ -34,7 +34,7 @@
     font-weight: 600;
     padding-top: 24px;
     line-height: 20px;
-    color: #000000;
+    color: #ffffff;
 
     &.logo {
       padding-top: 0;
@@ -115,7 +115,7 @@
 }
 
 .c_Header_Admin{
-  background: #F7F8FC;
+  background: #252C3F;
   height: 90px;
   padding: 0;
   text-align: center;

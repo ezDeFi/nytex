@@ -3,7 +3,8 @@ import BasePage from '@/model/BasePage'
 import { Layout, BackTop } from 'antd' // eslint-disable-line
 import Header from '../layout/Header/Container' // eslint-disable-line
 // import './style.scss';
-import Sidebar from '../layout/Sidebar/Container' // eslint-disable-line
+import Home from './home/Container'
+// import Sidebar from '../layout/Sidebar/Container' // eslint-disable-line
 import Footer from '../layout/Footer/Container' // eslint-disable-line
 
 const { Content } = Layout // eslint-disable-line
@@ -15,7 +16,8 @@ export default class extends BasePage {
       <div>
         <Layout>
           <BackTop />
-          <Sidebar />
+          {/* <Sidebar /> */}
+          
           <Layout>
             {/* <Header style={{ background: '#3c8dbc', padding: 0 }}> */}
             {/* <Icon
@@ -24,7 +26,7 @@ export default class extends BasePage {
                             onClick={this.toggle}
                         /> */}
             {/* </Header> */}
-            <Header />
+        <Header />          
             {/* <Breadcrumb.Item><Link to="/"><Icon type="home" /> Home</Link></Breadcrumb.Item>
                         <Breadcrumb.Item>Login</Breadcrumb.Item> */}
             {this.ord_renderBreadcrumb()}
