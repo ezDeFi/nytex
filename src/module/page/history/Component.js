@@ -2,13 +2,19 @@ import React from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
 import './style.scss'
+import axios from 'axios'
 
 import { Col, Row, Icon, Button, Breadcrumb, Table, Input, Modal } from 'antd' // eslint-disable-line
 
 export default class extends LoggedInPage {
-  state = {
+  constructor(props) {
+    super(props);
 
-  }
+
+    this.state = {
+      BlockNumber: ''
+    }
+}
 
   async componentDidMount() {
     // this.reload()
@@ -22,19 +28,19 @@ export default class extends LoggedInPage {
         <div className="ebp-page">
           <h3 className="text-center">Find data</h3>
           <Row>
-            <Col span={6}>
-              Insert block number
+            <Col span={3} />
+            <Col span={4}>
+              Insert block number:
             </Col>
             <Col span={8}>
               <Input className="maxWidth"
-                placeholder="Block Number"
-                defaultValue={0}
-                value={this.state.mnty}
+                defaultValue={0}                
+                onChange = {this.onChangeBL}
               />
             </Col>
             <Col span={1} />
-            <Col span={4}>
-              <Button type="primary" onClick={() => this.send()}
+            <Col span={2}>
+              <Button type="primary" onClick = {this.connect}
                 className="btn-margin-top submit-button maxWidth">Submit</Button>
             </Col>
           </Row>
@@ -52,7 +58,21 @@ export default class extends LoggedInPage {
       </div>
     )
   }
+  
+  connect=()=>{
+    const url = "http://localhost:8888/post"
 
+    fetch(url,{
+      method: "POST",
+      headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      body: 'BlockNumber=123'
+    }).catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+
+
+  }
+  
   ord_renderBreadcrumb () { // eslint-disable-line
     return (
       <Breadcrumb style={{ 'marginLeft': '16px', 'marginTop': '16px', float: 'right' }}>
@@ -61,10 +81,23 @@ export default class extends LoggedInPage {
       </Breadcrumb>
     )
   }
+  
+  onChangeBL(e) {
+    this.setState({
+        BlockNumber: e.target.value
+    });
+  }
 
-  onCopy = () => {
-    this.setState({copied: true});
-  };
+
+  _handleKeyDown = evt => {
+    if (evt.key === 'Enter') {
+      this.setState({
+        // valueInput: evt.target.value
+      }, () => {
+        // this.connect()
+      })
+    }
+  }
 
   historiesRender(_orderType) {
     const columns = [

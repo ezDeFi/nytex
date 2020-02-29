@@ -20,11 +20,13 @@
     "lint": "eslint ./**.js **.js",
     "travislint": "eslint --ignore-path .gitignore .",
     "lint:fix": "eslint . --fix",
-    "lint:sol": "solium -d contracts/"
+    "lint:sol": "solium -d contracts/",
+    "proxy": "http://localhost:8880/"
   },
   "author": "nexty.io",
   "dependencies": {
     "antd": "^3.5.0",
+    "axios": "^0.19.2",
     "babel-preset-stage-0": "^6.24.1",
     "big-integer": "^1.6.43",
     "big-number": "^2.0.0",
@@ -38,6 +40,7 @@
     "install": "^0.12.2",
     "lodash": "^4.17.11",
     "moment": "^2.19.1",
+    "mongodb": "^3.5.3",
     "npm": "^6.9.0",
     "openzeppelin-eth": "^2.1.3",
     "openzeppelin-solidity": "^2.1.2",
@@ -103,7 +106,7 @@
     "ganache-cli": "6.1.0",
     "html-webpack-plugin": "3.2.0",
     "jest": "22.4.3",
-    "node-sass": "4.9.0",
+    "node-sass": "^4.9.0",
     "open-browser-webpack-plugin": "0.0.5",
     "optimize-css-assets-webpack-plugin": "^4.0.1",
     "postcss-flexbugs-fixes": "^3.3.1",

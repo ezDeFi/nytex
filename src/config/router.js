@@ -4,6 +4,7 @@ import TxCodePage from '@/module/page/txcode/Container'
 import LoginPage from '@/module/page/login/Container'
 import NotFound from '@/module/page/error/NotFound'
 import History from '@/module/page/history/Container'
+import axios from 'axios'
 
 export default [
   {
