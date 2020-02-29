@@ -29,13 +29,13 @@ export default class extends BasePage {
         <Header />          
             {/* <Breadcrumb.Item><Link to="/"><Icon type="home" /> Home</Link></Breadcrumb.Item>
                         <Breadcrumb.Item>Login</Breadcrumb.Item> */}
-            {this.ord_renderBreadcrumb()}
-            <Content style={{ margin: '16px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
+            {/* {this.ord_renderBreadcrumb()} */}
+            <Content>
               {this.ord_renderContent()}
             </Content>
           </Layout>
         </Layout>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     // <Layout className="p_standardPage">
     //     <Header/>

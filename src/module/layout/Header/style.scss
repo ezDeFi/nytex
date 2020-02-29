@@ -1,16 +1,81 @@
-.right-side {
-  float: right;
-  top: 15px;
-  right: 35px;
+/*Header container*/
+
+#top_Header {
+  display: flex;
+  padding: 24px 40px 24px 40px;
+  flex-wrap: nowrap;
 }
 
-.a_Header {
-    padding: 24px 40px 24px 40px
+/* Header A and Header B */
+
+#top_Header .a_Header {
+  display: flex;
+  flex: 7;
+  max-width: 70%;
+  max-height: 40px;
+  line-height: 15px;
 }
+
+#top_Header .b_Header {
+  display: flex;
+  flex: 3;
+  justify-content: space-around;
+  max-width: 30%;
+  max-height: 40px;
+}
+
+/*Logo*/
 
 .xlogo {
-  left: 10%;
-  right: 89.92%;
-  top: 4%;
-  bottom: 95.8%;
+  max-width: 155px;
+  max-height: 30px;
+}
+
+/*Top Index Layout*/
+
+.last_price {
+  max-width: 165px;
+  max-height: 35px;
+  margin-left: 11px;
+}
+
+.daily_change {
+  max-width: 85px;
+  max-height: 35px;
+  margin-left: 20px;
+}
+
+.daily_change:first{
+  margin-left: 33px;
+}
+
+.exchange {
+  line-height: 28px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.language {
+  line-height: 15px;
+  font-size: 13px;
+}
+
+/*Index*/
+
+.a_Index_top {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  max-width: 70px;
+  max-height: 15px;
+  color: #6e7793;
+}
+
+.a_Index_bottom {
+  display: flex;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  max-height: 15px;
+  color: #ffffff;
 }
