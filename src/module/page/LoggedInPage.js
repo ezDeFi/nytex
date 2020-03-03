@@ -19,13 +19,13 @@ export default class extends BasePage {
           {/* <Sidebar /> */}
           
           <Layout>
-            {/* <Header style={{ background: '#3c8dbc', padding: 0 }}> */}
-            {/* <Icon
+            {/* <Header style={{ background: '#3c8dbc', padding: 0 }}>
+            <Icon
                             className="trigger"
                             type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
                             onClick={this.toggle}
-                        /> */}
-            {/* </Header> */}
+                        />
+            </Header> */}
         <Header />          
             {/* <Breadcrumb.Item><Link to="/"><Icon type="home" /> Home</Link></Breadcrumb.Item>
                         <Breadcrumb.Item>Login</Breadcrumb.Item> */}

@@ -53,19 +53,19 @@ export default class extends BaseComponent {
     this.loadData()
   }
 
-  toggleCollapsed () {
-    this.setState({
-      collapsed: !this.state.collapsed,
-      siderWidth: this.state.collapsed ? '200px' : '0px'
-    })
-    console.log(this.state.siderWidth)
-  }
+  // toggleCollapsed () {
+  //   this.setState({
+  //     collapsed: !this.state.collapsed,
+  //     siderWidth: this.state.collapsed ? '200px' : '0px'
+  //   })
+  //   console.log(this.state.siderWidth)
+  // }
 
-  loadData () {
-    this.setState({
-      siderWidth: this.state.collapsed ? '0px' : '200px'
-    })
-  }
+  // loadData () {
+  //   this.setState({
+  //     siderWidth: this.state.collapsed ? '0px' : '200px'
+  //   })
+  // }
 
   ord_render () { // eslint-disable-line
     return (
@@ -75,20 +75,13 @@ export default class extends BaseComponent {
         collapsible
         style={{ align: 'left' }}
       >
-        <div className="xlogo" style={{ background: '#0d47a1' }}>
-          <img src='/assets/images/Asset 1@20x-8.png' />
-        </div>
-        <div style={{ width: '50px', height: '50px', position: 'fixed', bottom: '20px', left: '20px', zIndex: '99999' }}>
-          <a href="https://t.me/nexty_io" target="_blank" rel="noopener"><img style ={{ width: '50px', zIndex: '99999' }} src="/assets/images/telegram.png" /></a>
-        </div>
-
-        <Icon onClick={this.toggleCollapsed.bind(this)} type={'menu-unfold'}
+        {/* <Icon onClick={this.toggleCollapsed.bind(this)} type={'menu-unfold'}
           style={{ position: 'fixed', top: (window.innerHeight - 186) / 2, background: 'white', left: 0, fontSize: 20, zIndex: '1', display: !this.state.collapsed ? 'none' : 'block' }}
         />
 
         <Icon onClick={this.toggleCollapsed.bind(this)} type={'menu-fold'}
           style={{ position: 'absolute', top: (window.innerHeight - 186) / 2, left: this.state.siderWidth, fontSize: 20, display: this.state.collapsed ? 'none' : 'block' }}
-        />
+        /> */}
 
         <Menu onClick={this.clickItem.bind(this)} theme="dark" mode="inline" className="menu-sidebar" defaultSelectedKeys={this.detectUrl()}>
           <Menu.Item key="exchange">
