@@ -6,7 +6,7 @@ import { thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul } 
 import { CONTRACTS } from '@/constant'
 import './style.scss'
 
-import { Col, Row, Icon, Button, Breadcrumb, Table, Input, Modal, Menu } from 'antd' // eslint-disable-line
+import { Col, Row, Icon, Button, Table, Input, Modal, Divider } from 'antd' // eslint-disable-line
 
 
 const List_image = [
@@ -37,6 +37,8 @@ const List_image3 = [
   { src: "/assets/images/trash.svg", href: "https://#" },
 ]
 
+
+
 export default class extends LoggedInPage {
   state = {
     amount: '',
@@ -55,41 +57,18 @@ export default class extends LoggedInPage {
     const totalString = weiToNTY(total.toString())
     return (
       <div id="exchangee">
-        
-          {this._renderTradingView()}
 
-          {this._renderOrderBook()}
-        
+        {this._renderTradingView()}
 
-        
-          <div className="open_Order">
-            <div className="l_Index">
-              Lorem ipsum dolor sit amet
-            </div>
-            <div className="l_subIndex">
-              Lorem ipsum dolor sit amet
-            </div>
-            <div className="l_Orders">
-              Lorem ipsum dolor sit amet
-            </div>
-          </div>
+        {this._renderOrderBook()}
 
-          <div className="order_Interface">
-            <div className="r_Buy">
-              <input placeholder={"Buy"}></input>
-              <button style={{background:'#00C28E', color:'#ffffff'}}>Buy</button>
-            </div>
-            <div className="r_Sell">
-              <input placeholder={"Sell"}></input>
-              <button style={{background:'#FC4D5C', color:'#ffffff'}}>Sell</button>
-            </div>
-          </div>
-        
+        {this._renderOpenOrder()}
+
+        {this._renderOrderInterface()}
+
       </div>
     )
   }
-
-
 
   _renderTradingView() {
     return (
@@ -111,7 +90,6 @@ export default class extends LoggedInPage {
         </div>
 
         <div className="l_GraphToolbar">
-
           <ul className="l_Toolbar">
             {
               List_image.map((item, index) => {
@@ -120,7 +98,7 @@ export default class extends LoggedInPage {
                 )
               })
             }
-            <div style={{height: '2px', background: '#394462', margin:'15px 8px'}} />
+            <div style={{ height: '2px', background: '#394462', margin: '15px 8px' }} />
             {
               List_image1.map((item, index) => {
                 return (
@@ -128,7 +106,7 @@ export default class extends LoggedInPage {
                 )
               })
             }
-            <div style={{height: '2px', background: '#394462', margin:'15px 8px'}} />
+            <div style={{ height: '2px', background: '#394462', margin: '15px 8px' }} />
             {
               List_image2.map((item, index) => {
                 return (
@@ -136,7 +114,7 @@ export default class extends LoggedInPage {
                 )
               })
             }
-            <div style={{height: '2px', background: '#394462', margin:'15px 8px'}} />
+            <div style={{ height: '2px', background: '#394462', margin: '15px 8px' }} />
             {
               List_image3.map((item, index) => {
                 return (
@@ -144,23 +122,18 @@ export default class extends LoggedInPage {
                 )
               })
             }
-            <div className="More">
-              <button style={{ color: 'grey' }}>Click</button>
-            </div>
-
+            
           </ul>
-
 
           <div className="l_Graph">
             <div className="l_Price">
               Price
             </div>
-            <div style={{height: '2px', background: '#394462', margin:'10px'}} />
+            <div style={{ height: '2px', background: '#394462', margin: '10px' }} />
             <div className="l_Volume">
               Volume
             </div>
           </div>
-
         </div>
 
 
@@ -193,6 +166,51 @@ export default class extends LoggedInPage {
         <div className="r_Ledger">
 
         </div>
+      </div>
+    )
+  }
+
+  _renderOpenOrder() {
+    return (
+      <div className="open_Order">
+        <div className="l_Index">
+          Lorem ipsum dolor sit amet
+            </div>
+        <div className="l_subIndex">
+          Lorem ipsum dolor sit amet
+            </div>
+        <div className="l_Orders">
+          Lorem ipsum dolor sit amet
+            </div>
+      </div>
+    )
+  }
+
+  _renderOrderInterface() {
+    return (
+      <div className="order_Interface">
+        <form className="r_Buy">
+          <p>Buy ETH</p>
+          <Input label="Price:" placeholder={"BTC"}></Input>
+          <Input label="Amount:" placeholder={"ETH"}></Input>
+          <Input label="Total:" placeholder={"ETH"}></Input>
+          
+          <Button style={{ background: '#00C28E', color: '#ffffff' }}>Buy</Button>
+        </form>
+
+        <div>
+        <Divider className="order_divider" orientation="center" type="vertical" />
+        </div>
+
+        <form className="r_Sell">
+          <p>Sell ETH</p>
+          
+          <Input label="Price:" placeholder={"BTC"}></Input>
+          <Input label="Amount:" placeholder={"ETH"}></Input>
+          <Input label="Total:" placeholder={"BTC"}></Input>
+
+          <Button style={{ background: '#FC4D5C', color: '#ffffff' }}>Sell</Button>
+        </form>
       </div>
     )
   }

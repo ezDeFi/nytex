@@ -8,6 +8,7 @@
   grid-template-columns: 1.6fr 1fr;
   grid-template-rows: 2fr 1fr;
   grid-gap: 8px;
+  color: #6e7793;
 }
 
 /*Trading View & Order Book container*/
@@ -96,6 +97,24 @@
 /*Order Interface*/
 .order_Interface {
   border: 1px solid #394462;
+  display: grid;
+  grid-template-columns: 1fr 0.1fr 1fr;
+  font-size: 14px;
+}
+
+.order_Interface button {
+  border: none;
+}
+
+.order_Interface input {
+  background: #1F2538;
+  border: none;
+}
+
+.order_divider {
+  background: #394462;
+  height: 12rem;
+  margin: 10px;
 }
 
 
