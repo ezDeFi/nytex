@@ -207,7 +207,7 @@ export default class extends LoggedInPage {
           <p>Total:</p>
           <Input suffix="ETH" />
           
-          <Button style={{ background: '#00C28E' }}>Buy</Button>
+          <Button>Buy</Button>
         </form>
 
         <div>
@@ -232,7 +232,7 @@ export default class extends LoggedInPage {
           <p>Total:</p>
           <Input suffix="BTC" />
 
-          <Button style={{ background: '#FC4D5C' }}>Sell</Button>
+          <Button>Sell</Button>
         </form>
       </div>
     )
