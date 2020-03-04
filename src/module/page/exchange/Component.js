@@ -190,12 +190,24 @@ export default class extends LoggedInPage {
     return (
       <div className="order_Interface">
         <form className="r_Buy">
-          <p>Buy ETH</p>
-          <Input label="Price:" placeholder={"BTC"}></Input>
-          <Input label="Amount:" placeholder={"ETH"}></Input>
-          <Input label="Total:" placeholder={"ETH"}></Input>
+          <p className="order_Title">Buy ETH</p>
           
-          <Button style={{ background: '#00C28E', color: '#ffffff' }}>Buy</Button>
+          <p>Price:</p>
+          <Input suffix="BTC" />
+          
+          <p>Amount:</p>
+          <Input suffix="ETH" />
+          <div className="order_Percentage">
+            <a href="http://#">25% </a>
+            <a href="http://#">50% </a>
+            <a href="http://#">75% </a>
+            <a href="http://#">100% </a>
+          </div>
+          
+          <p>Total:</p>
+          <Input suffix="ETH" />
+          
+          <Button style={{ background: '#00C28E' }}>Buy</Button>
         </form>
 
         <div>
@@ -203,13 +215,24 @@ export default class extends LoggedInPage {
         </div>
 
         <form className="r_Sell">
-          <p>Sell ETH</p>
+          <p className="order_Title">Sell ETH</p>
           
-          <Input label="Price:" placeholder={"BTC"}></Input>
-          <Input label="Amount:" placeholder={"ETH"}></Input>
-          <Input label="Total:" placeholder={"BTC"}></Input>
+          <p>Price:</p>
+          <Input suffix="BTC" />
+          
+          <p>Amount:</p>
+          <Input suffix="ETH" />
+          <div className="order_Percentage">
+            <a href="http://#">25% </a>
+            <a href="http://#">50% </a>
+            <a href="http://#">75% </a>
+            <a href="http://#">100% </a>
+          </div>
+          
+          <p>Total:</p>
+          <Input suffix="BTC" />
 
-          <Button style={{ background: '#FC4D5C', color: '#ffffff' }}>Sell</Button>
+          <Button style={{ background: '#FC4D5C' }}>Sell</Button>
         </form>
       </div>
     )
