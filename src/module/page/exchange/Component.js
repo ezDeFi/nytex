@@ -141,27 +141,51 @@ export default class extends LoggedInPage {
     return (
       <div className="order_Book">
 
-        <div className="r_SellBuy">
-          <div className="r_Sellorder">
-            <div>
-              Orderbook
-            </div>
-            <div>
-              <p>Price</p>
-              <p>Amount</p>
-              <p>Volume</p>
-            </div>
-          </div>
-          <div className="r_Buyorder">
-            <p>0.02342</p>
-            <p>$175.60602</p>
-            <p>-1.69%</p>
-          </div>
+        <div className="r_Sellorder">
+          <p>Orderbook</p>
+          <ul style={{color: "#FAB416", textAlign:"start"}}>Price
+            <li style={{color:"#FC4D5C"}}>0.02565</li>
+          </ul>
+          <ul style={{color: "#FAB416"}}>Amount
+            <li>0.0025152</li>
+          </ul>
+          <ul style={{color: "#FAB416"}}>Volume
+            <li>2.3764852</li>
+          </ul>
         </div>
 
         <div className="r_Ledger">
-
+          <ul style={{textAlign:"start"}}>Time
+              <li style={{color:"#ffffff"}}>11:59:58</li>
+          </ul>
+          <ul>Price
+              <li>0.0236295</li>
+          </ul>
+          <ul>Amount
+              <li style={{color:"#ffffff"}}>0.1976000</li>
+          </ul>
         </div>
+
+        <div className="r_Buyorder">
+          <div className="r_Price">
+            <p style={{textAlign:"start", fontSize:"22px", color:"#ffffff"}}>0.02342</p>
+            <p style={{textAlign:"end", lineHeight:"290%", color:"#ffffff"}}>$175.60602</p>
+            <p style={{textAlign:"end", lineHeight:"290%", color:"#FC4D5C"}}>-1.69%</p>
+          </div>
+
+          <div className="r_BuyOrd">
+            <ul style={{textAlign:"start"}}>
+              <li style={{color:"#00C28E"}}>0.02383</li>
+            </ul>
+            <ul>
+              <li style={{color:"#ffffff"}}>1.5124900</li>
+            </ul>
+            <ul>
+              <li style={{color:"#ffffff"}}>0.2964000</li>
+            </ul>
+          </div>
+        </div>
+
       </div>
     )
   }
@@ -186,43 +210,27 @@ export default class extends LoggedInPage {
         <div className="l_Orders">
           <ul>Time
             <li>12-09 15:46:51</li>
-            <li>12-09 15:46:51</li>
-            <li>12-09 15:46:51</li>
           </ul>
           <ul>Side
-            <li>Buy</li>
-            <li>Sell</li>
             <li>Buy</li>
           </ul>
           <ul>Price
             <li>$110.00</li>
-            <li>$110.00</li>
-            <li>$110.00</li>
           </ul>
           <ul>Amount
-            <li>1.000000</li>
-            <li>1.000000</li>
             <li>1.000000</li>
           </ul>
           <ul>Filled (%)
             <li>5.00%</li>
-            <li>5.00%</li>
-            <li>5.00%</li>
           </ul>
           <ul>Total
-            <li>100.00 ETH</li>
-            <li>100.00 ETH</li>
             <li>100.00 ETH</li>
           </ul>
           <ul>Trigger Conditions
             <li>-</li>
-            <li>-</li>
-            <li>-</li>
           </ul>
-          <ul style={{textAlign:'end'}}><button style={{width: '66px'}}>Cancel All</button>
-            <li><button style={{width: '52px'}}>Cancel</button></li>
-            <li><button style={{width: '52px'}}>Cancel</button></li>
-            <li><button style={{width: '52px'}}>Cancel</button></li>
+          <ul style={{ textAlign: 'end' }}><button style={{ width: '66px' }}>Cancel All</button>
+            <li><button style={{ width: '52px' }}>Cancel</button></li>
           </ul>
         </div>
       </div>
