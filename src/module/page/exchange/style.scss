@@ -10,28 +10,20 @@
   color: #6e7793;
 }
 
-/*Trading View & Order Book container*/
-.trading_Orderbook {
-  display: grid;
-  
-}
-
 /*Trading View container*/
- .trading_View {
+.trading_View {
+  border: 1px solid #394462;
   max-width: 1144px;
   max-height: 831px;
-  
 }
 
 /*Trading view navigation*/
-
 .l_Navigation {
   border: 1px solid #394462;
-  display: flex;
   max-width: 1144px;
   height: 40px;
   max-height: 40px;
-  font-Size: 13px;
+  font-size: 13px;
   display: grid;
   grid-template-columns: 8fr 2fr;
 }
@@ -39,41 +31,30 @@
 .l_NavigationA {
   line-height: 33px;
   text-align: initial;
-  // flex: 8;
-  font-style: normal;
-  font-weight: normal;
 }
 
 .l_NavigationB {
   line-height: 33px;
   text-align: end;
-  // flex: 2;
-  font-style: normal;
-  font-weight: normal;
 }
-
 
 /*Graph & Toolbar*/
 .l_GraphToolbar {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 20fr;
 }
 
 .l_Toolbar {
-  border: 1px solid #394462;
-  flex: 0.5;
+  // border: 1px solid #394462;
   list-style-type: none;
-  flex-wrap: nowrap;
+  margin-top: 8px;
   min-width: 55px;
-}
-
-.l_ToolbarA {
-  display: flex;
-  flex-direction: column;
+  li {
+    margin-bottom: 19px;
+  }
 }
 
 .l_Graph {
-  border: 1px solid #394462;
   flex: 9.5;
   display: grid;
   grid-template-rows: 1fr 0.1fr 1fr;
@@ -82,16 +63,76 @@
 /*Order Book container*/
 .order_Book {
   border: 1px solid #394462;
-  display: flex;
-  max-width: 637px;
+  display: grid;
+  max-width: 687px;
   max-height: 831px;
-  flex: 4;
-  
 }
 
-/*Open Order Ledger*/
+/*Open Order container*/
 .open_Order {
   border: 1px solid #394462;
+  max-width: 1144px;
+  max-height: 416px;
+  display: grid;
+  grid-template-rows: 1fr 1.3fr 9.2fr;
+}
+a {
+  color: #ffffff;
+}
+a:link:active,
+a:visited:active {
+  color: #fab416;
+  font-weight: 500;
+}
+
+.l_Index {
+  border: 1px solid #394462;
+  display: grid;
+  grid-template-columns: 3fr 2fr 2fr 1.5fr 8.5fr;
+  font-size: 14px;
+  line-height: 30px;
+  padding-left: 11px;
+  a {
+    text-align: start;
+  }
+}
+
+.l_Index .ant-checkbox-wrapper {
+  color: #ffffff !important;
+  text-align: end;
+}
+
+.l_subIndex {
+  border: 1px solid #394462;
+  padding-left: 11px;
+}
+
+.l_Orders {
+  border: 1px solid #394462;
+  padding-left: 11px;
+  padding-right: 14px;
+  font-size: 14px;
+  display: grid;
+  grid-template-columns: 3fr 2fr 2fr 1.5fr 1.5fr 2fr 3fr 2fr;
+  ul {
+    list-style-type: none;
+    font-size: 13px;
+    text-align: start;
+  }
+  li {
+    color: #ffffff;
+  }
+  button {
+    border: 1px solid #6e7793;
+    border-radius: 5px;
+    height: 15px;
+    line-height: 10px;
+    color: #6e7793;
+  }
+  button:hover {
+    border: 1px solid #dbdbdb;
+    color: #dbdbdb;
+  }
 }
 
 /*Order Interface*/
@@ -109,7 +150,7 @@
     text-align: start;
   }
   a {
-    color:#6e7793;
+    color: #6e7793;
   }
   a:hover {
     color: #ffffff;
@@ -122,7 +163,7 @@
   grid-gap: 15px;
   button {
     margin-left: 15px;
-    background: #00C28E;
+    background: #00c28e;
   }
   button:hover {
     background-color: #69eac6;
@@ -139,7 +180,7 @@
   grid-gap: 15px;
   margin-right: 15px;
   button {
-    background: #FC4D5C;
+    background: #fc4d5c;
   }
   button:hover {
     background-color: #ed7680 !important;
@@ -167,7 +208,7 @@
 }
 
 .order_Interface input {
-  background: #1F2538;
+  background: #1f2538;
   border: none;
   color: #6e7793;
 }
@@ -176,12 +217,6 @@
   font-size: 13px;
   color: #6e7793;
 }
-
-// .order_Interface .ant-input-group-addon {
-//   background: transparent;
-//   color: #6e7793;
-//   border: none;
-// }
 
 .order_divider {
   background: #394462;
