@@ -123,23 +123,23 @@ export default class extends BaseComponent {
           </div>
 
           <div className="b_Header">
-            <div className="exchange">
-              <a href='https://#' style={{ color: '#FAB416' }}><img src='/assets/images/exchange.svg' />   Exchange</a>
+            
+            <div style={{ textAlign:"end" }} className="exchange">
+              <a href='https://#' style={{ color: '#FAB416' }}><img src='/assets/images/exchange.svg' /> Exchange</a>
             </div>
 
-            <div className="exchange">
-              <a href='https://#' style={{ color: '#6e7793' }}><img src='/assets/images/preemptive.svg' />   Preemptive</a>
+            <div style={{ textAlign:"center" }} className="exchange">
+              <a href='https://#' style={{ color: '#6e7793' }}><img src='/assets/images/preemptive.svg' /> Preemptive</a>
             </div>
 
             <div className="exchange">
               <a href='https://#'><img src='/assets/images/wallet.svg'></img></a>
             </div>
 
-
             <div className="language">
               <Dropdown overlay={menu} trigger={['click']}>
                 <a className='ant-dropdown-link' style={{ color: '#6e7793' }} onClick={e => e.preventDefault()}>
-                  <img src='/assets/images/language.svg' />  English 
+                  <img src='/assets/images/language.svg' /> English 
                   <Icon type="caret-down" style={{ lineHeight: '15px' }} />
                 </a>
               </Dropdown>
@@ -169,9 +169,7 @@ export default class extends BaseComponent {
   ord_render() { // eslint-disable-line
 
     return (
-      <Header style={{
-        background: '#252C3F', padding: 0
-      }}>
+      <Header>
         {this.renderHeader()}
       </Header>
     )

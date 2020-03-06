@@ -22,7 +22,7 @@
 
 /*Trading view navigation*/
 .l_Navigation {
-  // border: 1px solid #394462;
+  border-bottom: 1px solid #394462;
   max-width: 1144px;
   height: 40px;
   max-height: 40px;
@@ -50,13 +50,13 @@
 .l_Toolbar {
   margin-top: 8px;
   min-width: 55px;
+  border-right: 1px solid #394462;
   li {
     margin-bottom: 19px;
   }
 }
 
 .l_Graph {
-  flex: 9.5;
   display: grid;
   grid-template-rows: 1fr 0.1fr 1fr;
 }
@@ -103,9 +103,6 @@
     grid-column: 1/4;
     max-height: 33px;
   }
-  ul {
-
-  }
 }
 
 .r_Buyorder {
@@ -144,7 +141,7 @@
 }
 
 .l_Index {
-  border: 1px solid #394462;
+  border-bottom: 1px solid #394462;
   display: grid;
   grid-template-columns: 3fr 2fr 2fr 1.5fr 8.5fr;
   font-size: 14px;
@@ -161,12 +158,12 @@
 }
 
 .l_subIndex {
-  border: 1px solid #394462;
+  // border: 1px solid #394462;
   padding-left: 11px;
 }
 
 .l_Orders {
-  border: 1px solid #394462;
+  // border: 1px solid #394462;
   padding-left: 11px;
   padding-right: 14px;
   font-size: 14px;
@@ -280,3 +277,4 @@
   height: 55%;
   margin: 10px;
 }
+

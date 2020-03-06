@@ -159,7 +159,7 @@ export default class extends LoggedInPage {
               <li style={{color:"#ffffff"}}>11:59:58</li>
           </ul>
           <ul>Price
-              <li>0.0236295</li>
+              <li style={{color:'#FC4D5C' }}>0.0236295</li>
           </ul>
           <ul>Amount
               <li style={{color:"#ffffff"}}>0.1976000</li>
@@ -202,7 +202,7 @@ export default class extends LoggedInPage {
         </div>
 
         <div className="l_subIndex">
-          <div>
+          <div className="l_SearchBar">
             (Date search taskbar)
           </div>
         </div>
@@ -241,13 +241,13 @@ export default class extends LoggedInPage {
     return (
       <div className="order_Interface">
         <form className="r_Buy">
-          <p className="order_Title">Buy ETH</p>
+          <p className="order_Title">Buy MNTY</p>
 
           <p>Price:</p>
-          <Input suffix="BTC" />
+          <Input suffix="NEWSD" />
 
           <p>Amount:</p>
-          <Input suffix="ETH" />
+          <Input suffix="MNTY" />
           <div className="order_Percentage">
             <a href="http://#">25% </a>
             <a href="http://#">50% </a>
@@ -256,7 +256,7 @@ export default class extends LoggedInPage {
           </div>
 
           <p>Total:</p>
-          <Input suffix="ETH" />
+          <Input suffix="MNTY" />
 
           <Button>Buy</Button>
         </form>
@@ -266,13 +266,13 @@ export default class extends LoggedInPage {
         </div>
 
         <form className="r_Sell">
-          <p className="order_Title">Sell ETH</p>
+          <p className="order_Title">Sell MNTY</p>
 
           <p>Price:</p>
-          <Input suffix="BTC" />
+          <Input suffix="NEWSD" />
 
           <p>Amount:</p>
-          <Input suffix="ETH" />
+          <Input suffix="MNTY" />
           <div className="order_Percentage">
             <a href="http://#">25% </a>
             <a href="http://#">50% </a>
@@ -281,7 +281,7 @@ export default class extends LoggedInPage {
           </div>
 
           <p>Total:</p>
-          <Input suffix="BTC" />
+          <Input suffix="NEWSD" />
 
           <Button>Sell</Button>
         </form>

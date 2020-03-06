@@ -1,42 +1,42 @@
 /*Header container*/
-
 #top_Header {
-  display: flex;
-  padding: 24px 40px 24px 40px;
-  flex-wrap: nowrap;
+  display: grid;
+  margin: 24px 40px;
+  grid-template-columns: 6fr 4fr;
 }
 
-/* Header A and Header B */
-
-#top_Header .a_Header {
-  display: flex;
-  flex: 7;
-  max-width: 70%;
+/*Header A*/
+.a_Header {
+  display: grid;
+  grid-template-columns: 3fr 0.5fr 3.5fr 2.5fr 2fr 2.5fr 2.5fr 7fr;
   max-height: 40px;
   line-height: 15px;
 }
-
-#top_Header .b_Header {
-  display: flex;
-  flex: 3;
-  justify-content: space-around;
-  max-width: 30%;
-  max-height: 40px;
-}
-
-/*Logo*/
 
 .xlogo {
   max-width: 155px;
   max-height: 30px;
 }
 
-/*Top Index Layout*/
+/*Index*/
+.a_Index_top {
+  font-size: 13px;
+  max-width: 70px;
+  max-height: 15px;
+  color: #6e7793;
+}
+
+.a_Index_bottom {
+  margin-top: 5px;
+  display: flex;
+  font-size: 13px;
+  max-height: 15px;
+  color: #ffffff;
+}
 
 .last_price {
   max-width: 165px;
   max-height: 35px;
-  margin-left: 11px;
 }
 
 .daily_change {
@@ -49,6 +49,13 @@
   margin-left: 33px;
 }
 
+/*Header B*/
+.b_Header {
+  display: grid;
+   grid-template-columns: 5fr 5fr 0.7fr 2fr;
+  max-height: 40px;
+}
+
 .exchange {
   line-height: 28px;
   font-size: 16px;
@@ -57,25 +64,5 @@
 
 .language {
   line-height: 15px;
-  font-size: 13px;
-}
-
-/*Index*/
-
-.a_Index_top {
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  max-width: 70px;
-  max-height: 15px;
-  color: #6e7793;
-}
-
-.a_Index_bottom {
-  display: flex;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  max-height: 15px;
-  color: #ffffff;
+  font-size: 19px;
 }
