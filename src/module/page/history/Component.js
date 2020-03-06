@@ -12,12 +12,15 @@ export default class extends LoggedInPage {
 
 
     this.state = {
-      BlockNumber: ''
+      BlockNumber: '',
+      txdata:[]
     }
 }
 
   async componentDidMount() {
-    // this.reload()
+    this.show()
+    
+    
   }
 
   ord_renderContent () { // eslint-disable-line
@@ -40,7 +43,7 @@ export default class extends LoggedInPage {
             </Col>
             <Col span={1} />
             <Col span={2}>
-              <Button type="primary" onClick = {this.connect}
+              <Button type="primary" 
                 className="btn-margin-top submit-button maxWidth">Submit</Button>
             </Col>
           </Row>
@@ -50,7 +53,34 @@ export default class extends LoggedInPage {
           <div className="ant-col-md-18 ant-col-md-offset-3 text-alert" style={{ 'textAlign': 'left' }}>
             <Row style={{ 'marginTop': '15px' }}>
               <Col span={24}>
-                {this.historiesRender(true)}
+              <div className="h_Table">
+                      
+                      <div className="h_Top">
+                      <h4>BlockNumber</h4>
+                      </div>
+                      <div className="h_Top">
+                        <h4>Action</h4>
+                      </div>                     
+                    </div>
+              <div>
+                {this.state.txdata.map((data, index) => {
+                    return (
+                      <div className="h_Table">
+                        <div className="h_BlockNumber">
+                        {data.blockNumber}
+                        </div>
+                        <div className="h_Action">
+                        {data.event.name}<br/>
+                        &emsp;&emsp;&emsp;{data.event.param1}<br/>
+                        &emsp;&emsp;&emsp;{data.event.param2}<br/>
+                        &emsp;&emsp;&emsp;{data.event.param3}<br/>
+                        &emsp;&emsp;&emsp;{data.event.param4}<br/>
+                        &emsp;&emsp;&emsp;{data.event.param5}
+                        </div>                     
+                      </div>
+                    ) 
+                })}
+              </div>
               </Col>
             </Row>
           </div>
@@ -59,18 +89,19 @@ export default class extends LoggedInPage {
     )
   }
   
-  connect=()=>{
-    const url = "http://localhost:8888/post"
 
-    fetch(url,{
-      method: "POST",
-      headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      },
-      body: 'BlockNumber=123'
-    }).catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+  show=()=>{
+    const url = "http://localhost:8888/show"
 
-
+    fetch(url)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      this.setState({
+        txdata: data
+      });
+    });
   }
   
   ord_renderBreadcrumb () { // eslint-disable-line
@@ -99,35 +130,27 @@ export default class extends LoggedInPage {
     }
   }
 
-  historiesRender(_orderType) {
-    const columns = [
-      {
-        title: 'Block Number',
-        dataIndex: 'action',
-        key: 'action',
-            render: (text, record) => (
-              <span>
-                {record.maker.substring(0, 5) === this.props.wallet.substring(0, 5) &&
-                  <Button
-                    onClick={() => this.props.cancel(_orderType, record.id)}
-                    className="btn-margin-top submit-button maxWidth">
-                      Cancel
-                  </Button>
-                }
-              </span>
-            )
-      },
-      {
-        title: 'data',
-        dataIndex: 'maker',
-        key: 'maker'
-      },
-    ]
-    return (<div>
-      <Table rowKey="seq"
-        dataSource={''}
-        columns={columns} />
-    </div>)
+  historiesRender() {
+    
+
+
+    // const columns = [
+    //   {
+    //     title: 'Block Number',
+    //     dataIndex: 'blockNumber',
+    //     key: 'blockNumber',
+    //   },
+    //   {
+    //     title: 'event',
+    //     dataIndex: 'event',
+    //     key: 'blockNumber'
+    //   },
+    // ]
+    // return (<div>
+    //   <Table rowKey="seq"
+    //     dataSource={Object.values(this.state.txdata)}
+    //     columns={columns} />
+    // </div>)
   }
 
 }

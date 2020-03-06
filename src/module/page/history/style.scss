@@ -66,3 +66,36 @@
     height: 24px;
   }
 }
+
+
+/*History*/
+.h_Table {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  border: 1px solid #e0e0e0;
+  font-size: 17px;
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 900px;
+}
+
+.h_BlockNumber {
+  border: 1px solid #e0e0e0;
+  text-align: center;
+  padding-top: 8px;
+}
+
+.h_Action {
+  border: 1px solid #e0e0e0;
+  padding-left: 30px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+
+}
+.h_Top {
+  text-align: center;
+  border: 1px solid #e0e0e0;
+  background-color: rgb(25, 82, 204);
+}
+h4 {
+  color: #ffffff
+}
