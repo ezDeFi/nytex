@@ -10,6 +10,12 @@
 .ant-checkbox-checked .ant-checkbox-inner {
     background:#394462;
 }    
+
+@media (min-width: 700px) {
+    .ant-dropdown {
+        display: none;
+    }
+}
 // .ant-btn{
 
 //   &.ant-btn-ebp{

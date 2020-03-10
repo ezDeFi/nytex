@@ -75,22 +75,22 @@ export default class extends LoggedInPage {
       <div className="trading_View">
         <div className="l_Navigation">
           <div className="l_NavigationA">
-            <a style={{ marginLeft: '16px', marginRight: '25px' }} href="https://#">1 m</a>
+            {/* <a style={{ marginLeft: '16px', marginRight: '25px' }} href="https://#">1 m</a>
             <a style={{ marginRight: '19px' }} href="https://#"><img src="\assets\images\candle-chart.svg" /></a>
             <a style={{ marginRight: '19px' }} href="https://#"><img src="\assets\images\line-chart.svg" /></a>
             <a style={{ marginRight: '19px' }} href="https://#">Indicator</a>
             <a style={{ marginRight: '19px' }} href="https://#"><img src="\assets\images\setting.svg" /></a>
-            <a href="https://#"><img src="\assets\images\expand.svg" /></a>
+            <a href="https://#"><img src="\assets\images\expand.svg" /></a> */}
           </div>
           <div className="l_NavigationB">
-            <a style={{ marginRight: '18px' }} href="https://#">Trading View</a>
-            <a style={{ marginRight: '10px' }} href="https://#">Depth </a>
+            {/* <a style={{ marginRight: '18px' }} href="https://#">Trading View</a>
+            <a style={{ marginRight: '10px' }} href="https://#">Depth </a> */}
           </div>
         </div>
 
         <div className="l_GraphToolbar">
           <ul className="l_Toolbar">
-            {
+            {/* {
               List_image.map((item, index) => {
                 return (
                   <li key={item.src + index.toString()}><a href={item.href}><img src={item.src} /></a></li>
@@ -120,7 +120,7 @@ export default class extends LoggedInPage {
                   <li key={item.src + index.toString()}><a href={item.href}><img src={item.src} /></a></li>
                 )
               })
-            }
+            } */}
           </ul>
 
           <div className="l_Graph">

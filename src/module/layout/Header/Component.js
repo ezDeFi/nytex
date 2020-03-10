@@ -8,6 +8,17 @@ import { USER_ROLE } from '@/constant'
 
 
 const { Header } = Layout // eslint-disable-line
+const drop_nav = (
+  <Menu>
+    <Menu.Item key="0">
+      <a href='https://#' style={{ color: '#FAB416' }}><img src='/assets/images/exchange.svg' /> Exchange</a>
+    </Menu.Item>
+    <Menu.Item key="1">
+      <a href='https://#' style={{ color: '#6e7793' }}><img src='/assets/images/preemptive.svg' /> Preemptive</a>
+    </Menu.Item>
+
+  </Menu>
+);
 const menu = (
   <Menu>
     <Menu.Item key="0">
@@ -72,7 +83,7 @@ export default class extends BaseComponent {
               <img src='/assets/images/nextyplat.svg' />
             </div>
 
-            <div style={{ width: "2px", background: "#9CA4B9", marginLeft: '14px', marginRight: '11px' }} />
+            <div className="divider" />
 
             <div className="last_price">
               <div className="a_Index_top">
@@ -123,27 +134,31 @@ export default class extends BaseComponent {
           </div>
 
           <div className="b_Header">
-            
-            <div style={{ textAlign:"end" }} className="exchange">
-              <a href='https://#' style={{ color: '#FAB416' }}><img src='/assets/images/exchange.svg' /> Exchange</a>
-            </div>
-
-            <div style={{ textAlign:"center" }} className="exchange">
-              <a href='https://#' style={{ color: '#6e7793' }}><img src='/assets/images/preemptive.svg' /> Preemptive</a>
-            </div>
-
-            <div className="exchange">
-              <a href='https://#'><img src='/assets/images/wallet.svg'></img></a>
-            </div>
-
-            <div className="language">
-              <Dropdown overlay={menu} trigger={['click']}>
-                <a className='ant-dropdown-link' style={{ color: '#6e7793' }} onClick={e => e.preventDefault()}>
-                  <img src='/assets/images/language.svg' /> English 
-                  <Icon type="caret-down" style={{ lineHeight: '15px' }} />
-                </a>
+              <Dropdown className="drop_Navigation" overlay={drop_nav} trigger={['click']}>
+                <a><img src='/assets/images/drop-nav.svg' /></a>
               </Dropdown>
-            </div>
+                <div className="exchange">
+                  <a href='https://#' style={{ color: '#FAB416' }}><img src='/assets/images/exchange.svg' /> Exchange</a>
+                </div>
+
+                <div className="exchange">
+                  <a href='https://#' style={{ color: '#6e7793' }}><img src='/assets/images/preemptive.svg' /> Preemptive</a>
+                </div>
+
+                <div className="exchange">
+                  <a href='https://#'><img src='/assets/images/wallet.svg'></img></a>
+                </div>
+
+                <div className="language">
+                  <Dropdown overlay={menu} trigger={['click']}>
+                    <a className='ant-dropdown-link' style={{ color: '#6e7793' }} onClick={e => e.preventDefault()}>
+                      <img src='/assets/images/language.svg' /> English
+                  <Icon type="caret-down" style={{ lineHeight: '15px' }} />
+                    </a>
+                  </Dropdown>
+                </div>
+              
+            
           </div>
 
           {/* <div style={{ width= '1px' }}> */}

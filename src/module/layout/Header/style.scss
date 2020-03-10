@@ -1,14 +1,21 @@
-/*Header container*/
+.divider, .last_price, .daily_change, .exchange, .language {
+  display: -moz-inline-grid;
+}
+
+.drop_Navigation {
+  display: none;
+}
+
 #top_Header {
   display: grid;
   margin: 24px 40px;
-  grid-template-columns: 6fr 4fr;
+  grid-template-columns: 7fr 3fr;
 }
 
 /*Header A*/
 .a_Header {
   display: grid;
-  grid-template-columns: 3fr 0.5fr 3.5fr 2.5fr 2fr 2.5fr 2.5fr 7fr;
+  grid-template-columns: 3fr 0.5fr 3.5fr 2.5fr 2fr 2.5fr 3fr 7fr;
   max-height: 40px;
   line-height: 15px;
 }
@@ -16,6 +23,13 @@
 .xlogo {
   max-width: 155px;
   max-height: 30px;
+}
+
+.divider {
+  width: 2px;
+  background: #9CA4B9;
+  margin-left: 14px;
+  margin-right: 11px;
 }
 
 /*Index*/
@@ -40,19 +54,20 @@
 }
 
 .daily_change {
+  min-width: 80px;
   max-width: 85px;
   max-height: 35px;
   margin-left: 20px;
 }
 
-.daily_change:first{
+.daily_change:first {
   margin-left: 33px;
 }
 
 /*Header B*/
 .b_Header {
   display: grid;
-   grid-template-columns: 5fr 5fr 0.7fr 2fr;
+  grid-template-columns: 5fr 5fr 0.7fr 2fr;
   max-height: 40px;
 }
 
@@ -65,4 +80,33 @@
 .language {
   line-height: 15px;
   font-size: 19px;
+  min-width: 110px;
+}
+
+@media (max-width: 1822px) {
+  #top_Header {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+  }
+  
+
+}
+
+@media (max-width:699px) {
+  .drop_Navigation {
+    display: inline-block;
+    line-height: 15px;
+    max-width: fit-content;
+    position: absolute;
+    top: 3.5%;
+    right: 10%;
+  }
+  .divider, .last_price, .daily_change, .exchange, .language {
+    display: none;
+  }
+  #top_Header {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    text-align: center;
+  }
 }
