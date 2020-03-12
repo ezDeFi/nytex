@@ -1,12 +1,10 @@
 import React from 'react';
 import userService       from "../../service/UserService"
 import {Row, Col, Table} from 'antd'
-import styles from './exchange.module.scss'
+import './style/index.scss'
 import OrderBookBuySale from './orderBookBuySale'
 import BuySale from './buySale'
 import OpenOrder from './openOrder'
-import './customAnt.scss'
-
 
 userService.fetchData()
 
@@ -69,7 +67,7 @@ const Exchange = () => {
 
   return (
     <div>
-      <Row className={styles.chartTradeTab}>
+      <Row className="tab">
         <Col span={12}>
           <label htmlFor="open-chart-tab">Chart</label>
         </Col>
@@ -80,46 +78,46 @@ const Exchange = () => {
       <input
         type="radio"
         name="chart-trade-tab"
-        className={styles.showChartRadio}
+        className="tab__btn-show--chart"
         id="open-chart-tab" defaultChecked/>
       <input
         type="radio"
         name="chart-trade-tab"
-        className={styles.showTradeRadio }
+        className="tab__btn-show--trade"
         id="open-trade-tab"/>
       <Row>
         <Col
-          lg={15}
+          lg={14}
           xs={24}
-          className={styles.chartHistoryBox}>
+          className="tab__content--chart">
           <div>
             chart
           </div>
-          <div className={styles.orderHistoryBox}>
+          <div className="user-order">
             <OpenOrder/>
           </div>
         </Col>
         <Col
-          lg={{span:9}}
+          lg={{span:10}}
           xs={{span:24}}
-          className={styles.tradeBox}>
-          <Row className={styles.tradeContent}>
+          className="tab__content--trade">
+          <Row>
             <Col lg={{span:12, order: 1}}
                  xs={{span:12, order: 2}}
-              className={styles.listBuySaleBox}
+              className="order-book__buy-and-sale-table"
             >
               <OrderBookBuySale/>
             </Col>
             <Col lg={{span:12, order: 2}}
                  xs={{span:24, order: 3}}
-                 className={styles.historyList}
+                 className="order-book__history-table"
             >
               <Table dataSource={dataSource} columns={columns} pagination={false} />;
             </Col>
             <Col
               lg={{span: 24, order: 3}}
               xs={{span: 12, order: 1}}
-              className={styles.buySaleBox}
+              className="trade-box"
             >
               <BuySale/>
             </Col>

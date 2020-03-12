@@ -1,0 +1,93 @@
+$light-grey: #394462;
+
+@mixin border-grey {
+    border: 1px solid $light-grey;
+}
+
+.tab {
+    display: none;
+    &__btn-show--chart, &__btn-show--trade {
+        display: none;
+    }
+    &__content--chart, &__content--trade {
+        padding: 5px;
+    }
+    &__content--chart>div {
+        border: 1px solid $light-grey;
+        height: 400px;
+    }
+}
+
+.order-book {
+    &__title {
+        font-size: 14px;
+        line-height: 16px;
+        color: #FFFFFF
+    }
+    &__buy-and-sale-table {
+        height: 400px;
+        padding: 10px 0 10px 10px;
+        @include border-grey;
+        border-right: none;
+    }
+    &__history-table {
+        height: 400px;
+        padding: 10px 0 10px 10px;
+        @include border-grey;
+        border-left: none;
+    }
+    &__sale-table, &__buy-table {
+        height: 50%;
+    }
+}
+
+
+.trade-box {
+    @include border-grey;
+    margin-top: 10px;
+    padding: 10px;
+    height: 400px;
+}
+
+.user-order {
+    margin-top: 10px;
+    height: 400px;
+    @include border-grey;
+}
+
+
+@media only screen and (max-width: 600px) {
+    .tab {
+        display: flex;
+        &__btn-show--chart:checked ~ div > &__content--chart {
+            display: block;
+        }
+
+        &__btn-show--trade:checked ~ div > &__content--trade {
+            display: block;
+        }
+        &__content {
+            &--chart {
+                display: none;
+            }
+            &--trade {
+                display: none;
+            }
+        }
+    }
+
+    .trade-box {
+        margin: 0 0 10px 0;
+        border-right: none;
+    }
+    .order-book {
+        &__buy-and-sale-table {
+            margin: 0 0 10px 0;
+            border-left: none;
+            border-right: 1px solid $light-grey;
+        }
+        &__history-table {
+            border: 1px solid $light-grey;
+        }
+    }
+}

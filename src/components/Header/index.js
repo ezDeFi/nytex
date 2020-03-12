@@ -1,6 +1,6 @@
 import React                                                    from 'react'
-import {Layout, Menu, Icon, Modal, Button, Dropdown, Row, Col,} from 'antd'
-import styles                                                   from './header.module.css'
+import {Menu, Dropdown, Row, Col} from 'antd'
+import './header.scss'
 import nextyplat                                                from '../../images/nextyplat.svg'
 import languageLogo from '../../images/language.svg'
 import exchangeLogo from '../../images/exchange.svg'
@@ -29,18 +29,20 @@ const menu = (
 const Header = () => {
   return (
     <>
-      <Row >
+      <Row className="header">
         <Col lg={{span:3}}
              xs={{span:6}}
-           className={styles.headerLogo}>
-          <img src={nextyplat} alt=""/>
+           className="header-logo">
+          <span>
+            <img src={nextyplat} alt=""/>
+          </span>
         </Col>
-        <Col lg={{span:12, order: 2}} xs={{span:24, order: 3}} className={styles.headerInfo} >
+        <Col lg={{span:12, order: 2}} xs={{span:24, order: 3}} className="header-info">
           <div>
             <p>last price</p>
             <p>0.0234271</p>
           </div>
-          <div><p className={styles.balance}>$175.12354856</p></div>
+          <div><p className="balance">$175.12354856</p></div>
           <div>
             <p>24h Change</p>
             <p><span>-0.01</span><span>-1.69</span></p>
@@ -58,26 +60,33 @@ const Header = () => {
             <p>468.428</p>
           </div>
         </Col>
+        {/*<Col lg={{span:0}}*/}
+        {/*  xs={{span:2, order: 2, offset:14}}*/}
+        {/*>*/}
+        {/*  menu*/}
+        {/*</Col>*/}
         <Col lg={{span:9, order:3}}
              xs={{span:18, order:2}}
-             className={styles.nav}
+             className="nav"
         >
-          <span className={styles[`nav__exchange`] + ' ' + styles['nav__item']}>
-            <img src={exchangeLogo} alt="" className={styles.navIcon}/>
-            Exchange
-          </span>
-          <span className={styles[`nav__preemptive`] + ' ' + styles['nav__item']}>
-            <img src={preemptiveLogo} alt="" className={styles.navIcon}/>
-            Preemptive
-          </span>
-          <span className={styles[`nav__menu`] + ' ' + styles['nav__item']}>
-            <Dropdown overlay={menu} trigger={['click']}>
-              <a className='ant-dropdown-link' style={{color: '#6e7793'}} onClick={e => e.preventDefault()}>
-                <img src={languageLogo} alt="" className={styles.navIcon}/>
-                Language
-              </a>
-            </Dropdown>
-          </span>
+          <div className="nav-box">
+            <span className="nav__exchange nav__item nav__item-exchange">
+              <img src={exchangeLogo} alt="" className="nav-icon"/>
+              Exchange
+            </span>
+            <span className="nav__preemptive nav__item nav__item-preemptive">
+              <img src={preemptiveLogo} alt="" className="nav-icon"/>
+              Preemptive
+            </span>
+            <span className="nav__menu nav__item nav__item-language">
+              <Dropdown overlay={menu} trigger={['click']}>
+                <a className='ant-dropdown-link' style={{color: '#6e7793'}} onClick={e => e.preventDefault()}>
+                  <img src={languageLogo} alt="" className="nav-icon"/>
+                  Language
+                </a>
+              </Dropdown>
+            </span>
+          </div>
         </Col>
       </Row>
     </>

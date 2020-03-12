@@ -1,0 +1,41 @@
+$text-color: #6E7793;
+
+.text-align {
+  &--center {
+    text-align: center;
+  }
+  &--left {
+    text-align: left;
+  }
+  &--right {
+    text-align: right;
+  }
+}
+
+.trade__buy-box {
+  border-right: 1px solid $text-color;
+  padding-right: 10px;
+}
+
+.trade__sale-box {
+  padding-left: 10px;
+}
+
+.trade__sub-box {
+  color: $text-color;
+
+  &--title {
+
+  }
+  &--field {
+    &-buy{
+      margin-bottom: 30px;
+    }
+    &-amount{
+      margin-bottom: 15px;
+    }
+    &-total>div:first-child {
+      padding-top: 10px
+    }
+  }
+}

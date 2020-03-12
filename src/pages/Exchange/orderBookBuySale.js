@@ -1,5 +1,4 @@
 import React  from 'react';
-import styles from "./exchange.module.scss";
 import {Table} from 'antd'
 // import Table  from '../../components/ExchangeTable'
 
@@ -79,11 +78,11 @@ const OrderBookBuySale = () => {
 
   return (
     <>
-      <p className={styles.orderBookTitle}>Orderbook</p>
-      <div className={styles.listSaleBox}>
+      <p className="order-book__title">Orderbook</p>
+      <div className="order-book__sale-table">
         <Table dataSource={dataSource} columns={salecolumns} pagination={false} />;
       </div>
-      <div className={styles.buyListBox}>
+      <div className="order-book__buy-table">
         <Table dataSource={dataSource} columns={buyColumns} pagination={false} />;
       </div>
     </>
