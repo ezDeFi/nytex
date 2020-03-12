@@ -1,0 +1,70 @@
+$dark-gray: #1F2538;
+
+//--------------------------------table--------------------------------------
+.ant-table {
+  background: none;
+}
+
+.ant-table thead tr th {
+  padding: 0;
+  border: none;
+  color: #6E7793;
+  background: none
+}
+
+.ant-table tbody tr td {
+  padding: 0;
+  border: none;
+  color: white;
+}
+
+.ant-table tbody>tr.ant-table-row:hover > td {
+  background: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+//-------------------------------tab--------------------------------
+.ant-tabs-nav {
+  color: white;
+}
+.ant-tabs-nav .ant-tabs-tab-active{
+  color: #FAB416;
+  border-bottom: none;
+}
+
+.ant-tabs-ink-bar {
+  background: none;
+}
+
+.ant-tabs-bar {
+  border-bottom: 1px solid #394462;
+}
+
+
+//-------------------------------input-----------------------------
+.ant-input {
+  background-color: $dark-gray;
+  color: white
+}
+
+.ant-input-affix-wrapper {
+  border: none;
+  background-color: $dark-gray;
+}
+
+.ant-input-affix-wrapper-focused {
+  box-shadow: none;
+}
+
+.ant-input {
+  border: none;
+}
+
+.ant-input:focus {
+  box-shadow: none;
+}

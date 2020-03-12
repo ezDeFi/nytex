@@ -1,0 +1,107 @@
+$light-grey: #394462;
+
+
+@mixin border-grey {
+    border: 1px solid $light-grey;
+}
+
+/*----------------------------------tab-----------------------------------*/
+.chartTradeTab {
+    display: none;
+}
+
+.showChartRadio, .showTradeRadio {
+    display: none;
+}
+
+/*--------------------------------chart trade-------------------------------------*/
+.chartHistoryBox, .tradeBox {
+    padding: 5px;
+}
+
+.chartHistoryBox>div {
+    border: 1px solid $light-grey;
+    height: 500px;
+}
+
+.tradeContent {
+    /*padding: 10px;*/
+}
+
+/*---------------------------------------order book-----------------------------------*/
+.orderBookTitle {
+    font-size: 14px;
+    line-height: 16px;
+    color: #FFFFFF
+}
+
+.listBuySaleBox {
+    height: 500px;
+    padding: 10px 0 10px 10px;
+    @include border-grey;
+    border-right: none;
+}
+.historyList {
+    height: 500px;
+    padding: 10px 0 10px 10px;
+    @include border-grey;
+    border-left: none;
+}
+
+.listSaleBox, .buyListBox {
+    height: 50%;
+}
+
+/*----------------------------buy sale-----------------------------------*/
+.buySaleBox {
+    margin-top: 10px;
+    height: 500px;
+    @include border-grey;
+}
+
+/*---------------------------order History-------------------------------------*/
+.orderHistoryBox {
+    margin-top: 10px;
+    height: 500px;
+    @include border-grey;
+}
+
+
+@media only screen and (max-width: 600px) {
+    /*--------------tab-------------------*/
+    .chartTradeTab {
+        display: flex;
+    }
+
+    .showChartRadio:checked ~ div > .chartHistoryBox {
+        display: block;
+    }
+
+    .showTradeRadio:checked ~ div > .tradeBox {
+        display: block;
+    }
+
+    .chartHistoryBox {
+        display: none;
+    }
+
+    .tradeBox {
+        display: none;
+    }
+
+    /*-------------------------------trade box-----------------------------*/
+    .buySaleBox {
+        margin: 0 0 10px 0;
+        border-right: none;
+    }
+
+    .listBuySaleBox {
+        margin: 0 0 10px 0;
+        border-left: none;
+        border-right: 1px solid $light-grey;
+    }
+
+    .historyList {
+        border: 1px solid $light-grey;
+    }
+}
