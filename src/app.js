@@ -62,40 +62,40 @@ function setupWeb3 () {
   window.web3.eth.getAccounts(async (err, accounts) => {
     if (err) return
     if (accounts.length > 0) {
-        window.web3.version.getNetwork((err, networkId) => {
-          if (err) {
-            console.error(err);
-            return;
+      window.web3.version.getNetwork((err, networkId) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        // detect account switch
+        const wallet = store.getState().user.wallet;
+        isLoggedIn = isLoggedIn && wallet === accounts[0];
+
+        if (!isLoggedIn) {
+          const web3 = new Web3(window.ethereum)
+
+          const contracts = {
+            VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
+            StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
+            Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
           }
 
-          // detect account switch
-          const wallet = store.getState().user.wallet;
-          isLoggedIn = isLoggedIn && wallet === accounts[0];
+          store.dispatch(userRedux.actions.loginMetamask_update(true))
+          store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
+          store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
+          store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
+          store.dispatch(userRedux.actions.web3_update(web3))
 
-          if (!isLoggedIn) {
-            const web3 = new Web3(window.ethereum)
+          userService.metaMaskLogin(accounts[0])
+          isLoggedIn = true
 
-            const contracts = {
-              VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
-              StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
-              Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
-            }
-
-            store.dispatch(userRedux.actions.loginMetamask_update(true))
-            store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
-            store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
-            store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
-            store.dispatch(userRedux.actions.web3_update(web3))
-
-            userService.metaMaskLogin(accounts[0])
-            isLoggedIn = true
-
-            // simple trick: not work for entering .../login directly to the browser
-            if (userService.path.location.pathname === '/login') {
-              userService.path.goBack();
-            }
+          // simple trick: not work for entering .../login directly to the browser
+          if (userService.path.location.pathname === '/login') {
+            userService.path.goBack();
           }
-        })
+        }
+      })
     } else {
         if (!isRequest) {
             isRequest = true
@@ -103,7 +103,6 @@ function setupWeb3 () {
         }
         store.dispatch(userRedux.actions.loginMetamask_update(false))
         isLoggedIn = false
-        userService.path.push('/login')
     }
   })
 }
