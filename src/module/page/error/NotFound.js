@@ -1,13 +1,12 @@
 import React from 'react' // eslint-disable-line
-import StandardPage from '../StandardPage'
+import BasePage from '../StandardPage'
 
-export default class extends StandardPage {
-  ord_renderContent () { // eslint-disable-line
-    return (
+export default () => {
+  return (
+    <BasePage>
       <div className="ebp-page">
         <h1>404, not found</h1>
       </div>
-
-    )
-  }
+    </BasePage>
+  )
 }

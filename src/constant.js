@@ -1,12 +1,6 @@
-import VolatileToken from './../build/contracts/VolatileToken.json'
-import StableToken from './../build/contracts/StableToken.json'
-import Seigniorage from './../build/contracts/Seigniorage.json'
+import ReadWrite from './../build/contracts/ReadWrite.json'
 
 const NetId = '111111'
-const SeigniorageAddress    = '0x0000000000000000000000000000000000023456'
-const VolatileTokenAddress  = '0x0000000000000000000000000000000000034567'
-const StableTokenAddress    = '0x0000000000000000000000000000000000045678'
-const ConsensusDeploy = true
 
 export const USER_ROLE = {
   MEMBER: 'MEMBER',
@@ -17,25 +11,15 @@ export const USER_ROLE = {
 
 export const CONTRACTS =
   {
-    'VolatileToken':
+    'ReadWrite':
       {
-        'abi': VolatileToken.abi,
-        'address': ConsensusDeploy ? VolatileTokenAddress : VolatileToken.networks[NetId].address
-      },
-    'StableToken':
-      {
-        'abi': StableToken.abi,
-        'address': ConsensusDeploy ? StableTokenAddress : StableToken.networks[NetId].address
-      },
-    'Seigniorage':
-      {
-        'abi': Seigniorage.abi,
-        'address': ConsensusDeploy ? SeigniorageAddress : Seigniorage.networks[NetId].address
-      },
+        'abi': ReadWrite.abi,
+        'address': ReadWrite.networks[NetId].address
+      }
   }
 
 export const USER_LANGUAGE = {
-  en: 'en',
+  en: 'en'
 }
 
 export const TEAM_ROLE = {

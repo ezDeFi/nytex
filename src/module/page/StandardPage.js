@@ -1,23 +1,19 @@
-import React from 'react' // eslint-disable-line
-import BasePage from '@/model/BasePage'
+import React      from 'react' // eslint-disable-line
 import { Layout } from 'antd' // eslint-disable-line
-import Header from '../layout/Header/Container' // eslint-disable-line
-import Footer from '../layout/Footer/Container' // eslint-disable-line
+import Header     from '../layout/Header'
 
-export default class extends BasePage {
-  ord_renderPage () { // eslint-disable-line
-    return (
-      <Layout className="p_standardPage">
-        <Header/>
-        <Layout.Content>
-          {this.ord_renderContent()}
-        </Layout.Content>
-        <Footer />
-      </Layout>
-    )
-  }
 
-  ord_renderContent () { // eslint-disable-line
-    return null
-  }
+const BasePage = (props) => {
+
+  return (
+    <Layout className="p_standardPage">
+       <Header/>
+      <Layout.Content>
+        {props.children}
+      </Layout.Content>
+      {/* <Footer /> */}
+    </Layout>
+  )
 }
+
+export default BasePage

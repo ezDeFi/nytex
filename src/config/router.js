@@ -1,25 +1,15 @@
-import SeignioragePage from '@/module/page/seigniorage/Container'
-import PreemptivePage from '@/module/page/preemptive/Container'
-import TxCodePage from '@/module/page/txcode/Container'
-import LoginPage from '@/module/page/login/Container'
+import TxCodePage from '@/module/page/txcode'
+import LoginPage from '@/module/page/login'
 import NotFound from '@/module/page/error/NotFound'
 
 export default [
   {
     path: '/',
-    page: SeignioragePage
+    page: TxCodePage
   },
   {
     path: '/home',
-    page: SeignioragePage
-  },
-  {
-    path: '/exchange',
-    page: SeignioragePage
-  },
-  {
-    path: '/preemptive',
-    page: PreemptivePage
+    page: TxCodePage
   },
   {
     path: '/txcode',

@@ -8,9 +8,7 @@ class ContractRedux extends BaseRedux {
   defineDefaultState () {
     return {
       web3: null,
-      volatileToken: null,
-      stableToken: null,
-      seigniorage: null
+      readWrite: null
     }
   }
 }
