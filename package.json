@@ -24,7 +24,7 @@
   },
   "author": "nexty.io",
   "dependencies": {
-    "antd": "^3.5.0",
+    "antd": "^4.0.3",
     "babel-preset-stage-0": "^6.24.1",
     "big-integer": "^1.6.43",
     "big-number": "^2.0.0",

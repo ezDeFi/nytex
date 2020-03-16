@@ -7,7 +7,7 @@
   border: 0;
   outline: 0;
   vertical-align: baseline;
-  background: transparent;
+  background-color: transparent;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -34,21 +34,19 @@ h4 {
 
 p {
   margin: 0;
-  padding-bottom: $gap_2;
 }
 
 a {
   text-decoration: none;
-  color: $link_color;
+  //color: $link_color;
 
   &:hover {
-    color: $link_hover_color;
+    //color: $link_hover_color;
   }
 }
 
 /* main layout */
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
 
@@ -57,7 +55,6 @@ html, body {
 body {
   font-size: 14px;
   color: #333333;
-  background-color: #082b5f;
 }
 
 td {

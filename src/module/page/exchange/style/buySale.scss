@@ -1,0 +1,76 @@
+$text-color: #6E7793;
+
+.text-align {
+  &--center {
+    text-align: center;
+  }
+  &--left {
+    text-align: left;
+  }
+  &--right {
+    text-align: right;
+  }
+}
+
+.trade__buy-box {
+  border-right: 1px solid $text-color;
+  padding-right: 10px;
+}
+
+.trade__sale-box {
+  padding-left: 10px;
+}
+
+.trade__sub-box {
+  color: $text-color;
+
+  &>div {
+    text-align: left;
+  }
+
+  &--title {
+    text-align: left;
+    padding-bottom: 5px;
+  }
+  &--field {
+    &-buy{
+      margin-bottom: 30px;
+    }
+    &-amount{
+      margin-bottom: 15px;
+    }
+    &-total>div:first-child {
+      padding-top: 10px
+    }
+  }
+}
+
+.btn{
+  &-buy-currency,
+  &-sale-currency{
+    display: block;
+    background-color: $green_color;
+    width: 80%;
+    margin: 15px auto;
+    padding: 5px;
+    border-radius: 7px;
+    color: white;
+  }
+
+  &-buy-currency{
+    background-color: $green_color;
+  }
+  &-sale-currency {
+    background-color: $red_color;
+  }
+
+}
+
+@media only screen and (max-width: 600px) {
+  .trade__sale-box {
+    padding-left: 0;
+    padding-right: 10px;
+    margin-top: 10px;
+    border-right: 1px solid $text-color;
+  }
+}
