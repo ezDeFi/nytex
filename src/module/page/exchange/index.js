@@ -78,10 +78,10 @@ const Exchange = () => {
         id="open-trade-tab"/>
       <Row className="tab">
         <Col span={12}>
-          <label htmlFor="open-chart-tab" className="tab__btn-label--chart">Chart</label>
+          <label htmlFor="open-chart-tab" className="tab__btn-label--chart"><b>Chart</b></label>
         </Col>
         <Col span={12}>
-          <label htmlFor="open-trade-tab" className="tab__btn-label--trade">Trade</label>
+          <label htmlFor="open-trade-tab" className="tab__btn-label--trade"><b>Trade</b></label>
         </Col>
       </Row>
       <Row>

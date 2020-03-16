@@ -4,7 +4,7 @@ import {Tabs, Table} from 'antd'
 const OpenOrder = () => {
   const {TabPane} = Tabs;
 
-  const hideOtherPairs = <label>
+  const hideOtherPairs = <label className='hide-on-mobile'>
     <input type="checkbox"/>
     Hid Other Pairs
   </label>;

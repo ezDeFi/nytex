@@ -31,6 +31,8 @@ $text-color: #6E7793;
   &--title {
     text-align: left;
     padding-bottom: 5px;
+    color: white;
+    font-weight: bold;
   }
   &--field {
     &-buy{
@@ -50,10 +52,10 @@ $text-color: #6E7793;
   &-sale-currency{
     display: block;
     background-color: $green_color;
-    width: 80%;
+    width: 100%;
     margin: 15px auto;
     padding: 5px;
-    border-radius: 7px;
+    border-radius: 20px;
     color: white;
   }
 
@@ -63,14 +65,33 @@ $text-color: #6E7793;
   &-sale-currency {
     background-color: $red_color;
   }
+}
 
+.list-btn-choose-amount {
+  display: flex;
+  justify-content: space-between;
 }
 
 @media only screen and (max-width: 600px) {
+  .trade__buy-box {
+    border: none;
+    padding-right: 0;
+  }
+
   .trade__sale-box {
     padding-left: 0;
-    padding-right: 10px;
+    padding-right: 0;
     margin-top: 10px;
-    border-right: 1px solid $text-color;
   }
+
+  .trade__sub-box{
+    &--field-buy {
+      margin-bottom: 17px;
+    }
+
+    &--field-amount{
+      margin-bottom: 2px;
+    }
+  }
+
 }

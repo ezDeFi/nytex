@@ -53,6 +53,7 @@ $dark-gray: #1F2538;
 }
 
 .ant-input-affix-wrapper {
+  padding: 0;
   border: none;
   background-color: $dark-gray;
 }
@@ -68,4 +69,11 @@ $dark-gray: #1F2538;
 
 .ant-input:focus {
   box-shadow: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .ant-input-affix-wrapper, .ant-input  {
+    background-color: black;
+    color: $grey_light_color;
+  }
 }

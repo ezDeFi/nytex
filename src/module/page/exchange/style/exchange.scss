@@ -14,10 +14,6 @@
     &__content--chart, &__content--trade {
         padding: 5px;
     }
-    &__content--chart > .chart {
-        border: 1px solid $primary_light_color;
-        height: 500px;
-    }
 
     &__btn-label {
         &--chart, &--trade {
@@ -32,6 +28,11 @@
         color: $yallow_color;
         border-bottom: 1px solid $yallow_color;
     }
+}
+
+.chart {
+    border: 1px solid $primary_light_color;
+    height: 500px;
 }
 
 .order-book {
@@ -77,10 +78,14 @@
         display: flex;
         &__btn-show--chart:checked ~ div > &__content--chart {
             display: block;
+            border: none;
+            padding: 0;
         }
 
         &__btn-show--trade:checked ~ div > &__content--trade {
             display: block;
+            border: none;
+            padding: 0;
         }
         &__content {
             &--chart {
@@ -92,22 +97,26 @@
         }
     }
 
+    .chart {
+        border: none;
+        background-color: $primary_dark_color;
+    }
+
+
     .trade-box {
         margin: 0 0 10px 0;
-        border-right: none;
+        border: none;
+        height: 500px;
+        background-color: $primary_dark_color;
     }
     .order-book {
         &__buy-and-sale-table {
             margin: 0 0 10px 0;
-            border-left: none;
-            border-right: 1px solid $primary_light_color;
+            border: none;
+            background-color: $primary_dark_color;
         }
         &__history-table {
             border: 1px solid $primary_light_color;
         }
-    }
-
-    .trade-box {
-        height: 500px;
     }
 }
