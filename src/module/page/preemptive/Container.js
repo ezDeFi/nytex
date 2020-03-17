@@ -55,7 +55,7 @@ export default createContainer(Component, (state) => {
       const mnty = BigInt(this.volatileTokenBalance)
       let value = undefined
       if (have > mnty) {
-        value = (have - mnty)
+        value = have.minus(mnty)
         if (value > BigInt(this.balance)) {
           throw "insufficient fund to stake"
         }
