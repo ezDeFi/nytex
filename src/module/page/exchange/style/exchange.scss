@@ -25,98 +25,54 @@
 
     &__btn-show--chart:checked ~ div &__btn-label--chart,
     &__btn-show--trade:checked ~ div &__btn-label--trade {
-        color: $yallow_color;
-        border-bottom: 1px solid $yallow_color;
+        color: $yellow_color;
+        border-bottom: 1px solid $yellow_color;
     }
 }
 
 .chart {
-    border: 1px solid $primary_light_color;
     height: 500px;
-}
+    padding: 5px;
 
-.order-book {
-    &__title {
-        font-size: 14px;
-        line-height: 16px;
-        color: #FFFFFF
-    }
-    &__buy-and-sale-table {
-        @include border-grey;
-        height: 500px;
-        padding: 10px 0 10px 10px;
-        border-right: none;
-    }
-    &__history-table {
-        height: 500px;
-        padding: 10px 0 10px 10px;
-        @include border-grey;
-        border-left: none;
-    }
-    &__sale-table, &__buy-table {
-        height: 48%;
+    &__content {
+        border: 1px solid $primary_light_color;
+        height: 100%;
     }
 }
-
-
-.trade-box {
-    @include border-grey;
-    margin-top: 10px;
-    padding: 10px;
-    height: 400px;
-}
-
-.user-order {
-    margin-top: 10px;
-    height: 400px;
-    @include border-grey;
-}
-
 
 @media only screen and (max-width: 600px) {
     .tab {
         display: flex;
-        &__btn-show--chart:checked ~ div > &__content--chart {
+        &__btn-show--chart:checked ~ div > .chart,
+        &__btn-show--trade:checked ~ div > .order-book,
+        &__btn-show--trade:checked ~ div > .trade-box
+        {
             display: block;
             border: none;
             padding: 0;
         }
 
-        &__btn-show--trade:checked ~ div > &__content--trade {
+        &__btn-show--trade:checked ~ div > .order-book {
             display: block;
             border: none;
             padding: 0;
-        }
-        &__content {
-            &--chart {
-                display: none;
-            }
-            &--trade {
-                display: none;
-            }
         }
     }
 
     .chart {
-        border: none;
+        display: none;
         background-color: $primary_dark_color;
+
+        &__content {
+            border: none;
+        }
     }
 
+    .order-book {
+        display: none;
+    }
 
     .trade-box {
-        margin: 0 0 10px 0;
-        border: none;
-        height: 500px;
-        background-color: $primary_dark_color;
-    }
-    .order-book {
-        &__buy-and-sale-table {
-            margin: 0 0 10px 0;
-            border: none;
-            background-color: $primary_dark_color;
-        }
-        &__history-table {
-            border: 1px solid $primary_light_color;
-        }
+        display: none;
     }
 }

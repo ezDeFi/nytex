@@ -8,7 +8,6 @@
   margin-bottom: 3px;
   font-size: 10px;
   color: $primary_light_color;
-  user-select: none;
 }
 
 .btn-large {
@@ -19,9 +18,4 @@
 .btn-search {
   background-color: $primary_light_color;
   color: white;
-}
-
-.btn-yellow {
-  color: $yellow_color;
-  border-color: $yellow_color;
 }

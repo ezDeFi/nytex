@@ -2,9 +2,7 @@ import React      from 'react' // eslint-disable-line
 import { Layout } from 'antd' // eslint-disable-line
 import Header     from '../layout/Header'
 
-
 const BasePage = (props) => {
-
   return (
     <Layout className="p_standardPage">
        <Header/>

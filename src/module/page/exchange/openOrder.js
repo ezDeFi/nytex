@@ -1,5 +1,6 @@
 import React         from 'react';
 import {Tabs, Table} from 'antd'
+import BtnOval from '../../Component/ButtonOval'
 
 const OpenOrder = () => {
   const {TabPane} = Tabs;
@@ -116,18 +117,45 @@ const OpenOrder = () => {
   const openHistory = (<Table dataSource={openOrderData} columns={openOrderColumns} pagination={false} />)
   const tradeHistory = (<Table dataSource={openOrderData} columns={openOrderColumns} pagination={false} />)
 
+  const filterHistory = (
+    <div className="open-order__search-box">
+      <span><BtnOval className="btn-large btn-yellow">1 Day</BtnOval></span>
+      <span><BtnOval className="btn-large">1 Week</BtnOval></span>
+      <span><BtnOval className="btn-large">1 Month</BtnOval></span>
+      <span><BtnOval className="btn-large">3 Month</BtnOval></span>
+      <span>
+        <label htmlFor="search-from" className="search-label">
+          <span>From</span>
+          <input type="text" id="search-from" className="search-input"/>
+        </label>
+      </span>
+      <span>
+        <label htmlFor="search-to" className="search-label">
+          <span>To</span>
+          <input type="text" id="search-to" className="search-input"/>
+        </label>
+      </span>
+      <span><BtnOval className="btn-large btn-search">Search</BtnOval></span>
+    </div>
+  )
+
   return (
-    <Tabs tabBarExtraContent={hideOtherPairs}>
-      <TabPane tab="Open Orders" key="1">
-        {openOrder}
-      </TabPane>
-      <TabPane tab="Open History" key="2">
-        {openHistory}
-      </TabPane>
-      <TabPane tab="Trade History" key="3">
-        {tradeHistory}
-      </TabPane>
-    </Tabs>
+    <div className="open-order__content">
+      <Tabs tabBarExtraContent={hideOtherPairs}>
+        <TabPane tab="Open Orders" key="1">
+          {filterHistory}
+          {openOrder}
+        </TabPane>
+        <TabPane tab="Open History" key="2">
+          {filterHistory}
+          {openHistory}
+        </TabPane>
+        <TabPane tab="Trade History" key="3">
+          {filterHistory}
+          {tradeHistory}
+        </TabPane>
+      </Tabs>
+    </div>
   )
 }
 

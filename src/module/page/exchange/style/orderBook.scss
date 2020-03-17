@@ -1,0 +1,52 @@
+@mixin border-grey {
+  border: 1px solid $primary_light_color;
+}
+
+.order-book {
+  padding: 5px;
+  height: 500px;
+
+  &__content {
+    @include border-grey;
+    height: 100%;
+    padding: 5px;
+  }
+
+  &__title {
+    font-size: 14px;
+    line-height: 16px;
+    color: #FFFFFF
+  }
+
+  &__history{
+    height: 500px;
+    padding: 10px 0 10px 10px;
+    margin-top: 5px;
+
+    &-table {
+      height: 100%;
+      @include border-grey;
+      border-left: none;
+    }
+  }
+  &__sale-table, &__buy-table {
+    height: 48%;
+  }
+  &__current-price {
+    background-color: $primary_dark_color;
+    color: white;
+    padding: 4px 0;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .order-book {
+    margin: 0;
+
+    &__content {
+      border: none;
+      background-color: $primary_dark_color;
+      padding: 10px 5px;
+    }
+  }
+}

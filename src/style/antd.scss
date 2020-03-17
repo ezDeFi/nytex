@@ -54,4 +54,87 @@
 
 .ant-layout {
   background-color: $primary_color;
+  &-content {
+    width: 95vw;
+    margin: 0 auto;
+  }
+}
+
+
+
+$dark-gray: #1F2538;
+
+//--------------------------------table--------------------------------------
+.ant-table {
+  background: none;
+
+  & thead tr th {
+    padding: 0;
+    border: none;
+    color: #6E7793;
+    background: none
+  }
+
+  & tbody tr td {
+    padding: 0;
+    border: none;
+    color: white;
+  }
+
+  & tbody>tr.ant-table-row:hover > td {
+    background: none;
+  }
+}
+
+
+//-------------------------------tab--------------------------------
+.ant-tabs-nav {
+  color: white;
+}
+.ant-tabs-nav .ant-tabs-tab-active{
+  color: #FAB416;
+  border-bottom: none;
+}
+
+.ant-tabs-ink-bar {
+  background: none;
+}
+
+.ant-tabs-bar {
+  border-bottom: 1px solid #394462;
+}
+
+//-------------------------------input-----------------------------
+.ant-input {
+  background-color: $dark-gray;
+  color: white;
+  border: none;
+  border-radius: 3px;
+
+  &-affix-wrapper {
+    padding: 0;
+    border: none;
+    background-color: $dark-gray;
+  }
+
+  &-affix-wrapper-focused {
+    box-shadow: none;
+  }
+
+  &:focus {
+    box-shadow: none;
+  }
+
+}
+
+@media only screen and (max-width: 600px) {
+  .ant-input-affix-wrapper, .ant-input  {
+    background-color: black;
+    color: $grey_light_color;
+  }
+
+  .ant-layout-content {
+    width: 100%;
+  }
+
 }

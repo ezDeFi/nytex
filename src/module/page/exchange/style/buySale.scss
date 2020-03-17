@@ -1,5 +1,17 @@
 $text-color: #6E7793;
 
+.trade-box {
+  margin-top: 5px;
+  padding: 5px;
+  height: 400px;
+
+  &__content {
+    @include border-grey;
+    padding: 10px;
+    height: 100%;
+  }
+}
+
 .text-align {
   &--center {
     text-align: center;
@@ -94,4 +106,13 @@ $text-color: #6E7793;
     }
   }
 
+  .trade-box {
+    margin: 0;
+    height: 500px;
+    background-color: $primary_dark_color;
+
+    &__content {
+      border: none;
+    }
+  }
 }
