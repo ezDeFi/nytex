@@ -1,0 +1,11 @@
+@import "../../../style/color";
+
+.footer {
+  background-color: $primary_dark_color;
+  text-align: center;
+
+  &>h4 {
+    padding: 10px;
+    color: $primary_light_color;
+  }
+}

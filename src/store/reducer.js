@@ -6,6 +6,7 @@ import user from './redux/user'
 import readWrite from './redux/readWrite'
 import contracts from './redux/contracts'
 import community from './redux/community'
+import preemptive from './redux/preemptive'
 
 const default_state = { // eslint-disable-line
   init: false
@@ -26,5 +27,6 @@ export default combineReducers({
   contracts: contracts.getReducer(),
   user: user.getReducer(),
   readWrite: readWrite.getReducer(),
-  community: community.getReducer()
+  community: community.getReducer(),
+  preemptive: preemptive.getReducer()
 })

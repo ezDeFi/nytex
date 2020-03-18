@@ -2,6 +2,7 @@ import TxCodePage from '@/module/page/txcode'
 import LoginPage from '@/module/page/login'
 import NotFound from '@/module/page/error/NotFound'
 import ExchangePage from '@/module/page/exchange'
+import Preemptive from '@/module/page/preemptive'
 
 export default [
   {
@@ -23,6 +24,10 @@ export default [
   {
     path: '/exchange',
     page: ExchangePage
+  },
+  {
+    path: '/preemptive',
+    page: Preemptive
   },
   {
     page: NotFound

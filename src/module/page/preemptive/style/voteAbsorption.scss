@@ -1,0 +1,35 @@
+.absorption {
+  display: none;
+  border-top: 1px solid $primary_light_color;
+  width: 100%;
+
+  &-content {
+    color: white;
+
+
+    &--vote-up,
+    &--vote-down {
+      width: 120px;
+      text-align: center;
+      font-size: 12px;
+      padding: 3px;
+    }
+    &--vote-up {
+      background: $green_color;
+      border-bottom-left-radius: 5px;
+      border-top-left-radius: 5px;
+    }
+    &--vote-down {
+      background: $red_color;
+      border-bottom-right-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+
+    &--btn-provoke {
+      font-size: 12px;
+      background: $primary_light_color;
+      width: 150px;
+      border-radius: 5px;
+    }
+  }
+}

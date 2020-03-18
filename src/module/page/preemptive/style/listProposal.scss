@@ -1,0 +1,21 @@
+.list-proposals .ant-table-container thead>tr>th {
+  color: white;
+  padding: 5px;
+}
+.list-proposals .ant-table-container tbody>tr>td:not(:last-child) {
+  padding-right: 4px;
+}
+
+.list-proposals .ant-table-container tbody>tr>td>p {
+  padding: 4px 10px;
+}
+
+.btn-my-proposal {
+  background: $primary_light_color;
+  border-radius: 7px;
+  margin-top: 15px;
+  margin-right: 10px;
+  color: white;
+  padding: 2px 15px;
+  font-size: 12px;
+}

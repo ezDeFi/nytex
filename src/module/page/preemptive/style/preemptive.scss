@@ -1,0 +1,15 @@
+.preemptive {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 10%;
+  border-top: 1px solid $primary_light_color;
+
+  &--header-2 {
+    color: white;
+    font-weight: bold;
+  }
+}
+
+.proposal {
+  margin-bottom: 40px;
+}

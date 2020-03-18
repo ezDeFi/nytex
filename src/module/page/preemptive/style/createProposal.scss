@@ -1,0 +1,12 @@
+.create-proposal {
+  &-box {
+    border-top: 1px solid $primary_light_color;
+    color: white;
+  }
+
+  &--btn-submit {
+    background: $green_color;
+    border-radius: 5px;
+    padding: 3px 40px;
+  }
+}

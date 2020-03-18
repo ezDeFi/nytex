@@ -1,0 +1,46 @@
+.user-wallet {
+  color: $primary_light_color;
+  padding-left: 20px;
+
+  &--title {
+    color: white;
+  }
+
+  &--info {
+    margin-top: 10px;
+  }
+
+  &--vote {
+    margin-top: 20px;
+  }
+}
+
+.btn-create-proposal {
+  background-color: $green_color;
+  color: white;
+  border-radius: 5px;
+  padding: 3px 60px;
+  margin-top: 45px;
+  display: none;
+}
+
+.user-absorption {
+  //display: none;
+  margin-top: 40px;
+
+  &__header {
+    color: white;
+  }
+
+  &__content {
+    margin-top: 10px;
+
+    &--btn-approve {
+      background: $green_color;
+      padding: 2px 10px;
+      color: white;
+      border-radius: 7px;
+    }
+  }
+}
+
