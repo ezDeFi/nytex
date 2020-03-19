@@ -148,7 +148,7 @@ const OrderBook = () => {
         </div>
       </Col>
       <Col lg={12} xs={0}>
-        <Table dataSource={dataSourceHistory} columns={columnsHistory} pagination={false} />;
+        <Table dataSource={dataSourceHistory} columns={columnsHistory} pagination={false} />
       </Col>
     </Row>
   )

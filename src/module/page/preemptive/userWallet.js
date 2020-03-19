@@ -1,7 +1,10 @@
-import React   from 'react';
+import React             from 'react';
 import {Row, Col, Input} from 'antd'
+import {useSelector}     from "react-redux";
 
 const userWallet = () => {
+  const detailVote = useSelector(state => state.preemptive.detail_vote)
+
   return (
     <div className="user-wallet">
       <p className="user-wallet--title"><b>My wallet</b></p>
@@ -24,21 +27,25 @@ const userWallet = () => {
         </Row>
       </div>
       <div className="user-wallet--vote">
-        <button className="btn-create-proposal">
-          Create Proposal
-        </button>
-        <div className="user-absorption">
-          <p className="user-absorption__header">
-            <b>My Preemptive Absorption</b>
-          </p>
-          <Row className="user-absorption__content">
-            <Col lg={6}><b>Allowance</b></Col>
-            <Col lg={12}><Input suffix="BTC"/></Col>
-            <Col lg={6} className="center">
-              <button className="user-absorption__content--btn-approve">Approve</button>
-            </Col>
-          </Row>
-        </div>
+        {
+          detailVote ?
+          <div className="user-absorption">
+            <p className="user-absorption__header">
+              <b>My Preemptive Absorption</b>
+            </p>
+            <Row className="user-absorption__content">
+              <Col lg={6}><b>Allowance</b></Col>
+              <Col lg={12}><Input suffix="BTC"/></Col>
+              <Col lg={6} className="center">
+                <button className="user-absorption__content--btn-approve">Approve</button>
+              </Col>
+            </Row>
+          </div>
+          :
+          <button className="btn-create-proposal">
+            Create Proposal
+          </button>
+        }
       </div>
     </div>
   )

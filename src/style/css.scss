@@ -103,6 +103,11 @@ td {
   margin-bottom: 35px;
 }
 
+.vertical-center-item {
+  display: flex;
+  align-items: center;
+}
+
 .no-select {
   -webkit-touch-callout: none;
   -webkit-user-select: none;

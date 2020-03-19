@@ -18,6 +18,10 @@
     color: #FFFFFF
   }
 
+  &__sale, &__buy {
+    height: 45%;
+  }
+
   &__history{
     height: 500px;
     padding: 10px 0 10px 10px;
@@ -29,9 +33,7 @@
       border-left: none;
     }
   }
-  &__sale-table, &__buy-table {
-    height: 48%;
-  }
+
   &__current-price {
     background-color: $primary_dark_color;
     color: white;

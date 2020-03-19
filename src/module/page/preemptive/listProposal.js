@@ -1,13 +1,15 @@
 import React, {useState}          from 'react';
 import {Table}                    from 'antd'
 import {useSelector, useDispatch} from "react-redux";
+import store from '../../../store'
 
 import './style/index.scss'
 import preemptive                 from "../../../store/redux/preemptive";
 
 const ListProposal = () => {
-  const detailVote = useSelector(state => state)
-  console.log(detailVote);
+  const detailVote = useSelector(state => state.preemptive.detail_vote)
+  const dispatch = useDispatch()
+  const action = store.getRedux('preemptive').actions;
 
   const [dataSource, setDataSource] = useState([
     {
@@ -158,6 +160,15 @@ const ListProposal = () => {
     return <p style={{background: bgColor, color: color}}>{value}</p>
   }
 
+  const showProposal = () => {
+    let data = dataSource.map(item => {
+      item.choosing = false;
+      return item
+    })
+    setDataSource(data)
+    dispatch(action.detail_vote_update(''))
+  }
+
   return (
     <div className="list-proposals">
       <Table
@@ -168,19 +179,26 @@ const ListProposal = () => {
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
+              dispatch(action.detail_vote_update(record))
               let newDataSource = dataSource.map(item => {
                 item.choosing = item.key === record.key;
                 return item
               })
-
               setDataSource(newDataSource)
             }
           }
         }}
       />
-      <div className="right-align">
-        <button className="btn-my-proposal">My proposal</button>
-      </div>
+      {
+        detailVote &&
+        <div className="right-align">
+          <button
+            className="btn-my-proposal"
+            onClick={showProposal}>
+            My proposal
+          </button>
+        </div>
+      }
     </div>
   )
 }

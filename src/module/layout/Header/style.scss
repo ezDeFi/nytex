@@ -4,11 +4,19 @@
     padding: 0 50px;
 
     &-logo {
-        padding-top: 15px;
+        padding-top: 10px;
         &>span {
+            width: 100%;
             padding: 5px 15px 15px 0;
             border-right: 1px solid #9CA4B9;
         }
+        &--image {
+            width: 100%;
+        }
+    }
+
+    &-info {
+        padding-left: 20px;
     }
 
     &-info > div {
@@ -17,16 +25,17 @@
         padding: 10px;
     }
 
-    &-info > div > p {
+    &-info > div > p:not(.balance) {
         margin: 0;
     }
 
     &-info > div > p:first-child:not(.balance) {
         color: #6E7793;
         font-size: 13px;
+        margin-bottom: 5px;
     }
 
-    &-info > div > p:last-child:not(.balance) {
+    &-info div {
         color: #FFFFFF;
         font-size: 13px;
         line-height: 15px;
@@ -34,7 +43,7 @@
 }
 
 .balance {
-    color: #00C28E
+    margin-top:20px;
 }
 
 /*---------------------------nav and menu ------------------------------*/
@@ -43,16 +52,36 @@
     justify-items: center;
     text-align: right;
 
+
+
     &__item {
         color: #6E7793;
         display: inline-block;
         padding-top: 15px;
-        padding-left: 20px;
+        padding-left: 30px;
         height: 100%;
+        &--choosing {
+            &>a {
+                color:$yellow_color !important;
+                &>svg {
+                    fill: $yellow_color;
+                }
+            }
+        }
+        &>a {
+            color: $primary_light_color
+        }
     }
 
     &-icon {
         padding-right: 7px;
+    }
+
+    &__icon{
+        width: 30px;
+        height: 30px;
+        fill: $primary_light_color;
+        padding-top:5px;
     }
 }
 
@@ -72,7 +101,16 @@
 
         &-info {
             background-color: #1F2538;
+            padding: 10px;
+
+            &>div {
+                padding: 3px;
+            }
         }
+    }
+
+    .balance {
+        margin: 0;
     }
 
     .nav {
@@ -102,7 +140,28 @@
 
             &-language{
             }
-
         }
+
+        &__dropdown {
+            color: $primary_light_color;
+            text-align: right;
+
+            &-current {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                height: 100%;
+            }
+            &-icon {
+                padding-top: 10px;
+                padding-left: 10px;
+            }
+
+            &-item {
+                display: flex !important;
+                align-items: center;
+            }
+        }
+
     }
 }

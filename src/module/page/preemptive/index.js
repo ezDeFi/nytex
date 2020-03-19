@@ -1,14 +1,16 @@
 import React             from 'react';
 import {Row, Col, Table} from 'antd'
 import BasePage          from '../../page/StandardPage'
-import ListProposal     from './listProposal'
-import UserWallet     from './userWallet'
-import VoteAbsorption     from './voteAbsorption'
-import CreateProposal     from './createProposal'
-
+import ListProposal      from './listProposal'
+import UserWallet        from './userWallet'
+import VoteAbsorption    from './voteAbsorption'
+import CreateProposal    from './createProposal'
 import './style/index.scss'
+import {useSelector}     from "react-redux";
 
 const Preemptive = () => {
+  const detailVote = useSelector(state => state.preemptive.detail_vote)
+
   return (
     <BasePage>
       <div className="preemptive">
@@ -25,12 +27,16 @@ const Preemptive = () => {
             </Col>
           </Row>
         </div>
-        <div>
-          <VoteAbsorption/>
-        </div>
-        <div>
-          <CreateProposal/>
-        </div>
+        {
+          detailVote ?
+          <div>
+            <VoteAbsorption/>
+          </div>
+            :
+          <div>
+            <CreateProposal/>
+          </div>
+        }
       </div>
     </BasePage>
   )

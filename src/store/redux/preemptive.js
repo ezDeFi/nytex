@@ -7,7 +7,7 @@ class PreemptiveRedux extends BaseRedux {
 
   defineDefaultState () {
     return {
-      detailVote: ''
+      detail_vote: ''
     }
   }
 }
