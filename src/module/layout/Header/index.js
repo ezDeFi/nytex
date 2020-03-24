@@ -19,7 +19,7 @@ const Header = () => {
 
   const languageItem = [
     <Menu.Item key="0" onClick={() => changeLanguage('vietnamese')}>
-      <a href='#'>Vietnamese</a>
+      <a href='#' className="text-white">Vietnamese</a>
     </Menu.Item>,
     <Menu.Item key="1" onClick={() => changeLanguage('korean')}>
       <a href='#'>Korean</a>
@@ -50,7 +50,7 @@ const Header = () => {
 
   const MenuOnMobile = <Menu>
     <Menu.Item key="10" onClick={() => changeLanguage('vietnamese')}>
-      <Link to="/exchange" className="nav__dropdown-item">
+      <Link to="/exchange" className={"nav__dropdown-item " + (pathname === '/exchange' ? 'nav__item--choosing' : '' )}>
         <svg className="nav__icon">
           <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
         </svg>
@@ -58,7 +58,7 @@ const Header = () => {
       </Link>
     </Menu.Item>
     <Menu.Item key="11" onClick={() => changeLanguage('korean')}>
-      <Link to="/preemptive" className="nav__dropdown-item">
+      <Link to="/preemptive" className={"nav__dropdown-item " + (pathname === '/preemptive' ? 'nav__item--choosing' : '' )}>
         <svg className="nav__icon">
           <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
         </svg>
@@ -124,10 +124,21 @@ const Header = () => {
         <span>
           <Dropdown overlay={MenuOnMobile} trigger={['click']}>
             <div className="nav__dropdown-current">
-              <svg className="nav__icon nav__dropdown-current-icon">
-                <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
-              </svg>
-              <span className="nav__dropdown-current-text">Exchange</span>
+              {pathname === '/exchange' ?
+                <React.Fragment>
+                  <svg className="nav__icon nav__dropdown-current-icon">
+                    <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
+                  </svg>
+                  <span className="nav__dropdown-current-text">Exchange</span>
+                </React.Fragment>
+                :
+                <React.Fragment>
+                  <svg className="nav__icon nav__dropdown-current-icon">
+                  <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
+                  </svg>
+                  <span className="nav__dropdown-current-text">Preemptive</span>
+                </React.Fragment>
+              }
               <svg className="nav__icon nav__dropdown-icon">
                 <use xlinkHref="../../../assets/images/sprite.svg#icon-drop-nav"></use>
               </svg>

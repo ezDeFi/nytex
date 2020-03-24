@@ -41,18 +41,21 @@ const OrderBook = () => {
       title    : 'Price',
       dataIndex: 'price',
       key      : 'price',
+      className: 'left-align',
       render   : text => (<p style={{color: 'red', margin: 0}}>{text}</p>)
     },
     {
       title    : 'Amount',
       dataIndex: 'amount',
       key      : 'amount',
+      className: 'center',
     },
     {
       title    : 'Volume',
       dataIndex: 'volume',
       key      : 'volume',
-      className: 'hide-on-mobile'
+      className: 'right-align'
+      // className: 'hide-on-mobile'
     },
   ];
 
@@ -60,16 +63,18 @@ const OrderBook = () => {
     {
       dataIndex: 'price',
       key      : 'price',
+      className: 'left-align',
       render   : text => (<p style={{color: '#00C28E', margin: 0}}>{text}</p>)
     },
     {
       dataIndex: 'amount',
       key      : 'amount',
+      className: 'center',
     },
     {
       dataIndex: 'volume',
       key      : 'volume',
-      className: 'hide-on-mobile'
+      className: 'right-align'
     },
   ];
 
@@ -123,31 +128,33 @@ const OrderBook = () => {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
+      className:'center'
     },
     {
       title: 'Volume',
       dataIndex: 'volume',
       key: 'volume',
+      className: 'right-align'
     },
   ];
 
   return (
     <Row className="order-book__content">
-      <Col lg={12} xs={24}>
-        <p className="order-book__title">Orderbook</p>
+      <Col lg={12} xs={24} className="order-book__buy-and-sale">
+        <p className="order-book__title hide-on-mobile">Orderbook</p>
         <div className="order-book__sale">
           <Table dataSource={dataSource} columns={salecolumns} pagination={false}/>
         </div>
         <Row className="order-book__current-price">
-          <Col span={6}>0.02342</Col>
-          <Col span={8}>$1775.600602</Col>
-          <Col span={8}>-1.69%</Col>
+          <Col span={6} className="left-align">0.02342</Col>
+          <Col span={8} className="right-align">$1775.600602</Col>
+          <Col span={10} className="right-align">-1.69%</Col>
         </Row>
         <div className="order-book__buy-table">
           <Table dataSource={dataSource} columns={buyColumns} pagination={false}/>
         </div>
       </Col>
-      <Col lg={12} xs={0}>
+      <Col lg={12} xs={0} className="order-book__history-table">
         <Table dataSource={dataSourceHistory} columns={columnsHistory} pagination={false} />
       </Col>
     </Row>

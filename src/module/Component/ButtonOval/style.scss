@@ -9,11 +9,12 @@
   font-size: 10px;
   color: $primary_light_color;
   user-select: none;
+  white-space: nowrap;
 }
 
 .btn-large {
-  font-size: 14px;
-  padding: 0 15px;
+  font-size: 12px;
+  padding: 0 13px;
 }
 
 .btn-search {
@@ -21,7 +22,19 @@
   color: white;
 }
 
+.btn-cancel {
+  font-size: 10px;
+  padding: 0 10px;
+}
+
 .btn-yellow {
   color: $yellow_color;
   border-color: $yellow_color;
+}
+
+@media only screen and (max-width: 600px) {
+  .btn-large {
+    font-size: 10px;
+    padding: 0 2px;
+  }
 }

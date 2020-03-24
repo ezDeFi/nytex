@@ -1,5 +1,9 @@
 import React, {useState}          from 'react';
-import {Table}                    from 'antd'
+import {Table, Row, Col}                    from 'antd'
+import {
+  UpOutlined,
+  DownOutlined
+} from '@ant-design/icons';
 import {useSelector, useDispatch} from "react-redux";
 import store from '../../../store'
 
@@ -17,6 +21,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -24,6 +29,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -31,6 +37,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -38,6 +45,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -45,6 +53,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -52,6 +61,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -59,6 +69,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -66,6 +77,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -73,6 +85,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -80,6 +93,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -87,6 +101,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -94,6 +109,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -101,6 +117,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -108,6 +125,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -115,6 +133,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
     {
@@ -122,6 +141,7 @@ const ListProposal = () => {
       maker     : '0x58E66ce774FE1bb7A901950abac450C8d756CD42',
       absorption: 0.00025152,
       rank      : 2.3764852,
+      state: 50,
       choosing  : false
     },
   ]);
@@ -132,7 +152,7 @@ const ListProposal = () => {
       dataIndex: 'maker',
       key      : 'maker',
       width    : 300,
-      className: 'center',
+      className: 'center hide-on-mobile',
       render   : (value, rowValue) => {
         if (value.length > 25) value = value.slice(0, 25) + '...'
         return renderStripedTable(value, rowValue)
@@ -142,15 +162,55 @@ const ListProposal = () => {
       title    : 'Absorption',
       dataIndex: 'absorption',
       key      : 'absorption',
-      className: 'right-align',
+      className: 'right-align hide-on-mobile',
       render   : (value, rowValue) => renderStripedTable(value, rowValue)
     },
     {
       title    : 'Rank',
       dataIndex: 'rank',
       key      : 'rank',
-      className: 'right-align',
+      className: 'right-align hide-on-mobile',
       render   : (value, rowValue) => renderStripedTable(value, rowValue)
+    },
+    {
+      dataIndex: 'proposal-on-mobile',
+      key      : 'proposal-on-mobile',
+      className: 'right-align hide-on-desktop',
+      render   : (value, object) => {
+        return (
+          <div className="list-proposal-mb-box">
+            <Row className="list-proposal-mb">
+              <Col xs={5} className="left-align list-proposal-mb__col-1">
+                <p className="text-green">Marker</p>
+                <p>Stake</p>
+                <p>Absorption</p>
+                <p>Total Vote</p>
+              </Col>
+              <Col xs={7} className="right-align list-proposal-mb__col-2">
+                <p className="text-green">0x12312345sda12</p>
+                <p>{object.state}</p>
+                <p>{object.absorption}</p>
+                <p>total vote</p>
+              </Col>
+              <Col xs={6} className="left-align list-proposal-mb__col-3">
+                <p>Slashing Rate</p>
+                <p>Rank</p>
+                <p>Lockdown Expiration</p>
+              </Col>
+              <Col xs={3} className="right-align list-proposal-mb__col-4">
+                <p>100%</p>
+                <p>557.89</p>
+                <p>403.201</p>
+              </Col>
+              <Col xs={3}>
+                <p>vote</p>
+                <div><button className="list-proposal-mb__btn-up"><UpOutlined /></button></div>
+                <div><button className="list-proposal-mb__btn-down"><DownOutlined /></button></div>
+              </Col>
+            </Row>
+          </div>
+        )
+      }
     },
   ];
 
@@ -175,7 +235,7 @@ const ListProposal = () => {
         dataSource={dataSource}
         columns={saleColumns}
         pagination={false}
-        scroll={{y: 210}}
+        scroll={{y: 270}}
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
@@ -191,7 +251,7 @@ const ListProposal = () => {
       />
       {
         detailVote &&
-        <div className="right-align">
+        <div className="right-align hide-on-mobile">
           <button
             className="btn-my-proposal"
             onClick={showProposal}>

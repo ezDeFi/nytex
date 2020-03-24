@@ -9,7 +9,7 @@
   &__content {
     @include border-grey;
     height: 100%;
-    padding: 5px;
+    padding: 10px;
   }
 
   &__title {
@@ -18,20 +18,16 @@
     color: #FFFFFF
   }
 
+  &__buy-and-sale {
+    padding-right: 10px;
+  }
+
   &__sale, &__buy {
     height: 45%;
   }
 
-  &__history{
-    height: 500px;
-    padding: 10px 0 10px 10px;
-    margin-top: 5px;
-
-    &-table {
-      height: 100%;
-      @include border-grey;
-      border-left: none;
-    }
+  &__history-table{
+    padding-left: 10px;
   }
 
   &__current-price {
@@ -49,6 +45,15 @@
       border: none;
       background-color: $primary_dark_color;
       padding: 10px 5px;
+    }
+
+    &__buy-and-sale {
+      padding-right: 0;
+    }
+
+    &__current-price {
+      background-color: $primary_color;
+      font-size: 12px;
     }
   }
 }

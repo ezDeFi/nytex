@@ -1,167 +1,176 @@
 @import "../../../style/color";
 
 .header {
-    padding: 0 50px;
+  padding: 0 50px;
 
-    &-logo {
-        padding-top: 10px;
-        &>span {
-            width: 100%;
-            padding: 5px 15px 15px 0;
-            border-right: 1px solid #9CA4B9;
-        }
-        &--image {
-            width: 100%;
-        }
+  &-logo {
+    padding-top: 10px;
+
+    & > span {
+      width: 100%;
+      padding: 5px 15px 15px 0;
+      border-right: 1px solid #9CA4B9;
     }
 
-    &-info {
-        padding-left: 20px;
+    &--image {
+      width: 100%;
     }
+  }
 
-    &-info > div {
-        display: inline-block;
-        text-align: left;
-        padding: 10px;
-    }
+  &-info {
+    padding-left: 20px;
+  }
 
-    &-info > div > p:not(.balance) {
-        margin: 0;
-    }
+  &-info > div {
+    display: inline-block;
+    text-align: left;
+    padding: 10px;
+  }
 
-    &-info > div > p:first-child:not(.balance) {
-        color: #6E7793;
-        font-size: 13px;
-        margin-bottom: 5px;
-    }
+  &-info > div > p:not(.balance) {
+    margin: 0;
+  }
 
-    &-info div {
-        color: #FFFFFF;
-        font-size: 13px;
-        line-height: 15px;
-    }
+  &-info > div > p:first-child:not(.balance) {
+    color: #6E7793;
+    font-size: 13px;
+    margin-bottom: 5px;
+  }
+
+  &-info div {
+    color: #FFFFFF;
+    font-size: 13px;
+    line-height: 15px;
+  }
 }
 
 .balance {
-    margin-top:20px;
+  margin-top: 20px;
 }
 
 /*---------------------------nav and menu ------------------------------*/
 
 .nav {
-    justify-items: center;
-    text-align: right;
+  justify-items: center;
+  text-align: right;
 
 
+  &__item {
+    color: #6E7793;
+    display: inline-block;
+    padding-top: 15px;
+    padding-left: 30px;
+    height: 100%;
 
-    &__item {
-        color: #6E7793;
-        display: inline-block;
-        padding-top: 15px;
-        padding-left: 30px;
-        height: 100%;
-        &--choosing {
-            &>a {
-                color:$yellow_color !important;
-                &>svg {
-                    fill: $yellow_color;
-                }
-            }
+    &--choosing {
+      & > a {
+        color: $yellow_color !important;
+
+        & > svg {
+          fill: $yellow_color;
         }
-        &>a {
-            color: $primary_light_color
-        }
+      }
     }
 
-    &-icon {
-        padding-right: 7px;
+    & > a {
+      color: $primary_light_color
     }
+  }
 
-    &__icon{
-        width: 30px;
-        height: 30px;
-        fill: $primary_light_color;
-        padding-top:5px;
-    }
+  &-icon {
+    padding-right: 7px;
+  }
+
+  &__icon {
+    width: 30px;
+    height: 30px;
+    fill: $primary_light_color;
+    padding-top: 5px;
+  }
 }
 
 
 @media only screen and (max-width: 600px) {
-    .header {
-        margin: 0;
-        padding: 0;
+  .header {
+    margin: 0;
+    padding: 0;
 
-        &-logo {
-        }
-
-        &-logo > span {
-            padding-left: 15px;
-            border: none;
-        }
-
-        &-info {
-            background-color: #1F2538;
-            padding: 10px;
-
-            &>div {
-                padding: 3px;
-            }
+    &-logo {
+        height: 45px;
+        &--image {
+            width: 125px;
         }
     }
 
-    .balance {
-        margin: 0;
+    &-logo > span {
+      padding-left: 15px;
+      border: none;
     }
 
-    .nav {
-        display: none !important;
-        position: relative;
+    &-info {
+      background-color: #1F2538;
+      padding: 10px;
 
-        &-box {
-            position: absolute;
-            width: 60%;
-            z-index: 1000;
-            top: 0;
-            right: 0;
-            height: 100vh;
-            background-color: black;
-            padding-right: 15px;
-        }
-
-        &__item {
-            height: 50px;
-            display: block;
-
-            &-exchange{
-            }
-
-            &-preemptive{
-            }
-
-            &-language{
-            }
-        }
-
-        &__dropdown {
-            color: $primary_light_color;
-            text-align: right;
-
-            &-current {
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-                height: 100%;
-            }
-            &-icon {
-                padding-top: 10px;
-                padding-left: 10px;
-            }
-
-            &-item {
-                display: flex !important;
-                align-items: center;
-            }
-        }
-
+      & > div {
+        padding: 3px;
+      }
     }
+  }
+
+  .balance {
+    margin: 0;
+  }
+
+  .nav {
+    display: none !important;
+    position: relative;
+
+    &-box {
+      position: absolute;
+      width: 60%;
+      z-index: 1000;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      background-color: black;
+      padding-right: 15px;
+    }
+
+    &__item {
+      height: 50px;
+      display: block;
+
+      &-exchange {
+      }
+
+      &-preemptive {
+      }
+
+      &-language {
+      }
+    }
+
+    &__dropdown {
+      color: $primary_light_color;
+      text-align: right;
+
+      &-current {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: 100%;
+      }
+
+      &-icon {
+        padding-top: 10px;
+        padding-left: 10px;
+      }
+
+      &-item {
+        display: flex !important;
+        align-items: center;
+      }
+    }
+
+  }
 }
