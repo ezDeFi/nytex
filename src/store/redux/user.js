@@ -14,7 +14,8 @@ class UserRedux extends BaseRedux {
         privatekey: '',
         loading: false
       },
-
+      volatileTokenBalance: 0,
+      stableTokenBalance: 0,
       web3: null,
       profile: null,
       blockNumber: 0,

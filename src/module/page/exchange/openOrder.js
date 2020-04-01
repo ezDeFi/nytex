@@ -1,73 +1,74 @@
-import React                   from 'react';
-import {Row, Col, Tabs, Table} from 'antd'
-import BtnOval                 from '../../Component/ButtonOval'
+import React                                from 'react';
+import {Row, Col, Tabs, Table}              from 'antd'
+import BtnOval                              from '../../Component/ButtonOval'
+import {useSelector, useDispatch, useStore} from "react-redux";
+import store                                from "../../../store";
 
-const OpenOrder = () => {
+const OpenOrder = (props) => {
+  let store               = useStore()
+  let listBuys            = useSelector(state => state.seigniorage.bids);
+  let listSell            = useSelector(state => state.seigniorage.asks);
+  const dispatch          = useDispatch()
+  const seigniorageAction = store.getRedux('seigniorage').actions;
+
+  let walletAddress = store.getState().user.wallet
+
+  let openOrderData = [];
+
   const {TabPane} = Tabs;
 
   const hideOtherPairs = <label className='hide-on-mobile'>
     <input type="checkbox"/>
-    Hid Other Pairs
+    Hide Other Pairs
   </label>;
 
+  for (let i in listBuys) {
+    if (listBuys[i].maker.toLocaleLowerCase() === walletAddress.toLocaleLowerCase())
+      openOrderData.push({
+        key        : 'buy-' + i,
+        id         : listBuys[i].id,
+        time       : '12:09 15:45:12',
+        side       : 'buy',
+        price      : listBuys[i].price,
+        amount     : parseFloat(listBuys[i].amount),
+        Total      : parseFloat(listBuys[i].volume),
+        priceToSort: listBuys[i].priceToSort,
+        trigger    : '-',
+        action     : 'cancel',
+      })
+  }
 
-  const openOrderData = [
-    {
-      key    : 1,
-      time   : '12:09 15:45:12',
-      side   : 'buy',
-      price  : '110.00',
-      amount : '1.00000',
-      filled : '0.00%',
-      Total  : '110.00USDT',
-      trigger: '-',
-      action : 'cancel',
-    },
-    {
-      key    : 2,
-      time   : '12:09 15:45:12',
-      side   : 'buy',
-      price  : '110.00',
-      amount : '1.00000',
-      filled : '0.00%',
-      Total  : '110.00USDT',
-      trigger: '-',
-      action : 'cancel',
-    },
-    {
-      key    : 3,
-      time   : '12:09 15:45:12',
-      side   : 'buy',
-      price  : '110.00',
-      amount : '1.00000',
-      filled : '0.00%',
-      Total  : '110.00USDT',
-      trigger: '-',
-      action : 'cancel',
-    },
-    {
-      key    : 4,
-      time   : '12:09 15:45:12',
-      side   : 'buy',
-      price  : '110.00',
-      amount : '1.00000',
-      filled : '0.00%',
-      Total  : '110.00USDT',
-      trigger: '-',
-      action : 'cancel',
-    },
-    {
-      key    : 5,
-      time   : '12:09 15:45:12',
-      side   : 'buy',
-      price  : '110.00',
-      amount : '1.00000',
-      filled : '0.00%',
-      Total  : '110.00USDT',
-      trigger: '-',
-      action : 'cancel',
-    },
-  ]
+  for (let i in listSell) {
+    // if(listSell[i].maker === userWallet)
+    if (listSell[i].maker.toLocaleLowerCase() === walletAddress.toLocaleLowerCase())
+      openOrderData.push({
+        key        : 'sell-' + i,
+        id         : listSell[i].id,
+        time       : '12:09 15:45:12',
+        side       : 'sell',
+        price      : listSell[i].price,
+        amount     : parseFloat(listSell[i].amount),
+        Total      : parseFloat(listSell[i].volume),
+        priceToSort: listSell[i].priceToSort,
+        trigger    : '-',
+        action     : 'cancel',
+      })
+  }
+
+  const cancelTrade = async (tradeRecode) => {
+    let type = tradeRecode.key.split('-')[0]
+    let index   = tradeRecode.key.split('-')[1]
+    if (type === 'buy') {
+      // let a = listBuys;
+      // delete a[index]
+      await props.cancelTrade(true, tradeRecode.id)
+      // await dispatch(seigniorageAction.bids_update(a))
+    } else {
+      // let a = listSell;
+      // delete a[index];
+      // dispatch(seigniorageAction.asks_update(a));
+    }
+  }
 
   const openOrderColumns = [
     {
@@ -117,7 +118,10 @@ const OpenOrder = () => {
       title    : 'Cancel All',
       dataIndex: 'action',
       key      : 'action',
-      className: 'hide-on-mobile'
+      className: 'hide-on-mobile',
+      render   : (value, object) => {
+        return (<BtnOval className='btn-large' onClick={() => cancelTrade(object)}>Cancel</BtnOval>)
+      }
     },
     {
       dataIndex: 'amount_mobile',

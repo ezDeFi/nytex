@@ -3,7 +3,7 @@ import './style.scss'
 
 const Index = (props) => {
   return (
-    <span className={props.className + ' btn-oval no-select'}>
+    <span className={props.className + ' btn-oval no-select'} onClick={props.onClick}>
       {props.children}
     </span>
   )

@@ -34,17 +34,18 @@ const App = () => { // eslint-disable-line
   )
 }
 
-const render = async () => {
-  await loginEzdefi()
 
-  ReactDOM.render(
-    <Provider store={store}>
-      <Router middleware={middleware} history={store.history}>
-        <App />
-      </Router>
-    </Provider>,
-    document.getElementById('ss-root')
-  )
+const render = () => {
+  loginEzdefi(function () {
+    ReactDOM.render(
+      <Provider store={store}>
+        <Router middleware={middleware} history={store.history}>
+          <App />
+        </Router>
+      </Provider>,
+      document.getElementById('ss-root')
+    )
+  })
 }
 
 if (sessionStorage.getItem('api-token')) { // eslint-disable-line

@@ -1,13 +1,62 @@
-import React from 'react';
-import {Row, Col, Table} from 'antd'
+import React, {useEffect}         from 'react';
+import {Row, Col, Table}          from 'antd'
 import './style/index.scss'
-import OrderBook from './orderBook'
-import BuySale from './buySale'
-import OpenOrder from './openOrder'
-import BasePage from '../../page/StandardPage'
-
+import OrderBook                  from './orderBook'
+import BuySell                    from './buySell'
+import OpenOrder                  from './openOrder'
+import BasePage                   from '../../page/StandardPage'
+import SeigniorageService         from "../../../service/contracts/SeigniorageService";
+import UserService                from "../../../service/UserService";
+import VolatileTokenService       from "../../../service/contracts/VolatileTokenService";
+import StableTokenService         from "../../../service/contracts/StableTokenService";
+import {useSelector, useDispatch} from "react-redux";
 
 const Exchange = () => {
+  const seigniorageService   = new SeigniorageService()
+  const userService          = new UserService()
+  const volatileTokenService = new VolatileTokenService()
+  const stableTokenService   = new StableTokenService()
+
+  useEffect(() => {
+    seigniorageService.loadOrdersRealTime(true)
+    seigniorageService.loadOrdersRealTime(false)
+    // seigniorageService.loadOrders(false)
+    userService.getBalance()
+    volatileTokenService.loadMyVolatileTokenBalance()
+    stableTokenService.loadMyStableTokenBalance()
+  }, [])
+
+  let volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)
+  let stableTokenBalance   = useSelector(state => state.user.stableTokenBalance)
+  let balance              = useSelector(state => state.user.balance)
+
+  const sellVolatileToken = (haveWei, wantWei) => {
+    const have = BigInt(haveWei)
+    const mnty = BigInt(volatileTokenBalance)
+
+    let value = undefined
+    if (have > mnty) {
+      value = (have - mnty)
+      if (value > BigInt(balance)) {
+        throw "insufficient NTY"
+      }
+      value = value.toString()
+    }
+
+    volatileTokenService.trade(haveWei, wantWei, value)
+  }
+
+  const buyVolatileToken = (haveAmount, wantAmount) => {
+    if (BigInt(haveAmount) > BigInt(stableTokenBalance)) {
+      throw "insufficient NEWSD"
+    }
+    return stableTokenService.trade(haveAmount, wantAmount)
+  }
+
+  const cancelTrade = (orderType, id) => {
+    seigniorageService.cancel(orderType, id)
+  }
+
   return (
     <BasePage>
       <input
@@ -40,10 +89,10 @@ const Exchange = () => {
         <Col lg={{span: 14, order: 4}}
              xs={{span: 24, order: 4}}
              className="open-order">
-          <OpenOrder/>
+          <OpenOrder cancelTrade={cancelTrade}/>
         </Col>
-        <Col lg={{span:10, order: 1}}
-             xs={{span:12, order: 2}}
+        <Col lg={{span: 10, order: 1}}
+             xs={{span: 12, order: 2}}
              className="order-book"
         >
           <OrderBook/>
@@ -53,7 +102,7 @@ const Exchange = () => {
           xs={{span: 12, order: 1}}
           className="trade-box"
         >
-          <BuySale/>
+          <BuySell sellVolatileToken={sellVolatileToken} buyVolatileToken={buyVolatileToken}/>
         </Col>
       </Row>
     </BasePage>

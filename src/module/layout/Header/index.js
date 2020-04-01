@@ -1,21 +1,37 @@
-import React, {useState}                      from 'react'
-import {Menu, Dropdown, Row, Col} from 'antd'
-import {Link} from "react-router-dom";
-import { useLocation } from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import {Menu, Dropdown, Row, Col}   from 'antd'
+import {Link}                       from "react-router-dom";
+import {useLocation}                from 'react-router-dom'
+import axios                        from 'axios'
+import {cutFloat} from '@/util/help.js'
 
 import "antd/dist/antd.css";
 import './style.scss'
 
 const Header = () => {
-  let currentLanguage = localStorage.getItem('language')
+  let currentLanguage           = localStorage.getItem('language')
   const [language, setLanguage] = useState(currentLanguage ? currentLanguage : 'vietnamese')
-  let pathname = useLocation().pathname;
-  const {SubMenu} = Menu
+  const [ntyQuote, setNtyQuote] = useState({})
+  let pathname                  = useLocation().pathname;
+  const {SubMenu}               = Menu
 
   const changeLanguage = (language) => {
     localStorage.setItem('language', language);
     setLanguage(language)
   }
+
+  useEffect(() => {
+    axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest',
+      {
+        params : {id: 2714},
+        headers: {'X-CMC_PRO_API_KEY': '64d67fb5-c596-4af9-8a2b-bb60c0dba70d', 'Accept': 'application/json'}
+      })
+      .then(function (response) {
+        console.log(response.data.data[2714].quote.USD)
+        setNtyQuote(response.data.data[2714].quote.USD)
+      });
+  }, [])
+
 
   const languageItem = [
     <Menu.Item key="0" onClick={() => changeLanguage('vietnamese')}>
@@ -50,7 +66,7 @@ const Header = () => {
 
   const MenuOnMobile = <Menu>
     <Menu.Item key="10" onClick={() => changeLanguage('vietnamese')}>
-      <Link to="/exchange" className={"nav__dropdown-item " + (pathname === '/exchange' ? 'nav__item--choosing' : '' )}>
+      <Link to="/exchange" className={"nav__dropdown-item " + (pathname === '/exchange' ? 'nav__item--choosing' : '')}>
         <svg className="nav__icon">
           <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
         </svg>
@@ -58,7 +74,8 @@ const Header = () => {
       </Link>
     </Menu.Item>
     <Menu.Item key="11" onClick={() => changeLanguage('korean')}>
-      <Link to="/preemptive" className={"nav__dropdown-item " + (pathname === '/preemptive' ? 'nav__item--choosing' : '' )}>
+      <Link to="/preemptive"
+            className={"nav__dropdown-item " + (pathname === '/preemptive' ? 'nav__item--choosing' : '')}>
         <svg className="nav__icon">
           <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
         </svg>
@@ -81,11 +98,11 @@ const Header = () => {
       </Col>
       <Col lg={{span: 12, order: 2}}
            xxl={{span: 10, order: 2}}
-           xs={{span: 24, order: 3}} >
+           xs={{span: 24, order: 3}}>
         <Row className="header-info">
           <Col lg={4} xs={6}>
             <p className="hide-on-mobile">last price</p>
-            <p>0.0234271</p>
+            <p>{ntyQuote.price}</p>
           </Col>
           <Col lg={4} xs={18}>
             <p className="balance text-green">$175.12354856</p>
@@ -93,33 +110,33 @@ const Header = () => {
           <Col lg={4} xs={12}>
             <p className="hide-on-mobile text-white">24h Change</p>
             <Row>
-              <Col xs={12}>-0.01</Col>
+              <Col xs={12}>{cutFloat(ntyQuote.percent_change_24h, 4)}</Col>
               <Col xs={12}>-1.69</Col>
             </Row>
           </Col>
-          <Col lg={4} xs={{span:12, order:4}}>
+          <Col lg={4} xs={{span: 12, order: 4}}>
             <p className="hide-on-mobile">24h high</p>
             <Row>
-              <Col xs={{span:6, offset:6}} className="hide-on-desktop">high</Col>
-              <Col >0.024844</Col>
+              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">high</Col>
+              <Col>0.024844</Col>
             </Row>
           </Col>
-          <Col lg={4} xs={{span:12, order:2}}>
+          <Col lg={4} xs={{span: 12, order: 2}}>
             <p className="hide-on-mobile">24h Low</p>
             <Row>
-              <Col xs={{span: 6, offset:6}} className="hide-on-desktop">Low</Col>
+              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">Low</Col>
               <Col span={12}>0.0226174</Col>
             </Row>
           </Col>
-          <Col lg={4} xs={{span:12, order:3}}>
+          <Col lg={4} xs={{span: 12, order: 3}}>
             <p className="hide-on-mobile">24h volume</p>
-            <p>Vol 468.428</p>
+            <p>Vol {cutFloat(ntyQuote.volume_24h, 2)}</p>
           </Col>
         </Row>
       </Col>
-      <Col lg={{span:0}}
-        xs={{span:12}}
-        className="nav__dropdown"
+      <Col lg={{span: 0}}
+           xs={{span: 12}}
+           className="nav__dropdown"
       >
         <span>
           <Dropdown overlay={MenuOnMobile} trigger={['click']}>
@@ -134,7 +151,7 @@ const Header = () => {
                 :
                 <React.Fragment>
                   <svg className="nav__icon nav__dropdown-current-icon">
-                  <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
+                    <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
                   </svg>
                   <span className="nav__dropdown-current-text">Preemptive</span>
                 </React.Fragment>
@@ -152,7 +169,8 @@ const Header = () => {
            className="nav"
       >
         <div className="nav-box">
-          <span className={"nav__exchange nav__item nav__item-exchange " + (pathname === '/exchange' ? 'nav__item--choosing' : '' )}>
+          <span
+            className={"nav__exchange nav__item nav__item-exchange " + (pathname === '/exchange' ? 'nav__item--choosing' : '')}>
             <Link to="/exchange" className="vertical-center-item">
               <svg className="nav__icon">
                 <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
@@ -160,7 +178,8 @@ const Header = () => {
               Exchange
             </Link>
           </span>
-          <span className={"nav__preemptive nav__item nav__item-preemptive " + (pathname === '/preemptive' ? 'nav__item--choosing' : '' )}>
+          <span
+            className={"nav__preemptive nav__item nav__item-preemptive " + (pathname === '/preemptive' ? 'nav__item--choosing' : '')}>
             <Link to="/preemptive" className="vertical-center-item">
               <svg className="nav__icon">
                 <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
@@ -170,7 +189,8 @@ const Header = () => {
           </span>
           <span className="nav__menu nav__item nav__item-language">
             <Dropdown overlay={LanguageSetting} trigger={['click']}>
-              <a className='ant-dropdown-link vertical-center-item' style={{color: '#6e7793'}} onClick={e => e.preventDefault()}>
+              <a className='ant-dropdown-link vertical-center-item' style={{color: '#6e7793'}}
+                 onClick={e => e.preventDefault()}>
                 <svg className="nav__icon">
                   <use xlinkHref="../../../assets/images/sprite.svg#icon-language"></use>
                 </svg>

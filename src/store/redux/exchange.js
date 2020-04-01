@@ -1,13 +1,14 @@
 import BaseRedux from '@/model/BaseRedux'
 
 class PreemptiveRedux extends BaseRedux {
-  defineTypes () {
-    return ['preemptive']
+  defineTypes() {
+    return ['exchange']
   }
 
-  defineDefaultState () {
+  defineDefaultState() {
     return {
-      proposal: ''
+      priceToSell: 0,
+      priceToBuy : 0
     }
   }
 }

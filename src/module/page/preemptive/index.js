@@ -1,16 +1,43 @@
-import React                   from 'react';
-import {Row, Col, Table, Tabs} from 'antd'
-import BasePage                from '../../page/StandardPage'
-import ListProposal            from './listProposal'
-import UserWallet              from './userWallet'
-import VoteAbsorption          from './voteAbsorption'
-import CreateProposal          from './createProposal'
+import React, {useEffect, useState} from 'react';
+import {Row, Col, Table, Tabs}      from 'antd'
+import BasePage           from '../../page/StandardPage'
+import ListProposal       from './listProposal'
+import DetailProposal     from './detailProposal'
+import CreateProposal     from './createProposal'
 import './style/index.scss'
-import {useSelector}           from "react-redux";
+import SeigniorageService from "../../../service/contracts/SeigniorageService";
+import UserService        from "../../../service/UserService";
+import {useSelector}      from "react-redux";
+import UserWallet         from './userWallet'
+import StableTokenService from "../../../service/contracts/StableTokenService";
+import VolatileTokenService       from "../../../service/contracts/VolatileTokenService";
 
 const Preemptive = () => {
-  const {TabPane} = Tabs;
-  const detailVote = useSelector(state => state.preemptive.detail_vote)
+  const {TabPane}          = Tabs;
+  const proposal           = useSelector(state => state.preemptive.proposal)
+  const seigniorageService = new SeigniorageService()
+  const userService        = new UserService()
+  const stableTokenService   = new StableTokenService()
+  const volatileTokenService   = new VolatileTokenService()
+
+  useEffect(() => {
+    seigniorageService.loadProposals()
+    userService.getBalance()
+    stableTokenService.loadMyStableTokenBalance()
+    volatileTokenService.loadMyVolatileTokenBalance()
+  }, []);
+
+  const vote = (maker, voteUp) => {
+    seigniorageService.vote(maker, voteUp)
+  }
+
+  const approve = (amount, isVolatile) => {
+    if (isVolatile) {
+      return volatileTokenService.approve(amount)
+    } else {
+      return stableTokenService.approve(amount)
+    }
+  }
 
   return (
     <BasePage>
@@ -25,19 +52,19 @@ const Preemptive = () => {
                 <ListProposal/>
               </Col>
               <Col lg={12}>
-                <UserWallet/>
+                <UserWallet approve={approve}/>
               </Col>
             </Row>
           </div>
           {
-            detailVote ?
-            <div>
-              <VoteAbsorption/>
-            </div>
+            proposal ?
+              <div>
+                <DetailProposal vote={vote}/>
+              </div>
               :
-            <div>
-              <CreateProposal/>
-            </div>
+              <div>
+                <CreateProposal/>
+              </div>
           }
         </Col>
         <Col lg={0} xs={24}>

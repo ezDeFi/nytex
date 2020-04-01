@@ -18,11 +18,11 @@
     color: #FFFFFF
   }
 
-  &__buy-and-sale {
+  &__buy-and-sell {
     padding-right: 10px;
   }
 
-  &__sale, &__buy {
+  &__sell, &__buy {
     height: 45%;
   }
 
@@ -47,7 +47,7 @@
       padding: 10px 5px;
     }
 
-    &__buy-and-sale {
+    &__buy-and-sell {
       padding-right: 0;
     }
 

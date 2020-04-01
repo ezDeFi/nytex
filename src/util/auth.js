@@ -1,5 +1,4 @@
 import store from '@/store'
-import { useSelector } from 'react-redux'
 
 import { USER_ROLE } from '@/constant'
 import { api_request } from './'
@@ -13,26 +12,28 @@ const userService = new UserService()
 let isRequest = false
 let isLoggedIn = false
 
-
-
-async function setupWeb3 () {
+async function setupWeb3 (callback) {
   // await window.ethereum.enable()
-  window.web3.eth.getAccounts(async (err, accounts) => {
+  await window.web3.eth.getAccounts(async (err, accounts) => {
     if (err) return
     if (accounts.length > 0) {
       // detect account switch
       const wallet = store.getState().user.wallet;
       isLoggedIn = isLoggedIn && wallet === accounts[0];
-
       if (!isLoggedIn) {
         const web3 = new Web3(window.ethereum)
 
-        const contracts = {
-          ReadWrite: new web3.eth.Contract(CONTRACTS.ReadWrite.abi, CONTRACTS.ReadWrite.address)
-        }
-
-        store.dispatch(userRedux.actions.loginMetamask_update(true))
-        store.dispatch(contractsRedux.actions.readWrite_update(contracts.ReadWrite))
+        // const contracts = {
+        //   // ReadWrite: new web3.eth.Contract(CONTRACTS.ReadWrite.abi, CONTRACTS.ReadWrite.address),
+        //   VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
+        //   StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
+        //   Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
+        // }
+        //
+        // store.dispatch(userRedux.actions.loginMetamask_update(true))
+        // store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
+        // store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
+        // store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
         store.dispatch(userRedux.actions.web3_update(web3))
 
         userService.metaMaskLogin(accounts[0])
@@ -42,8 +43,8 @@ async function setupWeb3 () {
         if (userService.path.location.pathname === '/login') {
           // userService.path.goBack()
           userService.path.push('/txcode')
-
         }
+        callback()
       }
     } else {
       if (!isRequest) {
@@ -57,12 +58,12 @@ async function setupWeb3 () {
   })
 }
 
-export const loginEzdefi = () => {
+export const loginEzdefi = (callback) => {
   if (window.ethereum) {
-    setupWeb3()
+    setupWeb3(callback)
     if (window.web3.currentProvider.publicConfigStore) {
       window.web3.currentProvider.publicConfigStore.on('update', async () => {
-        setupWeb3()
+        setupWeb3(callback)
       })
     }
   } else {
