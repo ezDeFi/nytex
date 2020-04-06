@@ -9,6 +9,7 @@ import seigniorage   from './redux/seigniorage'
 import volatileToken from './redux/volatileToken'
 import stableToken   from './redux/stableToken'
 import exchange      from './redux/exchange'
+import common        from './redux/common'
 
 const default_state = { // eslint-disable-line
   init: false
@@ -32,5 +33,6 @@ export default combineReducers({
   seigniorage  : seigniorage.getReducer(),
   stableToken  : stableToken.getReducer(),
   volatileToken: volatileToken.getReducer(),
-  exchange     : exchange.getReducer()
+  exchange     : exchange.getReducer(),
+  common       : common.getReducer()
 })

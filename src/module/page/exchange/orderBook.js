@@ -1,10 +1,11 @@
 import React, {useState, useEffect}         from 'react';
 import {Table, Row, Col}                    from 'antd'
 import {useSelector, useDispatch, useStore} from "react-redux";
-import SeigniorageService                   from "../../../service/contracts/SeigniorageService";
 import store                                from "../../../store";
+import {cutFloat}                           from '@/util/help.js'
 
 const OrderBook = () => {
+  let ntyQuote         = useSelector(state => state.common.ntyQuote);
   let listBuys         = useSelector(state => state.seigniorage.bids);
   let listSell         = useSelector(state => state.seigniorage.asks);
   let listBuySource    = []
@@ -13,22 +14,13 @@ const OrderBook = () => {
   const dispatch       = useDispatch()
 
   for (let i in listBuys) {
-    // let index = listBuySource.findIndex((e) => {
-    //   return e.price === listBuys[i].price
-    // })
-    // if(index >= 0) {
-    //   listBuySource[index].amount += parseFloat(listBuys[i].amount)
-    //   listBuySource[index].volume += parseFloat(listBuys[i].volume)
-    //   continue;
-    // } else {
-      listBuySource.push({
-        key        : i,
-        price      : listBuys[i].price,
-        amount     : parseFloat(listBuys[i].amount),
-        volume     : parseFloat(listBuys[i].volume),
-        priceToSort: listBuys[i].priceToSort
-      })
-    // }
+    listBuySource.push({
+      key        : i,
+      price      : listBuys[i].price,
+      amount     : parseFloat(listBuys[i].amount),
+      volume     : parseFloat(listBuys[i].volume),
+      priceToSort: listBuys[i].priceToSort
+    })
   }
   listBuySource.sort(function (a, b) {
     return b.priceToSort - a.priceToSort;
@@ -43,13 +35,13 @@ const OrderBook = () => {
     //   listSellSource[index].volume += parseFloat(listSell[i].volume)
     //   continue;
     // } else {
-      listSellSource.push({
-        key        : i,
-        price      : listSell[i].price,
-        amount     : parseFloat(listSell[i].amount),
-        volume     : parseFloat(listSell[i].volume),
-        priceToSort: listSell[i].priceToSort
-      })
+    listSellSource.push({
+      key        : i,
+      price      : listSell[i].price,
+      amount     : parseFloat(listSell[i].amount),
+      volume     : parseFloat(listSell[i].volume),
+      priceToSort: listSell[i].priceToSort
+    })
     // }
   }
   listSellSource.sort(function (a, b) {
@@ -174,9 +166,9 @@ const OrderBook = () => {
           />
         </div>
         <Row className="order-book__current-price">
-          <Col span={6} className="left-align">0.02342</Col>
-          <Col span={8} className="right-align">$1775.600602</Col>
-          <Col span={10} className="right-align">-1.69%</Col>
+          <Col span={6} className="left-align">${cutFloat(ntyQuote.price * Math.pow(10, 6), 2)}</Col>
+          <Col span={8} className="right-align">${cutFloat(ntyQuote.volume_24h, 2)}</Col>
+          <Col span={10} className="right-align">{cutFloat(ntyQuote.percent_change_24h, 2)}%</Col>
         </Row>
         <div className="order-book__buy-table">
           <Table dataSource={listBuySource} columns={buyColumns} pagination={false} onRow={onRowTable}/>

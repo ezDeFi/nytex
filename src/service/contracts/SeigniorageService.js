@@ -2,6 +2,7 @@ import BaseService                                                        from '
 import _                                                                  from 'lodash'
 import {thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift} from '@/util/help'
 import BigInt                                                             from 'big-integer';
+import {CONTRACTS}                                                        from '@/constant'
 
 export default class extends BaseService {
   async cancel(orderType, id) {
@@ -158,17 +159,17 @@ export default class extends BaseService {
     })
   }
 
-  async loadOrders(orderType) {
-
+  async loadOrders(orderType, updateOnce = false) {
     const seigniorageRedux = this.store.getRedux('seigniorage')
     const byteFFFF         = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
     const store            = this.store.getState()
-    console.log(store.user.wallet)
     if (!store.contracts.seigniorage) return
     const methods   = store.contracts.seigniorage.methods
     //let _id = byteZero
     let id          = await methods.top(orderType).call();
     const MAX_ITEMS = 10;
+    let bids        = {}
+    let asks        = {}
     for (let i = 0; i < MAX_ITEMS; ++i) {
       if (id === byteFFFF) {
         continue;
@@ -185,22 +186,58 @@ export default class extends BaseService {
         'volume'     : weiToNUSD(nusd),
         'priceToSort': weiToPrice(mnty, nusd)
       }
-      if (orderType) {
-        this.dispatch(seigniorageRedux.actions.bids_update({[i]: order}));
+      if (!updateOnce) {
+        if (orderType) {
+          this.dispatch(seigniorageRedux.actions.bids_update({[i]: order}));
+        } else {
+          this.dispatch(seigniorageRedux.actions.asks_update({[MAX_ITEMS - 1 - i]: order}));
+        }
       } else {
-        this.dispatch(seigniorageRedux.actions.asks_update({[MAX_ITEMS - 1 - i]: order}));
+        if (orderType) {
+          bids[i] = order
+        } else {
+          asks[MAX_ITEMS - 1 - i] = order
+        }
       }
       id = res[4];
     }
+
+    if (updateOnce && orderType) {
+      this.dispatch(seigniorageRedux.actions.bids_reset());
+      this.dispatch(seigniorageRedux.actions.bids_update(bids));
+    } else if (updateOnce && !orderType) {
+      this.dispatch(seigniorageRedux.actions.asks_reset());
+      this.dispatch(seigniorageRedux.actions.asks_update(asks));
+    }
   }
 
-  loadOrdersRealTime(orderType) {
-    const that  = this;
-    const store = this.store.getState()
-    const web3  = store.user.web3
+  loadOrdersRealTime() {
+    const that     = this;
+    const store    = this.store.getState()
+    const web3     = store.user.web3
+    const byte0000 = '0x0000000000000000000000000000000000000000'
 
-    web3.eth.subscribe('newBlockHeaders', async function () {
-      that.loadOrders(orderType)
+    web3.eth.subscribe('newBlockHeaders', async function (error, data) {
+      web3.eth.getBlock(data.hash, true).then(function (e) {
+        let transactions = e.transactions
+        if (transactions.length > 1) {
+          console.log(e)
+          for (let i in transactions) {
+            if (transactions[i].to === CONTRACTS.StableToken.address) {
+              that.loadOrders(true, true)
+            }
+            if (transactions[i].to === CONTRACTS.VolatileToken.address) {
+              that.loadOrders(false, true)
+            }
+            if (transactions[i].to === CONTRACTS.Seigniorage.address &&
+              transactions[i].from !== byte0000) {
+              console.log("load cancel")
+              that.loadOrders(false, true)
+              that.loadOrders(true, true)
+            }
+          }
+        }
+      })
     });
   }
 

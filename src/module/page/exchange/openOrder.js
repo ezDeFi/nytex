@@ -57,17 +57,7 @@ const OpenOrder = (props) => {
 
   const cancelTrade = async (tradeRecode) => {
     let type = tradeRecode.key.split('-')[0]
-    let index   = tradeRecode.key.split('-')[1]
-    if (type === 'buy') {
-      // let a = listBuys;
-      // delete a[index]
-      await props.cancelTrade(true, tradeRecode.id)
-      // await dispatch(seigniorageAction.bids_update(a))
-    } else {
-      // let a = listSell;
-      // delete a[index];
-      // dispatch(seigniorageAction.asks_update(a));
-    }
+    await props.cancelTrade(type === 'buy', tradeRecode.id)
   }
 
   const openOrderColumns = [

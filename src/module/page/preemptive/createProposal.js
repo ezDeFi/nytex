@@ -1,8 +1,12 @@
 import React   from 'react';
 import {Row, Col, Input} from 'antd'
 import ButOval from '../../Component/ButtonOval'
+import {useSelector, useDispatch}   from "react-redux";
 
 const CreateProposal = () => {
+  const wallet = useSelector(state => state.user.wallet)
+
+
   return (
     <div className="create-proposal-box ">
       <div className="center hide-on-mobile">
@@ -11,7 +15,7 @@ const CreateProposal = () => {
       <div>
         <Row className="margin-bt-lg hide-on-mobile">
           <Col lg={4}>Marker:</Col>
-          <Col lg={9}>0x371Fd45453fCe637E6035779eE0a9eeE53665Ae9</Col>
+          <Col lg={9}>{wallet}</Col>
         </Row>
         <Row className="margin-bt-sm">
           <Col lg={4} xs={10}>Stake (MNTY):</Col>

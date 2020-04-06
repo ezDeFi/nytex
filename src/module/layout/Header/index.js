@@ -2,16 +2,19 @@ import React, {useState, useEffect} from 'react'
 import {Menu, Dropdown, Row, Col}   from 'antd'
 import {Link}                       from "react-router-dom";
 import {useLocation}                from 'react-router-dom'
-import axios                        from 'axios'
-import {cutFloat} from '@/util/help.js'
-
+import {cutFloat}                   from '@/util/help.js'
+import {useSelector}                from "react-redux";
 import "antd/dist/antd.css";
 import './style.scss'
+import {weiToNTY}                   from '@/util/help.js'
+import ApiService                   from "../../../service/ApiService";
 
 const Header = () => {
   let currentLanguage           = localStorage.getItem('language')
+  const apiService              = new ApiService()
   const [language, setLanguage] = useState(currentLanguage ? currentLanguage : 'vietnamese')
-  const [ntyQuote, setNtyQuote] = useState({})
+  const ntyQuote                = useSelector(state => state.common.ntyQuote)
+  const balance                 = useSelector(state => state.user.balance)
   let pathname                  = useLocation().pathname;
   const {SubMenu}               = Menu
 
@@ -21,15 +24,7 @@ const Header = () => {
   }
 
   useEffect(() => {
-    axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest',
-      {
-        params : {id: 2714},
-        headers: {'X-CMC_PRO_API_KEY': '64d67fb5-c596-4af9-8a2b-bb60c0dba70d', 'Accept': 'application/json'}
-      })
-      .then(function (response) {
-        console.log(response.data.data[2714].quote.USD)
-        setNtyQuote(response.data.data[2714].quote.USD)
-      });
+    apiService.loadNtyQuote()
   }, [])
 
 
@@ -102,10 +97,10 @@ const Header = () => {
         <Row className="header-info">
           <Col lg={4} xs={6}>
             <p className="hide-on-mobile">last price</p>
-            <p>{ntyQuote.price}</p>
+            <p>${cutFloat(ntyQuote.price * Math.pow(10, 6), 5)}</p>
           </Col>
           <Col lg={4} xs={18}>
-            <p className="balance text-green">$175.12354856</p>
+            <p className="balance text-green">${cutFloat(weiToNTY(balance * ntyQuote.price), 7)}</p>
           </Col>
           <Col lg={4} xs={12}>
             <p className="hide-on-mobile text-white">24h Change</p>

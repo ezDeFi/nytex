@@ -18,8 +18,9 @@ const Exchange = () => {
   const stableTokenService   = new StableTokenService()
 
   useEffect(() => {
-    seigniorageService.loadOrdersRealTime(true)
-    seigniorageService.loadOrdersRealTime(false)
+    seigniorageService.loadOrders(true, false)
+    seigniorageService.loadOrders(false, false)
+    seigniorageService.loadOrdersRealTime()
     // seigniorageService.loadOrders(false)
     userService.getBalance()
     volatileTokenService.loadMyVolatileTokenBalance()
