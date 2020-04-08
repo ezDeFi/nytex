@@ -42,7 +42,7 @@ async function setupWeb3 (callback) {
         // simple trick: not work for entering .../login directly to the browser
         if (userService.path.location.pathname === '/login') {
           // userService.path.goBack()
-          userService.path.push('/txcode')
+          userService.path.push('/exchange')
         }
         callback()
       }
@@ -67,6 +67,8 @@ export const loginEzdefi = (callback) => {
       })
     }
   } else {
+    userService.path.push('/login')
+    callback()
     store.dispatch(userRedux.actions.loginMetamask_update(false))
   }
 }

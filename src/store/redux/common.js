@@ -7,7 +7,8 @@ class CommunityRedux extends BaseRedux {
 
   defineDefaultState () {
     return {
-      ntyQuote: {}
+      ntyQuote      : {},
+      historicalData: []
     }
   }
 }

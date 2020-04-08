@@ -5,6 +5,7 @@ import OrderBook                  from './orderBook'
 import BuySell                    from './buySell'
 import OpenOrder                  from './openOrder'
 import BasePage                   from '../../page/StandardPage'
+import Chart                      from './chart'
 import SeigniorageService         from "../../../service/contracts/SeigniorageService";
 import UserService                from "../../../service/UserService";
 import VolatileTokenService       from "../../../service/contracts/VolatileTokenService";
@@ -83,8 +84,8 @@ const Exchange = () => {
           lg={{span: 14, order: 0}}
           xs={24}
           className="chart">
-          <div className="chart__content">
-            chart
+          <div className="chart__content" id="chart-content">
+            <Chart/>
           </div>
         </Col>
         <Col lg={{span: 14, order: 4}}

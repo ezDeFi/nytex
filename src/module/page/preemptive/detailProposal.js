@@ -12,7 +12,6 @@ const Detail = (props) => {
 
   const rank = proposal.totalVote && globalParams.rank > 0 &&
     <span>{
-      // rank = (totalVote * stake) / (2/3*globalRank)
       (BigInt(proposal.totalVote) * BigInt(proposal.stake) * BigInt(150) / BigInt(globalParams.rank)).toString()
     }%</span>
 

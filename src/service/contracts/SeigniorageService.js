@@ -42,6 +42,7 @@ export default class extends BaseService {
   async loadProposals() {
     const store            = this.store.getState()
     let methods            = store.contracts.seigniorage.methods
+    let proposal = store.preemptive.proposal
     const seigniorageRedux = this.store.getRedux('seigniorage')
 
     methods.getGlobalParams().call()
@@ -221,24 +222,48 @@ export default class extends BaseService {
       web3.eth.getBlock(data.hash, true).then(function (e) {
         let transactions = e.transactions
         if (transactions.length > 1) {
-          console.log(e)
           for (let i in transactions) {
-            if (transactions[i].to === CONTRACTS.StableToken.address) {
+            console.log(transactions)
+            if (transactions[i].to === CONTRACTS.StableToken.address ||
+              transactions[i].to === CONTRACTS.VolatileToken.address ||
+              (transactions[i].to === CONTRACTS.Seigniorage.address &&
+              transactions[i].from !== byte0000)
+            ) {
               that.loadOrders(true, true)
-            }
-            if (transactions[i].to === CONTRACTS.VolatileToken.address) {
               that.loadOrders(false, true)
-            }
-            if (transactions[i].to === CONTRACTS.Seigniorage.address &&
-              transactions[i].from !== byte0000) {
-              console.log("load cancel")
-              that.loadOrders(false, true)
-              that.loadOrders(true, true)
             }
           }
         }
       })
     });
+  }
+
+  loadProposalRealTime(loadVolatileToken, loadStableToken) {
+    const that  = this
+    const store = this.store.getState()
+    const web3  = store.user.web3
+    const byte0000 = '0x0000000000000000000000000000000000000000'
+
+    web3.eth.subscribe('newBlockHeaders', async function (error, data) {
+      web3.eth.getBlock(data.hash, true).then(function (e) {
+        let transactions = e.transactions
+        if (transactions.length > 1) {
+          for (let i in transactions) {
+            if (transactions[i].to === CONTRACTS.Seigniorage.address &&
+              transactions[i].from !== byte0000) {
+              that.loadProposals()
+            }
+            if (transactions[i].from.toLowerCase() === store.user.wallet.toString().toLowerCase() && transactions[i].to === CONTRACTS.VolatileToken.address) {
+              loadVolatileToken()
+            }
+            if (transactions[i].from.toLowerCase() === store.user.wallet.toString().toLowerCase() && transactions[i].to === CONTRACTS.StableToken.address) {
+              loadStableToken()
+            }
+          }
+        }
+      })
+    });
+
   }
 
   async absorb(amount, sideAddress) {

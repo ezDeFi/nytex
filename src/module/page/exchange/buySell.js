@@ -31,7 +31,7 @@ const Index = (props) => {
     try {
       let wantAmount, wantWei, haveWei
       try {
-        wantAmount = priceToBuy.toString().trim()
+        wantAmount = amountBuy.toString().trim()
         wantWei = mntyToWei(wantAmount);
         BigInt(wantWei)
       } catch (e) {
@@ -39,7 +39,7 @@ const Index = (props) => {
         throw 'invalid amount'
       }
       try {
-        const haveAmount = mul(wantAmount, amountBuy);
+        const haveAmount = mul(wantAmount, priceToBuy);
         haveWei = nusdToWei(haveAmount);
       } catch (e) {
         console.error(e)
@@ -84,6 +84,7 @@ const Index = (props) => {
         const wantAmount = mul(haveAmount, priceToSell);
         wantWei          = nusdToWei(wantAmount);
       } catch (e) {
+        console.log(e)
         throw 'invalid price'
       }
       if (wantWei === '0') {
@@ -113,8 +114,6 @@ const Index = (props) => {
 
   return (
     <div className="trade-box__content">
-      <p>{stableTokenBalance}</p>
-      <p>{weiToMNTY(balance)}</p>
       <Row key={'buy-sell' + 0}>
         <Col lg={12} xs={24} className='trade__sub-box trade__buy-box'>
           <p className="trade__sub-box--title"> Buy MNTY</p>
@@ -160,7 +159,9 @@ const Index = (props) => {
                   value={totalBuy}
                   onChange={e => {
                     setTotalBuy(e.target.value)
-                    setAmountBuy(e.target.value / priceToBuy)
+                    if(priceToBuy) {
+                      setAmountBuy(e.target.value / priceToBuy)
+                    }
                   }}/>
               </div>
             </Col>
@@ -193,7 +194,7 @@ const Index = (props) => {
                 suffix="MNTY"
                 value={amountSell}
                 onChange={e => {
-                  if (e.target.value < weiToMNTY(balance) && !isNaN(e.target.value))
+                  // if (e.target.value < weiToMNTY(balance) && !isNaN(e.target.value))
                     setAmountSell(e.target.value)
                 }
                 }

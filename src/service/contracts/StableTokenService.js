@@ -9,10 +9,12 @@ export default class extends BaseService {
     const store     = this.store.getState()
     let methods     = store.contracts.stableToken.methods
     let wallet      = store.user.wallet
+    console.log("load")
     methods.balanceOf(store.contracts.seigniorage._address).call().then(exStb => {
       this.dispatch(userRedux.actions.exStb_update(exStb))
     })
     methods.allowance(wallet, store.contracts.seigniorage._address).call().then(stbAllowance => {
+      console.log(stbAllowance)
       this.dispatch(userRedux.actions.stbAllowance_update(stbAllowance))
     })
     methods.balanceOf(wallet).call().then(_stableTokenBalance => {
