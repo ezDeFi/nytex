@@ -1,6 +1,20 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:200,400,500,700,800');
 @import './color';
 
+@font-face {
+  font-family: 'BinancePlex Regular';
+  font-style: normal;
+  src: url('../assets/font/BinancePlex-Regular.woff2');
+  src: local('BinancePlex Regular'), url('../assets/font/BinancePlex-Regular.woff2') format('woff'); /* IE9 Compat Modes */
+}
+
+@font-face {
+  font-family: 'BinancePlex SemiBold';
+  font-style: normal;
+  src:  url('../assets/font/BinancePlex-SemiBold.woff2');
+  src: local('BinancePlex SemiBold'), url('../assets/font/BinancePlex-SemiBold.woff2') format('woff'); /* IE9 Compat Modes */
+}
+
 .no-info {
   //color: $text_light_gray;
 }

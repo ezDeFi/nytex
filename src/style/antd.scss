@@ -27,10 +27,9 @@ $dark-gray: #1F2538;
   }
 
   & tbody>tr.ant-table-row:hover > td {
-    background: none;
+    background: $primary_dark_color;
   }
 }
-
 
 //-------------------------------tab--------------------------------\
 .ant-tabs-nav {

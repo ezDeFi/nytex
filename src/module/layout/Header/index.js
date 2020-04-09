@@ -29,19 +29,22 @@ const Header = () => {
 
 
   const languageItem = [
-    <Menu.Item key="0" onClick={() => changeLanguage('vietnamese')}>
+    <Menu.Item key="0" onClick={() => changeLanguage('Vietnamese')}>
       <a href='#' className="text-white">Vietnamese</a>
     </Menu.Item>,
-    <Menu.Item key="1" onClick={() => changeLanguage('korean')}>
+    <Menu.Item key="0" onClick={() => changeLanguage('English')}>
+      <a href='#' className="text-white">English</a>
+    </Menu.Item>,
+    <Menu.Item key="1" onClick={() => changeLanguage('Korean')}>
       <a href='#'>Korean</a>
     </Menu.Item>,
-    <Menu.Item key="2" onClick={() => changeLanguage('chinese')}>
+    <Menu.Item key="2" onClick={() => changeLanguage('Chinese')}>
       <a href='#'>Chinese</a>
     </Menu.Item>,
-    <Menu.Item key="3" onClick={() => changeLanguage('deutsch')}>
+    <Menu.Item key="3" onClick={() => changeLanguage('Deutsch')}>
       <a href='#'>Deutsch</a>
     </Menu.Item>,
-    <Menu.Item key="4" onClick={() => changeLanguage('espanol')}>
+    <Menu.Item key="4" onClick={() => changeLanguage('Espanol')}>
       <a href='#'>Espanol</a>
     </Menu.Item>
   ]

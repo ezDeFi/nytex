@@ -223,7 +223,6 @@ export default class extends BaseService {
         let transactions = e.transactions
         if (transactions.length > 1) {
           for (let i in transactions) {
-            console.log(transactions)
             if (transactions[i].to === CONTRACTS.StableToken.address ||
               transactions[i].to === CONTRACTS.VolatileToken.address ||
               (transactions[i].to === CONTRACTS.Seigniorage.address &&

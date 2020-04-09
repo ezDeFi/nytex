@@ -10,6 +10,15 @@
   color: $primary_light_color;
   user-select: none;
   white-space: nowrap;
+
+  &:hover {
+    color: $yellow_color;
+    border-color: $yellow_color;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
 }
 
 .btn-large {

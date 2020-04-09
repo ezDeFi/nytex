@@ -35,6 +35,40 @@
     color: white;
     padding: 4px 0;
   }
+
+  &__column {
+    &--price {
+      width: 30%;
+    }
+    &--amount {
+      width: 30%;
+    }
+    &--volume {
+      width: 40%;
+    }
+  }
+
+
+  &__volume-value {
+    //position: absolute;
+    //z-index: 1000;
+  }
+
+  &__volume-mask {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    z-index: -1;
+
+    &-buy {
+      background-color: rgba(21, 179, 113, 0.1);
+    }
+
+    &-sell{
+      background: rgba(245, 86, 86, 0.1);
+    }
+  }
 }
 
 @media only screen and (max-width: 600px) {

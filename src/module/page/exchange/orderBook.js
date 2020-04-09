@@ -17,8 +17,8 @@ const OrderBook = () => {
     listBuySource.push({
       key        : i,
       price      : listBuys[i].price,
-      amount     : parseFloat(listBuys[i].amount),
-      volume     : parseFloat(listBuys[i].volume),
+      amount     : cutFloat(listBuys[i].amount, 6),
+      volume     : cutFloat(listBuys[i].volume, 6),
       priceToSort: listBuys[i].priceToSort
     })
   }
@@ -38,8 +38,8 @@ const OrderBook = () => {
     listSellSource.push({
       key        : i,
       price      : listSell[i].price,
-      amount     : parseFloat(listSell[i].amount),
-      volume     : parseFloat(listSell[i].volume),
+      amount     : cutFloat(listSell[i].amount, 6),
+      volume     : cutFloat(listSell[i].volume, 6),
       priceToSort: listSell[i].priceToSort
     })
     // }
@@ -53,20 +53,28 @@ const OrderBook = () => {
       title    : 'Price',
       dataIndex: 'price',
       key      : 'price',
-      className: 'left-align',
+      className: 'left-align order-book__column--price',
       render   : text => (<p style={{color: 'red', margin: 0}}>{text}</p>)
     },
     {
       title    : 'Amount',
       dataIndex: 'amount',
       key      : 'amount',
-      className: 'right',
+      className: 'right-align order-book__column--amount',
     },
     {
       title    : 'Volume',
       dataIndex: 'volume',
       key      : 'volume',
-      className: 'right-align'
+      className: 'right-align order-book__column--volume',
+      render: (value, object) => {
+        const maxVolume = 1;
+        const widthPercent = 250 * parseFloat(value)/maxVolume > maxVolume ?  250: 250 * parseFloat(value)/maxVolume
+        return (<div>
+          <p className="order-book__volume-mask order-book__volume-mask-sell" style={{width: widthPercent + '%'}}></p>
+          <p className="order-book__volume-value">{value}</p>
+        </div>)
+      }
     },
   ];
 
@@ -74,18 +82,26 @@ const OrderBook = () => {
     {
       dataIndex: 'price',
       key      : 'price',
-      className: 'left-align',
+      className: 'left-align order-book__column--price',
       render   : text => (<p style={{color: '#00C28E', margin: 0}}>{text}</p>)
     },
     {
       dataIndex: 'amount',
       key      : 'amount',
-      className: 'right',
+      className: 'right-align order-book__column--amount',
     },
     {
       dataIndex: 'volume',
       key      : 'volume',
-      className: 'right-align'
+      className: 'right-align order-book__column--volume',
+      render: (value) => {
+        const maxVolume = 1;
+        const widthPercent = 250 * parseFloat(value)/maxVolume > maxVolume ?  250: 250 * parseFloat(value)/maxVolume
+        return (<div>
+          <p className="order-book__volume-mask order-book__volume-mask-buy" style={{width: widthPercent + '%'}}></p>
+          <p className="order-book__volume-value">{value}</p>
+        </div>)
+      }
     },
   ];
 

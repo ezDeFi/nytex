@@ -22,37 +22,39 @@ const OpenOrder = (props) => {
     Hide Other Pairs
   </label>;
 
-  for (let i in listBuys) {
-    if (listBuys[i].maker.toLocaleLowerCase() === walletAddress.toLocaleLowerCase())
-      openOrderData.push({
-        key        : 'buy-' + i,
-        id         : listBuys[i].id,
-        time       : '12:09 15:45:12',
-        side       : 'buy',
-        price      : listBuys[i].price,
-        amount     : parseFloat(listBuys[i].amount),
-        Total      : parseFloat(listBuys[i].volume),
-        priceToSort: listBuys[i].priceToSort,
-        trigger    : '-',
-        action     : 'cancel',
-      })
-  }
+  if (walletAddress) {
+    for (let i in listBuys) {
+      if (listBuys[i].maker.toLocaleLowerCase() === walletAddress.toLocaleLowerCase())
+        openOrderData.push({
+          key        : 'buy-' + i,
+          id         : listBuys[i].id,
+          time       : '12:09 15:45:12',
+          side       : 'buy',
+          price      : listBuys[i].price,
+          amount     : parseFloat(listBuys[i].amount),
+          Total      : parseFloat(listBuys[i].volume),
+          priceToSort: listBuys[i].priceToSort,
+          trigger    : '-',
+          action     : 'cancel',
+        })
+    }
 
-  for (let i in listSell) {
-    // if(listSell[i].maker === userWallet)
-    if (listSell[i].maker.toLocaleLowerCase() === walletAddress.toLocaleLowerCase())
-      openOrderData.push({
-        key        : 'sell-' + i,
-        id         : listSell[i].id,
-        time       : '12:09 15:45:12',
-        side       : 'sell',
-        price      : listSell[i].price,
-        amount     : parseFloat(listSell[i].amount),
-        Total      : parseFloat(listSell[i].volume),
-        priceToSort: listSell[i].priceToSort,
-        trigger    : '-',
-        action     : 'cancel',
-      })
+    for (let i in listSell) {
+      // if(listSell[i].maker === userWallet)
+      if (listSell[i].maker.toLocaleLowerCase() === walletAddress.toLocaleLowerCase())
+        openOrderData.push({
+          key        : 'sell-' + i,
+          id         : listSell[i].id,
+          time       : '12:09 15:45:12',
+          side       : 'sell',
+          price      : listSell[i].price,
+          amount     : parseFloat(listSell[i].amount),
+          Total      : parseFloat(listSell[i].volume),
+          priceToSort: listSell[i].priceToSort,
+          trigger    : '-',
+          action     : 'cancel',
+        })
+    }
   }
 
   const cancelTrade = async (tradeRecode) => {

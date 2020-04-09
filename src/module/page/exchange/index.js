@@ -11,21 +11,37 @@ import UserService                from "../../../service/UserService";
 import VolatileTokenService       from "../../../service/contracts/VolatileTokenService";
 import StableTokenService         from "../../../service/contracts/StableTokenService";
 import {useSelector, useDispatch} from "react-redux";
+import {setupWeb3} from '../../../util/auth'
 
 const Exchange = () => {
+  const wallet             = useSelector(state => state.user.wallet)
   const seigniorageService   = new SeigniorageService()
   const userService          = new UserService()
   const volatileTokenService = new VolatileTokenService()
   const stableTokenService   = new StableTokenService()
 
+
+
   useEffect(() => {
     seigniorageService.loadOrders(true, false)
     seigniorageService.loadOrders(false, false)
     seigniorageService.loadOrdersRealTime()
-    // seigniorageService.loadOrders(false)
-    userService.getBalance()
-    volatileTokenService.loadMyVolatileTokenBalance()
-    stableTokenService.loadMyStableTokenBalance()
+    if(wallet) {
+      userService.getBalance()
+      volatileTokenService.loadMyVolatileTokenBalance()
+      stableTokenService.loadMyStableTokenBalance()
+    }
+
+    const loadData =  () => {
+      userService.getBalance()
+      volatileTokenService.loadMyVolatileTokenBalance()
+      stableTokenService.loadMyStableTokenBalance()
+    }
+
+    if (window.ethereum) {
+      setupWeb3(loadData)
+    }
+
   }, [])
 
   let volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)

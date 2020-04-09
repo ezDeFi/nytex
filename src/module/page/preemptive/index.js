@@ -18,6 +18,7 @@ import {thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul} fr
 
 const Preemptive = () => {
   const {TabPane}            = Tabs;
+  const wallet             = useSelector(state => state.user.wallet)
   const proposal             = useSelector(state => state.preemptive.proposal)
   const volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)
   const balance              = useSelector(state => state.user.balance)
@@ -29,9 +30,11 @@ const Preemptive = () => {
   useEffect(() => {
     seigniorageService.loadProposals()
     seigniorageService.loadProposalRealTime(loadVolatileTokenBalance, loadStableTokenBalance)
-    userService.getBalance()
-    stableTokenService.loadMyStableTokenBalance()
-    volatileTokenService.loadMyVolatileTokenBalance()
+    if(wallet) {
+      userService.getBalance()
+      stableTokenService.loadMyStableTokenBalance()
+      volatileTokenService.loadMyVolatileTokenBalance()
+    }
   }, []);
 
   const loadVolatileTokenBalance = () => {

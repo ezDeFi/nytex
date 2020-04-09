@@ -20,7 +20,9 @@ const Index = (props) => {
   const setAmountToBuy = (persent) => {
     let newTotal = weiToNUSD(stableTokenBalance) * persent / 100;
     setTotalBuy(newTotal)
-    setAmountBuy(newTotal / priceToBuy)
+    if(priceToBuy) {
+      setAmountBuy(newTotal / priceToBuy)
+    }
   }
 
   const setAmountToSell = (persent) => {
