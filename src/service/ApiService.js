@@ -45,4 +45,38 @@ export default class extends BaseService {
         callback(result)
       })
   }
+
+
+  loadTradeHistories(callback) {
+    axios.get('http://51.158.123.17:8881/gettrade',
+      {
+        headers: {'Accept': 'application/json'}
+      })
+      .then(function (response) {
+        let data = response.data;
+        // console.log(data)
+        let result = data.map((record) => {
+          let price, amount
+          let wantAmount = parseFloat(record.wantAnount.split(' ')[0])
+          let haveAmount = parseFloat(record.haveAmount.split(' ')[0])
+          console.log(record.wantAnount.split(' ')[1].toLowerCase())
+          let status = record.wantAnount.split(' ')[1].toLowerCase() === 'newsd' ? 'sell' : 'buy'
+          if(status === 'buy') {
+            price = haveAmount/wantAmount
+            amount = wantAmount
+          } else {
+            price = wantAmount/haveAmount
+            amount = haveAmount
+          }
+          return {
+            key: record._id,
+            price: [price, status],
+            amount: amount,
+            time: record.time
+          }
+        })
+        callback(result)
+      })
+  }
+
 }

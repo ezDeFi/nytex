@@ -142,7 +142,7 @@ const OpenOrder = (props) => {
           <Col xs={6} className="open-order__mobile-row--action">
             <p>{object.time}</p>
             <div>
-              <BtnOval className="btn-cancel">Cancel</BtnOval>
+              <BtnOval className="btn-cancel" onClick={() => cancelTrade(object)}>Cancel</BtnOval>
             </div>
           </Col>
         </Row>)

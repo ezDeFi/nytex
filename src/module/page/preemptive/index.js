@@ -1,24 +1,21 @@
-import React, {useEffect, useState}                                           from 'react';
-import {Row, Col, Table, Tabs}                                                from 'antd'
-import BasePage                                                               from '../../page/StandardPage'
-import ListProposal                                                           from './listProposal'
-import DetailProposal                                                         from './detailProposal'
-import CreateProposal                                                         from './createProposal'
+import React, {useEffect, useState} from 'react';
+import {Row, Col, Table, Tabs}      from 'antd'
+import BasePage                     from '../../page/StandardPage'
+import ListProposal                 from './listProposal'
+import DetailProposal               from './detailProposal'
+import CreateProposal               from './createProposal'
 import './style/index.scss'
-import SeigniorageService
-                                                                              from "../../../service/contracts/SeigniorageService";
-import UserService                                                            from "../../../service/UserService";
-import {useSelector}                                                          from "react-redux";
-import UserWallet                                                             from './userWallet'
-import StableTokenService
-                                                                              from "../../../service/contracts/StableTokenService";
-import VolatileTokenService
-                                                                              from "../../../service/contracts/VolatileTokenService";
-import {thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul} from '@/util/help.js'
+import SeigniorageService           from "../../../service/contracts/SeigniorageService";
+import UserService                  from "../../../service/UserService";
+import {useSelector}                from "react-redux";
+import UserWallet                   from './userWallet'
+import StableTokenService           from "../../../service/contracts/StableTokenService";
+import VolatileTokenService         from "../../../service/contracts/VolatileTokenService";
+import {setupWeb3}                  from "../../../util/auth";
 
 const Preemptive = () => {
   const {TabPane}            = Tabs;
-  const wallet             = useSelector(state => state.user.wallet)
+  const wallet               = useSelector(state => state.user.wallet)
   const proposal             = useSelector(state => state.preemptive.proposal)
   const volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)
   const balance              = useSelector(state => state.user.balance)
@@ -30,10 +27,21 @@ const Preemptive = () => {
   useEffect(() => {
     seigniorageService.loadProposals()
     seigniorageService.loadProposalRealTime(loadVolatileTokenBalance, loadStableTokenBalance)
-    if(wallet) {
+
+    if (wallet) {
       userService.getBalance()
       stableTokenService.loadMyStableTokenBalance()
       volatileTokenService.loadMyVolatileTokenBalance()
+    }
+
+    const loadData = () => {
+      userService.getBalance()
+      volatileTokenService.loadMyVolatileTokenBalance()
+      stableTokenService.loadMyStableTokenBalance()
+    }
+
+    if (window.ethereum) {
+      setupWeb3(loadData)
     }
   }, []);
 
@@ -81,7 +89,7 @@ const Preemptive = () => {
             </div>
             <Row>
               <Col lg={12}>
-                <ListProposal/>
+                <ListProposal />
               </Col>
               <Col lg={12}>
                 <UserWallet approve={approve}/>
@@ -103,7 +111,7 @@ const Preemptive = () => {
           <UserWallet/>
           <Tabs className="preemptive-tab">
             <TabPane tab="Open Orders" key="1">
-              <ListProposal/>
+              <ListProposal vote={vote}/>
             </TabPane>
             <TabPane tab="Open History" key="2">
               <CreateProposal/>

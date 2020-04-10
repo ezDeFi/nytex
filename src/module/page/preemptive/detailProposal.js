@@ -61,7 +61,7 @@ const Detail = (props) => {
           <Col lg={4}><b>Lockdown Duration:</b></Col>
           <Col lg={20}>
             <Row>
-              <Col lg={5}>7 days</Col>
+              <Col lg={5}>{proposal.lockdownExpiration}</Col>
               <Col lg={19}>
                 <button className="absorption-content--btn-provoke">Provoke</button>
               </Col>
