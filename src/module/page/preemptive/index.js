@@ -82,7 +82,7 @@ const Preemptive = () => {
   return (
     <BasePage>
       <Row className="preemptive">
-        <Col lg={24} xs={0}>
+        <Col lg={24} sm={24} xs={0}>
           <div className="proposal">
             <div className="center">
               <h3 className="preemptive--header-2">Proposals</h3>
@@ -107,7 +107,7 @@ const Preemptive = () => {
               </div>
           }
         </Col>
-        <Col lg={0} xs={24}>
+        <Col lg={0} sm={0} xs={24}>
           <UserWallet/>
           <Tabs className="preemptive-tab">
             <TabPane tab="Open Orders" key="1">

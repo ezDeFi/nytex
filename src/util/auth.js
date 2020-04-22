@@ -15,6 +15,9 @@ export const setupWeb3 = async (callback) => {
 
   // // await window.ethereum.enable()
   await window.web3.eth.getAccounts(async (err, accounts) => {
+
+
+    console.log(accounts)
     if (err) return
     if (accounts.length > 0) {
       // detect account switch
@@ -50,14 +53,14 @@ export const loginEzdefi = (callback) => {
     Seigniorage  : new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
   }
   //
-  store.dispatch(userRedux.actions.loginMetamask_update(true))
+  // store.dispatch(userRedux.actions.loginMetamask_update(true))
   store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
   store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
   store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
   store.dispatch(userRedux.actions.web3_update(web3))
 
   callback()
-  store.dispatch(userRedux.actions.loginMetamask_update(false))
+  // store.dispatch(userRedux.actions.loginMetamask_update(false))
 }
 
 export const getUserProfile = (callback) => {

@@ -80,6 +80,21 @@ $dark-gray: #1F2538;
 
 }
 
+//---------------date picker--------------
+.ant-picker {
+  background: $primary_color;
+  border: 1px solid #6E7793;
+  color: $primary_light_color;
+  border-radius: 15px;
+  width: 105px;
+  padding: 0 3px;
+
+  & input {
+    color: $primary_light_color;
+    font-size: 12px;
+    padding: 0 0 0 10px;
+  }
+}
 
 //------------------modal------------------
 .ant-modal-content{

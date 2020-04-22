@@ -41,6 +41,7 @@ const Index = (props) => {
         throw 'invalid amount'
       }
       try {
+        console.log(wantAmount, priceToBuy)
         const haveAmount = mul(wantAmount, priceToBuy);
         haveWei = nusdToWei(haveAmount);
       } catch (e) {
@@ -127,7 +128,7 @@ const Index = (props) => {
                 value={priceToBuy}
                 onChange={e => {
                   dispatch(exchangeAction.priceToBuy_update(e.target.value))
-                  setTotalBuy(e.target.value * amountBuy)
+                  setTotalBuy(mul(e.target.value, amountBuy))
                 }}
               />
             </Col>
@@ -140,7 +141,8 @@ const Index = (props) => {
                 value={amountBuy}
                 onChange={e => {
                   setAmountBuy(e.target.value)
-                  setTotalBuy(e.target.value * priceToBuy)
+                  setTotalBuy(mul(e.target.value, priceToBuy))
+                  // setTotalBuy(e.target.value * priceToBuy)
                 }}/>
             </Col>
           </Row>

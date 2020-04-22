@@ -139,11 +139,11 @@ const userWallet = (props) => {
 
   return (
     <Row className="user-wallet">
-      <Col lg={24} xs={12} className="user-wallet__assets">
+      <Col lg={24} md={24} xs={12} className="user-wallet__assets">
         <p className="assets--title"><b>Assets</b></p>
         <div className="assets__info-box">
           <Row className="assets__info hide-on-mobile">
-            <Col lg={5}><b>Wallet</b></Col>
+            <Col lg={5} xs={5}><b>Wallet</b></Col>
             <Col lg={19}>{wallet}</Col>
           </Row>
           <Row className="assets__info">
