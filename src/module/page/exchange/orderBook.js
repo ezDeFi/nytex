@@ -5,7 +5,7 @@ import store                                from "../../../store";
 import {cutFloat}                           from '@/util/help.js'
 import ApiService                           from "../../../service/ApiService";
 
-const OrderBook = () => {
+const OrderBook = (props) => {
   const apiService     = new ApiService()
   let ntyQuote         = useSelector(state => state.common.ntyQuote);
   let listBuys         = useSelector(state => state.seigniorage.bids);
@@ -29,14 +29,6 @@ const OrderBook = () => {
   });
 
   for (let i in listSell) {
-    // let index = listSellSource.findIndex((e) => {
-    //   return e.price === listSell[i].price
-    // })
-    // if(index >= 0) {
-    //   listSellSource[index].amount += parseFloat(listSell[i].amount)
-    //   listSellSource[index].volume += parseFloat(listSell[i].volume)
-    //   continue;
-    // } else {
     listSellSource.push({
       key        : i,
       price      : listSell[i].price,
@@ -44,7 +36,6 @@ const OrderBook = () => {
       volume     : cutFloat(listSell[i].volume, 6),
       priceToSort: listSell[i].priceToSort
     })
-    // }
   }
   listSellSource.sort(function (a, b) {
     return parseFloat(b.priceToSort) - parseFloat(a.priceToSort);
@@ -106,20 +97,11 @@ const OrderBook = () => {
       }
     },
   ];
-  // buy
-  // have        want
-  // 10 unsd -> 20mnty
-  //
-  // sell
-  // have         want
-  // 20 mnty        40 nusd
-
-
   const [dataSourceHistory, setDataSourceHistory] = useState([])
 
-  useEffect(() => {
-    apiService.loadTradeHistories(setDataSourceHistory)
-  }, [])
+  // useEffect(() => {
+  //   apiService.loadTradeHistories(setDataSourceHistory)
+  // }, [])
 
   const columnsHistory = [
     {
@@ -173,7 +155,7 @@ const OrderBook = () => {
         </div>
       </Col>
       <Col lg={12} xs={0} className="order-book__history-table">
-        <Table dataSource={dataSourceHistory} columns={columnsHistory} pagination={false} onRow={onRowTable}/>
+        <Table dataSource={props.dataSourceHistory} columns={columnsHistory} pagination={false} onRow={onRowTable}/>
       </Col>
     </Row>
   )

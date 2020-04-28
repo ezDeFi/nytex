@@ -1,6 +1,14 @@
 import BaseService from '../model/BaseService'
 import axios       from 'axios'
 
+const API_URL = 'http://51.158.123.17:8881'
+const API = {
+  GET_OPEN_ORDER: API_URL + '/get-open-order',
+  GET_OPEN_HISTORY: API_URL + '/get-open-history',
+  GET_TRADE_HISTORY: API_URL + '/get-trade-history',
+  GET_NEW_TRADE: API_URL + '/gettoptrade',
+}
+
 export default class extends BaseService {
   loadNtyQuote() {
     const that        = this
@@ -46,10 +54,9 @@ export default class extends BaseService {
       })
   }
 
-
   loadTradeHistories(callback) {
     var that = this
-    axios.get('http://51.158.123.17:8881/gettoptrade',
+    axios.get(API.GET_NEW_TRADE,
       {
         headers: {'Accept': 'application/json'}
       })
@@ -85,7 +92,7 @@ export default class extends BaseService {
     }
 
     var that = this
-    axios.get('http://51.158.123.17:8881/get-open-order',
+    axios.get(API.GET_OPEN_ORDER,
       {
         headers: {'Accept': 'application/json'},
         params: {
@@ -122,7 +129,7 @@ export default class extends BaseService {
     }
 
     var that = this
-    axios.get('http://51.158.123.17:8881/get-open-history',
+    axios.get(API.GET_OPEN_HISTORY,
       {
         headers: {'Accept': 'application/json'},
         params: {
@@ -178,7 +185,7 @@ export default class extends BaseService {
       timeFrom = timeTo - 24*60*60
     }
     var that = this
-    axios.get('http://51.158.123.17:8881/get-trade-history',
+    axios.get(API.GET_TRADE_HISTORY,
       {
         headers: {'Accept': 'application/json'},
         params: {

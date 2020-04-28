@@ -1,9 +1,9 @@
 import React, {useState}                                                      from 'react';
 import {Row, Col, Input, Modal}                                               from 'antd'
 import BtnOval                                                                from '../../Component/ButtonOval'
-import {useSelector, useDispatch, useStore}                                   from "react-redux";
+import {useSelector, useDispatch}                                   from "react-redux";
 import store                                                                  from "../../../store";
-import {thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul} from '@/util/help.js'
+import {thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul} from '@/util/help.js'
 
 const Index = (props) => {
   let stableTokenBalance            = useSelector(state => state.user.stableTokenBalance)

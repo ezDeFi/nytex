@@ -1,4 +1,4 @@
-import React, {useEffect}         from 'react';
+import React, {useEffect, useState }         from 'react';
 import {Row, Col, Table}          from 'antd'
 import './style/index.scss'
 import OrderBook                  from './orderBook'
@@ -10,45 +10,42 @@ import SeigniorageService         from "../../../service/contracts/SeigniorageSe
 import UserService                from "../../../service/UserService";
 import VolatileTokenService       from "../../../service/contracts/VolatileTokenService";
 import StableTokenService         from "../../../service/contracts/StableTokenService";
-import {useSelector, useDispatch} from "react-redux";
-import {setupWeb3} from '../../../util/auth'
+import {useSelector}              from "react-redux";
+import {setupWeb3}                from '../../../util/auth'
+import ApiService                 from "../../../service/ApiService";
 
 const Exchange = () => {
-  const wallet             = useSelector(state => state.user.wallet)
+  const wallet               = useSelector(state => state.user.wallet)
+  const apiService           = new ApiService()
   const seigniorageService   = new SeigniorageService()
   const userService          = new UserService()
   const volatileTokenService = new VolatileTokenService()
   const stableTokenService   = new StableTokenService()
-
-
+  const [dataSourceHistory, setDataSourceHistory] = useState([])
+  const [updateOrderStatus, setUpdateOrderStatus] = useState(0);
 
   useEffect(() => {
+    apiService.loadTradeHistories(setDataSourceHistory)
+
     seigniorageService.loadOrders(true, false)
     seigniorageService.loadOrders(false, false)
-    seigniorageService.loadOrdersRealTime()
-    if(wallet) {
-      userService.getBalance()
-      volatileTokenService.loadMyVolatileTokenBalance()
-      stableTokenService.loadMyStableTokenBalance()
-    }
-
-    const loadData =  () => {
-      userService.getBalance()
-      volatileTokenService.loadMyVolatileTokenBalance()
-      stableTokenService.loadMyStableTokenBalance()
-    }
+    seigniorageService.loadOrdersRealTime(setDataSourceHistory)
 
     if (window.ethereum) {
+      const loadData =  () => {
+        userService.getBalance()
+        volatileTokenService.loadMyVolatileTokenBalance()
+        stableTokenService.loadMyStableTokenBalance()
+      }
       setupWeb3(loadData)
     }
-
-  }, [])
+  }, [wallet])
 
   let volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)
   let stableTokenBalance   = useSelector(state => state.user.stableTokenBalance)
   let balance              = useSelector(state => state.user.balance)
 
-  const sellVolatileToken = (haveWei, wantWei) => {
+  const sellVolatileToken = async (haveWei, wantWei) => {
     const have = BigInt(haveWei)
     const mnty = BigInt(volatileTokenBalance)
 
@@ -61,18 +58,24 @@ const Exchange = () => {
       value = value.toString()
     }
 
-    volatileTokenService.trade(haveWei, wantWei, value)
+    await volatileTokenService.trade(haveWei, wantWei, value)
+    if(updateOrderStatus === 0) setUpdateOrderStatus(1)
+    else if(updateOrderStatus === 1) setUpdateOrderStatus(0)
   }
 
-  const buyVolatileToken = (haveAmount, wantAmount) => {
+  const buyVolatileToken = async (haveAmount, wantAmount) => {
     if (BigInt(haveAmount) > BigInt(stableTokenBalance)) {
       throw "insufficient NEWSD"
     }
-    return stableTokenService.trade(haveAmount, wantAmount)
+    await stableTokenService.trade(haveAmount, wantAmount)
+    if(updateOrderStatus === 0) setUpdateOrderStatus(1)
+    else if(updateOrderStatus === 1) setUpdateOrderStatus(0)
   }
 
-  const cancelTrade = (orderType, id) => {
-    seigniorageService.cancel(orderType, id)
+  const cancelTrade = async (orderType, id) => {
+    await seigniorageService.cancel(orderType, id)
+    if(updateOrderStatus === 0) setUpdateOrderStatus(1)
+    else if(updateOrderStatus === 1) setUpdateOrderStatus(0)
   }
 
   return (
@@ -107,13 +110,13 @@ const Exchange = () => {
         <Col lg={{span: 14, order: 4}}
              xs={{span: 24, order: 4}}
              className="open-order">
-          <OpenOrder cancelTrade={cancelTrade}/>
+          <OpenOrder updateOrderStatus={updateOrderStatus} cancelTrade={cancelTrade}/>
         </Col>
         <Col lg={{span: 10, order: 1}}
              xs={{span: 12, order: 2}}
              className="order-book"
         >
-          <OrderBook/>
+          <OrderBook dataSourceHistory={dataSourceHistory} />
         </Col>
         <Col
           lg={{span: 10, order: 5}}

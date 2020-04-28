@@ -1,7 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {createChart, CrosshairMode}         from 'lightweight-charts';
 import ApiService                           from "../../../service/ApiService";
-import {useSelector}      from "react-redux";
 
 const Index = (props) => {
   const apiService = new ApiService()

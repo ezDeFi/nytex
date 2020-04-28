@@ -37,9 +37,17 @@ const OpenOrder = (props) => {
     }
   }, [address])
 
+  useEffect(() => {
+    if(address) {
+      filterOpenOrder('openOrder', filterFlag['openOrder'])
+      filterOpenOrder('openHistory', filterFlag['openHistory'])
+      filterOpenOrder('tradeHistory', filterFlag['tradeHistory'])
+    }
+  }, [props.updateOrderStatus])
+
 
   const cancelTrade = async (tradeRecode) => {
-    await props.cancelTrade(tradeRecode.side === 'buy', tradeRecode.id)
+    await props.cancelTrade(tradeRecode.side.toLowerCase() === 'buy', tradeRecode.id)
   }
 
   const openOrderColumns = [
@@ -49,15 +57,14 @@ const OpenOrder = (props) => {
       dataIndex: 'side',
       key      : 'side',
       className: 'hide-on-mobile',
-      render   : text => <span style={{color: text === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
+      render   : text => <span style={{color: text.toLowerCase() === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
     },
     {title: 'Price', dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
     {title: 'Amount', dataIndex: 'amount', key: 'amount', className: 'hide-on-mobile'},
     {title: 'Filled (%)', dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
     {title: 'Total', dataIndex: 'total', key: 'total', className: 'hide-on-mobile'},
-    {title: 'Trigger Conditions', dataIndex: 'trigger', key: 'Trigger', className: 'hide-on-mobile'},
     {
-      title    : 'Cancel All',
+      title    : 'Action',
       dataIndex: 'action',
       key      : 'action',
       className: 'hide-on-mobile right-align',
@@ -155,7 +162,7 @@ const OpenOrder = (props) => {
       dataIndex: 'side',
       key      : 'side',
       className: 'hide-on-mobile',
-      render   : text => <span style={{color: text === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
+      render   : text => <span style={{color: text.toLowerCase() === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
     },
     {title: 'Average', dataIndex: 'average', key: 'average', className: 'hide-on-mobile'},
     {title: 'Price', dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
@@ -163,7 +170,7 @@ const OpenOrder = (props) => {
     {title: 'Amount', dataIndex: 'amount', key: 'amount', className: 'hide-on-mobile'},
     {title: 'Total', dataIndex: 'total', key: 'total', className: 'hide-on-mobile'},
     {title: 'Trigger Conditions', dataIndex: 'trigger', key: 'Trigger', className: 'hide-on-mobile'},
-    {title: 'status', dataIndex: 'status', key: 'status', className: 'hide-on-mobile  right-align'}
+    {title: 'Status', dataIndex: 'status', key: 'status', className: 'hide-on-mobile  right-align'}
   ]
 
   const tradeHistoryColumns = [
@@ -174,7 +181,7 @@ const OpenOrder = (props) => {
       dataIndex: 'side',
       key      : 'side',
       className: 'hide-on-mobile',
-      render   : text => <span style={{color: text === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
+      render   : text => <span style={{color: text.toLowerCase() === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
     },
     {title: 'Price', dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
     {title: 'Filled (%)', dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},

@@ -3,6 +3,7 @@ import _                                                                  from '
 import {thousands, weiToNUSD, weiToMNTY, weiToPrice, cutString, decShift} from '@/util/help'
 import BigInt                                                             from 'big-integer';
 import {CONTRACTS}                                                        from '@/constant'
+import ApiService                                                         from "../ApiService";
 
 export default class extends BaseService {
   async cancel(orderType, id) {
@@ -212,11 +213,12 @@ export default class extends BaseService {
     }
   }
 
-  loadOrdersRealTime() {
-    const that     = this;
-    const store    = this.store.getState()
-    const web3     = store.user.web3
-    const byte0000 = '0x0000000000000000000000000000000000000000'
+  loadOrdersRealTime(setTradeHistory, clear = false) {
+    const apiService     = new ApiService();
+    const that           = this;
+    const store          = this.store.getState();
+    const web3           = store.user.web3;
+    const byte0000       = '0x0000000000000000000000000000000000000000';
 
     web3.eth.subscribe('newBlockHeaders', async function (error, data) {
       web3.eth.getBlock(data.hash, true).then(function (e) {
@@ -230,6 +232,7 @@ export default class extends BaseService {
             ) {
               that.loadOrders(true, true)
               that.loadOrders(false, true)
+              apiService.loadTradeHistories(setTradeHistory)
             }
           }
         }

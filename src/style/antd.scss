@@ -103,6 +103,11 @@ $dark-gray: #1F2538;
   box-shadow: 0px 0px 15px black;
 }
 
+.ant-modal-confirm-body .ant-modal-confirm-title,
+.ant-modal-confirm-body .ant-modal-confirm-content {
+  color: $primary_light_color;
+}
+
 //-------------------drop down-------------------------
 .ant-dropdown-menu {
   background: $primary_dark_color;

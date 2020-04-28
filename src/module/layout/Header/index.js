@@ -100,7 +100,7 @@ const Header = () => {
            xs={{span: 24, order: 3}}>
         <Row className="header-info">
           <Col lg={4} xs={6}>
-            <p className="hide-on-mobile">last price</p>
+            <p className="hide-on-mobile">Last price</p>
             <p>${cutFloat(ntyQuote.price * Math.pow(10, 6), 5)}</p>
           </Col>
           <Col lg={4} xs={18}>
@@ -114,9 +114,9 @@ const Header = () => {
             </Row>
           </Col>
           <Col lg={4} xs={{span: 12, order: 4}}>
-            <p className="hide-on-mobile">24h high</p>
+            <p className="hide-on-mobile">24h High</p>
             <Row>
-              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">high</Col>
+              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">High</Col>
               <Col>0.024844</Col>
             </Row>
           </Col>
@@ -128,7 +128,7 @@ const Header = () => {
             </Row>
           </Col>
           <Col lg={4} xs={{span: 12, order: 3}}>
-            <p className="hide-on-mobile">24h volume</p>
+            <p className="hide-on-mobile">24h Volume</p>
             <p>Vol {cutFloat(ntyQuote.volume_24h, 2)}</p>
           </Col>
         </Row>
