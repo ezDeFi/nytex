@@ -8,6 +8,7 @@ import "antd/dist/antd.css";
 import './style.scss'
 import {weiToNTY}                   from '@/util/help.js'
 import ApiService                   from "../../../service/ApiService";
+import I18N from '@/I18N'
 
 const Header = () => {
   let currentLanguage           = localStorage.getItem('language')
@@ -30,7 +31,7 @@ const Header = () => {
 
   const languageItem = [
     <Menu.Item key="0" onClick={() => changeLanguage('Vietnamese')}>
-      <a href='#' className="text-white">Vietnamese</a>
+      <a href='#' className="text-white"> {I18N.get('0200')}</a>
     </Menu.Item>,
     <Menu.Item key="0" onClick={() => changeLanguage('English')}>
       <a href='#' className="text-white">English</a>

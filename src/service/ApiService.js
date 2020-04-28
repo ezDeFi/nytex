@@ -48,13 +48,13 @@ export default class extends BaseService {
 
 
   loadTradeHistories(callback) {
+    var that = this
     axios.get('http://51.158.123.17:8881/gettoptrade',
       {
         headers: {'Accept': 'application/json'}
       })
       .then(function (response) {
         let data   = response.data;
-        // console.log(data)
         let result = data.map((record) => {
           let price, amount
           let wantAmount = parseFloat(record.wantAmount.split(' ')[0])
@@ -71,7 +71,7 @@ export default class extends BaseService {
             key   : record._id,
             price : [price, status],
             amount: amount,
-            time  : record.time
+            time  : that.timestampToTime(record.time),
           }
         })
         callback(result)
@@ -104,9 +104,9 @@ export default class extends BaseService {
             id  : record.orderID,
             price  : price,
             amount : amount,
-            time   : record.time,
+            time   : that.timestampToDateTime(record.time),
             total  : total,
-            side   : side,
+            side   : that.upperCaseFirstLetter(side),
             filled : filled,
             trigger: '-'
           }
@@ -142,17 +142,34 @@ export default class extends BaseService {
             id  : record.orderID,
             price  : price,
             amount : amount,
-            time   : record.time,
+            time   : that.timestampToDateTime(record.time),
             total  : total,
-            side   : side,
+            side   : that.upperCaseFirstLetter(side),
             filled : filled,
             trigger: '-',
             average: '-',
-            status: record.status
+            status: that.upperCaseFirstLetter(record.status)
           }
         })
         setOpenHistory(result)
       })
+  }
+
+  timestampToTime(timestamp) {
+    let date = new Date(timestamp * 1000)
+    return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+  }
+
+  timestampToDateTime(timestamp) {
+    let date = new Date(timestamp * 1000)
+    let monthResult = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth()
+    let dateResult = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+
+    return monthResult +'-'+ dateResult + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+  }
+
+  upperCaseFirstLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
   }
 
   loadTradeHistory(setTradeHistory, address, timeFrom = null, timeTo = null) {
@@ -177,12 +194,11 @@ export default class extends BaseService {
           return {
             key    : record._id,
             market: 'MNTY/NEWSD',
-            time   : record.time,
+            time   : that.timestampToDateTime(record.time),
             price  : price,
             total  : total,
-            side   : side,
+            side   : that.upperCaseFirstLetter(side),
             filled : filled,
-            txfee: '-'
           }
         })
         setTradeHistory(result)
@@ -207,6 +223,8 @@ export default class extends BaseService {
       volume = wantAmount
     }
     filled = (1 - (haveAmountNow / haveAmount)) * 100
+    console.log(haveAmountNow, haveAmount, filled)
+
     return {
       price : price,
       amount: amount,

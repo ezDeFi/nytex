@@ -81,7 +81,7 @@ const OpenOrder = (props) => {
       dataIndex: 'time', key: 'time',
       render   : (value, object) => {
         return (<div>
-          <p className="open-order__mobile-row--currency">ETH/USDT</p>
+          <p className="open-order__mobile-row--currency">MNTY/NUSD</p>
           <Row>
             <Col xs={10} className="text-light-grey">Amount</Col>
             <Col xs={14}>
@@ -97,13 +97,52 @@ const OpenOrder = (props) => {
       }
     },
     {
-      dataIndex: 'time', key: 'time', className: 'right-align', width: 70,
+      dataIndex: 'time', key: 'time', className: 'right-align', width: 100,
       render   : (value, object) => {
         return (<div>
           <p>{object.time}</p>
           <div>
             <BtnOval className="btn-cancel" onClick={() => cancelTrade(object)}>Cancel</BtnOval>
           </div>
+        </div>)
+      }
+    }
+  ]
+
+
+  const openHistoryColumnsMobile = [
+    {
+      dataIndex: 'time', key: 'side', width: 70,
+      render   : (value, object) => {
+        return (<div>
+          <p className="text-green text-size-md">{object.side}</p>
+          <Row>
+            <Col xs={12} className="text-light-grey">Price</Col>
+            <Col xs={12}><span>{object.price}</span></Col>
+          </Row>
+        </div>)
+      }
+    },
+    {
+      dataIndex: 'time', key: 'time',
+      render   : (value, object) => {
+        return (<div>
+          <p className="open-order__mobile-row--currency">MNTY/NUSD</p>
+          <Row>
+            <Col xs={8} className="text-light-grey">Amount</Col>
+            <Col xs={14}>
+              <span>{object.amount}</span>
+            </Col>
+          </Row>
+        </div>)
+      }
+    },
+    {
+      dataIndex: 'time', key: 'time', className: 'right-align', width: 100,
+      render   : (value, object) => {
+        return (<div>
+          <p className="text-light-grey">{object.time}</p>
+          <p>{object.status}</p>
         </div>)
       }
     }
@@ -139,24 +178,62 @@ const OpenOrder = (props) => {
     },
     {title: 'Price', dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
     {title: 'Filled (%)', dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
-    {title: 'Transaction Fee', dataIndex: 'txfee', key: 'txfee', className: 'hide-on-mobile'},
     {title: 'Total', dataIndex: 'total', key: 'total', className: 'hide-on-mobile right-align'},
+  ]
+
+  const tradeHistoryColumnsMobile = [
+    {
+      dataIndex: 'time', key: 'side', width: 70,
+      render   : (value, object) => {
+        return (<div>
+          <p className="text-green text-size-md">{object.side}</p>
+          <Row>
+            <Col xs={12} className="text-light-grey">Price</Col>
+            <Col xs={12}><span>{object.price}</span></Col>
+          </Row>
+        </div>)
+      }
+    },
+    {
+      dataIndex: 'time', key: 'time',
+      render   : (value, object) => {
+        return (<div>
+          <p className="open-order__mobile-row--currency">MNTY/NUSD</p>
+        </div>)
+      }
+    },
+    {
+      dataIndex: 'time', key: 'time', className: 'right-align', width: 150,
+      render   : (value, object) => {
+        return (<div>
+          <p className="text-light-grey">{object.time}</p>
+          <Row>
+            <Col xs={12} className="text-light-grey">Total</Col>
+            <Col xs={12}><span>{object.total} USDT</span></Col>
+          </Row>
+        </div>)
+      }
+    }
   ]
 
   const openOrderTable    = (
     <Row>
-      <Col lg={24} xs={0}>
-        <Table scroll={{y: 250}} dataSource={openOrder} columns={openOrderColumns} pagination={false}/>
-      </Col>
-      <Col lg={0} xs={24}>
-        <Table scroll={{y: 250}} dataSource={openOrder} columns={openOrderColumnsMobile} pagination={false}/>
-      </Col>
+      <Col lg={24} xs={0}><Table scroll={{y: 250}} dataSource={openOrder} columns={openOrderColumns} pagination={false}/></Col>
+      <Col lg={0} xs={24}><Table scroll={{y: 250}} dataSource={openOrder} columns={openOrderColumnsMobile} pagination={false}/></Col>
     </Row>
   )
   const openHistoryTable  = (
-    <Table scroll={{y: 250}} dataSource={openHistory} columns={openHistoryColumns} pagination={false}/>)
+    <Row>
+      <Col lg={24} xs={0}><Table scroll={{y: 250}} dataSource={openHistory} columns={openHistoryColumns} pagination={false}/></Col>
+      <Col lg={0} xs={24}><Table scroll={{y: 250}} dataSource={openHistory} columns={openHistoryColumnsMobile} pagination={false}/></Col>
+    </Row>
+  )
   const tradeHistoryTable = (
-    <Table scroll={{y: 250}} dataSource={tradeHistory} columns={tradeHistoryColumns} pagination={false}/>)
+    <Row>
+      <Col lg={24} xs={0}><Table scroll={{y: 250}} dataSource={tradeHistory} columns={tradeHistoryColumns} pagination={false}/></Col>
+      <Col lg={0} xs={24}><Table scroll={{y: 250}} dataSource={tradeHistory} columns={tradeHistoryColumnsMobile} pagination={false}/></Col>
+    </Row>
+  )
 
   const filterHistory = (type) => (
     <div className="open-order__search-box">
@@ -183,13 +260,13 @@ const OpenOrder = (props) => {
       <span>
         <label htmlFor="search-from" className="search-label">
           <span className="hide-on-mobile">From</span>
-          <DatePicker placeholder="" onChange={(date, dateString) => setStartTimeFilter(dateString)}></DatePicker>
+          <DatePicker className="search-input" suffixIcon="" placeholder="" onChange={(date, dateString) => setStartTimeFilter(dateString)}></DatePicker>
         </label>
       </span>
       <span>
         <label htmlFor="search-to" className="search-label">
           <span className="hide-on-mobile">To</span>
-            <DatePicker placeholder="" onChange={(date, dateString) => setEndTimeFilter(dateString)}></DatePicker>
+            <DatePicker className="search-input" suffixIcon="" placeholder="" onChange={(date, dateString) => setEndTimeFilter(dateString)}></DatePicker>
         </label>
       </span>
       <span>
