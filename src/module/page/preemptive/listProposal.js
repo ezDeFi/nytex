@@ -11,14 +11,12 @@ import {thousands, weiToMNTY}     from '@/util/help.js'
 import './style/index.scss'
 
 const ListProposal = (props) => {
-  const proposal          = useSelector(state => state.preemptive.proposal)
   const dispatch          = useDispatch()
   const action            = store.getRedux('preemptive').actions;
   const seigniorageAction = store.getRedux('seigniorage').actions;
   const proposals         = useSelector(state => state.seigniorage.proposals)
   const globalParams      = useSelector(state => state.seigniorage.globalParams)
-
-  const [currentProposal, setCurrentProposal] = useState(null)
+  const showingProposal      = useSelector(state => state.preemptive.showingProposal)
 
   const sellColumns = [
     {
@@ -57,7 +55,7 @@ const ListProposal = (props) => {
       key      : 'proposal-on-mobile',
       className: 'right-align hide-on-desktop',
       render   : (value, object) => {
-        console.log(object)
+        // console.log(object)
         return (
           <div className="list-proposal-mb-box">
             <Row className="list-proposal-mb">
@@ -116,14 +114,6 @@ const ListProposal = (props) => {
     return <p style={{background: bgColor, color: color}}>{value}</p>
   }
 
-  const showProposal = () => {
-    dispatch(action.proposal_update(''))
-    let record      = currentProposal
-    record.choosing = false
-    dispatch(seigniorageAction.proposals_update({[record.maker]: record}))
-    setCurrentProposal(null)
-  }
-
   return (
     <div className="list-proposals">
       <Table
@@ -134,24 +124,16 @@ const ListProposal = (props) => {
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
+              if(showingProposal) {
+                dispatch(seigniorageAction.proposals_update({[showingProposal.maker]: {...showingProposal, choosing: false}}))
+              }
+              dispatch(action.showingProposal_update(record))
               record.choosing = true
-              setCurrentProposal(record)
               dispatch(seigniorageAction.proposals_update({[record.maker]: record}))
-              dispatch(action.proposal_update(record))
             }
           }
         }}
       />
-      {
-        proposal &&
-        <div className="right-align hide-on-mobile">
-          <button
-            className="btn-my-proposal"
-            onClick={showProposal}>
-            My proposal
-          </button>
-        </div>
-      }
     </div>
   )
 }

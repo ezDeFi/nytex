@@ -1,20 +1,30 @@
-import React, {useState}          from 'react';
-import {Row, Col, Input, Modal}   from 'antd'
+import React, {useState, useEffect}                            from 'react';
+import {Row, Col, Input, Modal}                                from 'antd'
 import {
   EditOutlined
-}                                 from '@ant-design/icons';
-import {useSelector, useDispatch} from "react-redux";
-import {thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul} from '@/util/help.js'
+}                                                              from '@ant-design/icons';
+import {useSelector, useDispatch}                              from "react-redux";
+import {thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei} from '@/util/help.js'
+import store                                                   from "../../../store";
 
 const Allowance = (props) => {
-
-  const [mntyAllowanceVisible, setMntyAllowanceVisible]   = useState(false);
+  const dispatch = useDispatch()
+  const [mntyAllowanceVisible, setMntyAllowanceVisible] = useState(false);
   const [newsdAllowanceVisible, setNewsdAllowanceVisible] = useState(false);
   const [volToApprove, setVolToApprove] = useState('');
   const [stbToApprove, setStbToApprove] = useState('');
-
   const volAllowance = useSelector(state => state.user.volAllowance)
   const stbAllowance = useSelector(state => state.user.stbAllowance)
+  const userProposal = useSelector(state => state.preemptive.userProposal)
+  const showingProposal = useSelector(state => state.preemptive.showingProposal)
+  const seigniorageAction = store.getRedux('seigniorage').actions;
+  const preemptiveAction = store.getRedux('preemptive').actions;
+
+  const showUserProposal = () => {
+    dispatch(seigniorageAction.proposals_update({[showingProposal.maker]: {...showingProposal, choosing: false}}))
+    dispatch(seigniorageAction.proposals_update({[userProposal.maker]: {...userProposal, choosing: true}}))
+    dispatch(preemptiveAction.showingProposal_update(userProposal))
+  }
 
   const approve = (isVolatileToken) => {
     try {
@@ -29,15 +39,15 @@ const Allowance = (props) => {
       } catch (e) {
         if (typeof e === 'string') {
           Modal.error({
-            title: 'Approve Allowance',
-            content: e,
+            title       : 'Approve Allowance',
+            content     : e,
             maskClosable: true,
           })
         } else {
           console.error(e)
           Modal.error({
-            title: 'Set Token Allowance',
-            content: 'unable to approve allowance',
+            title       : 'Set Token Allowance',
+            content     : 'unable to approve allowance',
             maskClosable: true,
           })
         }
@@ -45,15 +55,15 @@ const Allowance = (props) => {
     } catch (e) {
       if (typeof e === 'string') {
         Modal.error({
-          title: 'Approve Allowance',
-          content: e,
+          title       : 'Approve Allowance',
+          content     : e,
           maskClosable: true,
         })
       } else {
         console.error(e)
         Modal.error({
-          title: 'Set Token Allowance',
-          content: 'invalid amount',
+          title       : 'Set Token Allowance',
+          content     : 'invalid amount',
           maskClosable: true,
         })
       }
@@ -69,7 +79,8 @@ const Allowance = (props) => {
         <Col lg={6}><b>MNTY:</b></Col>
         <Col lg={18} className="text-align--right">
           <span onClick={() => setMntyAllowanceVisible(true)}>
-            {thousands(weiToMNTY(volAllowance))} <span className="hide-on-mobile">MNTY</span><span><EditOutlined/></span>
+            {thousands(weiToMNTY(volAllowance))} <span
+            className="hide-on-mobile">MNTY</span><span><EditOutlined/></span>
           </span>
         </Col>
       </Row>
@@ -77,7 +88,8 @@ const Allowance = (props) => {
         <Col lg={6}><b>NewSD:</b></Col>
         <Col lg={18} className="text-align--right">
           <span onClick={() => setNewsdAllowanceVisible(true)}>
-            {thousands(weiToNUSD(stbAllowance))} <span className="hide-on-mobile">NEWSD</span><span><EditOutlined/></span>
+            {thousands(weiToNUSD(stbAllowance))} <span
+            className="hide-on-mobile">NEWSD</span><span><EditOutlined/></span>
           </span>
         </Col>
       </Row>
@@ -100,7 +112,8 @@ const Allowance = (props) => {
             <button
               onClick={() => approve(true)}
               className="allowance__modal--btn-approve"
-            >Approve</button>
+            >Approve
+            </button>
           </Col>
         </Row>
       </Modal>
@@ -123,19 +136,43 @@ const Allowance = (props) => {
             <button
               onClick={() => approve(false)}
               className="allowance__modal--btn-approve"
-            >Approve</button>
+            >Approve
+            </button>
           </Col>
         </Row>
       </Modal>
+      <button
+        className="btn-my-proposal" onClick={showUserProposal}>
+        My proposal
+      </button>
     </div>
   )
 }
 
-const userWallet = (props) => {
-  const proposal         = useSelector(state => state.preemptive.proposal)
-  const wallet           = useSelector(state => state.user.wallet)
-  const balance          = useSelector(state => state.user.balance)
-  let stableTokenBalance = useSelector(state => state.user.stableTokenBalance)
+const asset = (props) => {
+  const [createdProposal, setCreatedProposal] = useState(false);
+
+  const dispatch = useDispatch()
+  const preemptiveAction = store.getRedux('preemptive').actions;
+  const seigniorageAction = store.getRedux('seigniorage').actions;
+  const balance = useSelector(state => state.user.balance)
+  const stableTokenBalance = useSelector(state => state.user.stableTokenBalance)
+  const wallet = useSelector(state => state.user.wallet)
+  const showingProposal = useSelector(state => state.preemptive.showingProposal)
+  const proposals = useSelector(state => state.seigniorage.proposals)
+  const userProposal = useSelector(state => state.preemptive.userProposal)
+
+  useEffect(() => {
+    setCreatedProposal(userProposal)
+    dispatch(preemptiveAction.showingProposal_update(userProposal))
+  }, [userProposal]);
+
+  const showCreateForm = () => {
+    if (showingProposal) {
+      dispatch(seigniorageAction.proposals_update({[showingProposal.maker]: showingProposal}))
+      dispatch(preemptiveAction.showingProposal_update(''))
+    }
+  }
 
   return (
     <Row className="user-wallet">
@@ -181,10 +218,10 @@ const userWallet = (props) => {
         </div>
         <div className="user-wallet--allowance hide-on-mobile">
           {
-            proposal ?
+            createdProposal ?
               <Allowance approve={props.approve}/>
               :
-              <button className="btn-create-proposal">
+              <button className="btn-create-proposal" onClick={showCreateForm}>
                 Create Proposal
               </button>
           }
@@ -194,4 +231,4 @@ const userWallet = (props) => {
   )
 }
 
-export default userWallet
+export default asset

@@ -43,12 +43,11 @@ export default class extends BaseService {
   async loadProposals() {
     const store            = this.store.getState()
     let methods            = store.contracts.seigniorage.methods
-    let proposal = store.preemptive.proposal
+    let showingProposal = store.preemptive.showingProposal
     const seigniorageRedux = this.store.getRedux('seigniorage')
-
+    const preemptiveRedux = this.store.getRedux('preemptive')
     methods.getGlobalParams().call()
       .then((globalParams) => {
-        console.log(globalParams);
         this.dispatch(seigniorageRedux.actions.globalParams_update(globalParams));
       });
 
@@ -66,16 +65,20 @@ export default class extends BaseService {
     for (let i = 0; i < count; ++i) {
       methods.getProposal(i).call().then(res => {
         // console.log(res);
+        let proposal = {
+          key               : i,
+          maker             : res.maker.toString(),
+          stake             : res.stake,
+          amount            : thousands(weiToNUSD(res.amount)),
+          slashingRate      : decShift(res.slashingRate, -3),
+          lockdownExpiration: res.lockdownExpiration,
+          choosing          : res.maker === store.user.wallet ? true : false
+        }
+        if(res.maker === store.user.wallet) {
+          this.dispatch(preemptiveRedux.actions.userProposal_update(proposal))
+        }
         this.dispatch(seigniorageRedux.actions.proposals_update({
-          [res.maker]: {
-            key               : i,
-            maker             : res.maker,
-            stake             : res.stake,
-            amount            : thousands(weiToNUSD(res.amount)),
-            slashingRate      : decShift(res.slashingRate, -3),
-            lockdownExpiration: res.lockdownExpiration,
-            choosing          : false
-          }
+          [res.maker]: proposal
         }));
         methods.totalVote(res.maker).call().then(totalVote => {
           // console.log(totalVote);
@@ -84,6 +87,9 @@ export default class extends BaseService {
               totalVote: totalVote,
             }
           }));
+          if(res.maker === store.user.wallet) {
+            this.dispatch(preemptiveRedux.actions.userProposal_update({ totalVote: totalVote}))
+          }
         });
         // this.loadVote(res.maker)
       })

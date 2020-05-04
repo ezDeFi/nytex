@@ -8,7 +8,7 @@ import './style/index.scss'
 import SeigniorageService           from "../../../service/contracts/SeigniorageService";
 import UserService                  from "../../../service/UserService";
 import {useSelector}                from "react-redux";
-import UserWallet                   from './userWallet'
+import Asset                   from './asset'
 import StableTokenService           from "../../../service/contracts/StableTokenService";
 import VolatileTokenService         from "../../../service/contracts/VolatileTokenService";
 import {setupWeb3}                  from "../../../util/auth";
@@ -16,7 +16,7 @@ import {setupWeb3}                  from "../../../util/auth";
 const Preemptive = () => {
   const {TabPane}            = Tabs;
   const wallet               = useSelector(state => state.user.wallet)
-  const proposal             = useSelector(state => state.preemptive.proposal)
+  const showingProposal             = useSelector(state => state.preemptive.showingProposal)
   const volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)
   const balance              = useSelector(state => state.user.balance)
   const seigniorageService   = new SeigniorageService()
@@ -25,16 +25,9 @@ const Preemptive = () => {
   const volatileTokenService = new VolatileTokenService()
 
   useEffect(() => {
-    seigniorageService.loadProposals()
-    seigniorageService.loadProposalRealTime(loadVolatileTokenBalance, loadStableTokenBalance)
-
-    if (wallet) {
-      userService.getBalance()
-      stableTokenService.loadMyStableTokenBalance()
-      volatileTokenService.loadMyVolatileTokenBalance()
-    }
-
     const loadData = () => {
+      seigniorageService.loadProposals()
+      seigniorageService.loadProposalRealTime(loadVolatileTokenBalance, loadStableTokenBalance)
       userService.getBalance()
       volatileTokenService.loadMyVolatileTokenBalance()
       stableTokenService.loadMyStableTokenBalance()
@@ -43,7 +36,7 @@ const Preemptive = () => {
     if (window.ethereum) {
       setupWeb3(loadData)
     }
-  }, []);
+  }, [wallet]);
 
   const loadVolatileTokenBalance = () => {
     volatileTokenService.loadMyVolatileTokenBalance()
@@ -92,12 +85,12 @@ const Preemptive = () => {
                 <ListProposal />
               </Col>
               <Col lg={12}>
-                <UserWallet approve={approve}/>
+                <Asset approve={approve}/>
               </Col>
             </Row>
           </div>
           {
-            proposal ?
+            showingProposal ?
               <div>
                 <DetailProposal vote={vote}/>
               </div>
@@ -108,12 +101,12 @@ const Preemptive = () => {
           }
         </Col>
         <Col lg={0} sm={0} xs={24}>
-          <UserWallet/>
+          <Asset/>
           <Tabs className="preemptive-tab">
-            <TabPane tab="Open Orders" key="1">
+            <TabPane tab="Proposals" key="1">
               <ListProposal vote={vote}/>
             </TabPane>
-            <TabPane tab="Open History" key="2">
+            <TabPane tab="New Proposal" key="2">
               <CreateProposal/>
             </TabPane>
           </Tabs>

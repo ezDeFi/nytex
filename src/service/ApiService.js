@@ -164,15 +164,21 @@ export default class extends BaseService {
 
   timestampToTime(timestamp) {
     let date = new Date(timestamp * 1000)
-    return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    let hourResult = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+    let minuteResult = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+    let secondResult = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
+    return hourResult + ':' + minuteResult + ':' + secondResult;
   }
 
   timestampToDateTime(timestamp) {
     let date = new Date(timestamp * 1000)
     let monthResult = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth()
     let dateResult = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+    let hourResult = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+    let minuteResult = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+    let secondResult = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
 
-    return monthResult +'-'+ dateResult + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    return monthResult +'-'+ dateResult + ' ' + hourResult + ':' + minuteResult + ':' + secondResult;
   }
 
   upperCaseFirstLetter(string) {

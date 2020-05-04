@@ -7,7 +7,8 @@ class PreemptiveRedux extends BaseRedux {
 
   defineDefaultState () {
     return {
-      proposal: ''
+      showingProposal: '',
+      userProposal: ''
     }
   }
 }

@@ -6,7 +6,7 @@ import store                      from "../../../store";
 import { cutString, thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, decShift } from '@/util/help.js'
 
 const Detail = (props) => {
-  const proposal = useSelector(state => state.preemptive.proposal)
+  const proposal = useSelector(state => state.preemptive.showingProposal)
   const action     = store.getRedux('preemptive').actions;
   const globalParams      = useSelector(state => state.seigniorage.globalParams)
 
