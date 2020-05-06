@@ -8,7 +8,6 @@ import {useSelector, useDispatch} from "react-redux";
 import store                      from '../../../store'
 import preemptive                 from "../../../store/redux/preemptive";
 import {thousands, weiToMNTY}     from '@/util/help.js'
-import './style/index.scss'
 
 const ListProposal = (props) => {
   const dispatch          = useDispatch()

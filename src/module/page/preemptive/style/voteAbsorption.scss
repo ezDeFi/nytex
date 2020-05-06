@@ -13,6 +13,12 @@
       font-size: 12px;
       padding: 3px;
     }
+
+    &--vote-up:disabled,
+    &--vote-down:disabled {
+      background-color: $primary_light_color;
+    }
+
     &--vote-up {
       background: $green_color;
       border-bottom-left-radius: 5px;
@@ -24,7 +30,7 @@
       border-top-right-radius: 5px;
     }
 
-    &--btn-provoke {
+    &--btn-revoke {
       font-size: 12px;
       background: $primary_light_color;
       width: 150px;

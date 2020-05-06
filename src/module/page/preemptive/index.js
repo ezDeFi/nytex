@@ -8,20 +8,20 @@ import './style/index.scss'
 import SeigniorageService           from "../../../service/contracts/SeigniorageService";
 import UserService                  from "../../../service/UserService";
 import {useSelector}                from "react-redux";
-import Asset                   from './asset'
+import Asset                        from './asset'
 import StableTokenService           from "../../../service/contracts/StableTokenService";
 import VolatileTokenService         from "../../../service/contracts/VolatileTokenService";
 import {setupWeb3}                  from "../../../util/auth";
 
 const Preemptive = () => {
-  const {TabPane}            = Tabs;
-  const wallet               = useSelector(state => state.user.wallet)
-  const showingProposal             = useSelector(state => state.preemptive.showingProposal)
+  const {TabPane} = Tabs;
+  const wallet = useSelector(state => state.user.wallet)
+  const showingProposal = useSelector(state => state.preemptive.showingProposal)
   const volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)
-  const balance              = useSelector(state => state.user.balance)
-  const seigniorageService   = new SeigniorageService()
-  const userService          = new UserService()
-  const stableTokenService   = new StableTokenService()
+  const balance = useSelector(state => state.user.balance)
+  const seigniorageService = new SeigniorageService()
+  const userService = new UserService()
+  const stableTokenService = new StableTokenService()
   const volatileTokenService = new VolatileTokenService()
 
   useEffect(() => {
@@ -46,8 +46,8 @@ const Preemptive = () => {
     stableTokenService.loadMyStableTokenBalance()
   }
 
-  const vote = (maker, voteUp) => {
-    seigniorageService.vote(maker, voteUp)
+  const vote = async (maker, voteUp) => {
+    await seigniorageService.vote(maker, voteUp)
   }
 
   const approve = (amount, isVolatile) => {
@@ -61,7 +61,7 @@ const Preemptive = () => {
   const createProposal = (amount, stake, slashingRate, lockdownExpiration) => {
     const have = BigInt(stake)
     const mnty = BigInt(volatileTokenBalance)
-    let value  = undefined
+    let value = undefined
     if (have > mnty) {
       value = (have - mnty)
       if (value > BigInt(balance)) {
@@ -82,7 +82,7 @@ const Preemptive = () => {
             </div>
             <Row>
               <Col lg={12}>
-                <ListProposal />
+                <ListProposal/>
               </Col>
               <Col lg={12}>
                 <Asset approve={approve}/>
@@ -101,7 +101,7 @@ const Preemptive = () => {
           }
         </Col>
         <Col lg={0} sm={0} xs={24}>
-          <Asset/>
+          <Asset approve={approve}/>
           <Tabs className="preemptive-tab">
             <TabPane tab="Proposals" key="1">
               <ListProposal vote={vote}/>

@@ -25,7 +25,6 @@ export default class extends BaseService {
   }
 
   async vote(maker, up) {
-    console.log(maker.toString(), up)
     const store    = this.store.getState()
     const contract = store.contracts.seigniorage;
     await contract.methods.vote(maker, up)

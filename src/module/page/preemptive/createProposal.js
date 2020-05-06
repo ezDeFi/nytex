@@ -78,6 +78,9 @@ const CreateProposal = (props) => {
               onChange={e => setStake(e.target.value)}
             />
           </Col>
+          <Col lg={5} className="right-align">
+            <code>> {thousands(weiToMNTY(globalParams.stake) * 2 / 3)}</code>
+          </Col>
         </Row>
         <Row className="margin-bt-sm">
           <Col lg={4} xs={10}>Absorption (NEWSD):</Col>
@@ -96,6 +99,9 @@ const CreateProposal = (props) => {
               onChange={e => setSlashing(e.target.value)}
             />
           </Col>
+          <Col lg={5} className="right-align">
+            <code>> {Math.floor(globalParams.slashingRate * 2 / 3) / 1000}</code>
+          </Col>
         </Row>
         <Row className="margin-bt-sm">
           <Col lg={4} xs={10}>Lockdown Duration:</Col>
@@ -104,6 +110,9 @@ const CreateProposal = (props) => {
               value={lockdown}
               onChange={e => setLockdown(e.target.value)}
             />
+          </Col>
+          <Col lg={5} className="right-align">
+            <code>> {Math.floor(globalParams.lockdownExpiration * 2 / 3)}</code>
           </Col>
         </Row>
         <Row className="margin-bt-sm">

@@ -141,10 +141,12 @@ const Allowance = (props) => {
           </Col>
         </Row>
       </Modal>
-      <button
-        className="btn-my-proposal" onClick={showUserProposal}>
-        My proposal
-      </button>
+      {userProposal &&
+        <button
+          className="btn-my-proposal" onClick={showUserProposal}>
+          My proposal
+        </button>
+      }
     </div>
   )
 }

@@ -1,5 +1,7 @@
-import BaseService from '../model/BaseService'
-import axios       from 'axios'
+import BaseService                 from '../model/BaseService'
+import axios                       from 'axios'
+import {div, mntyToWei, nusdToWei, thousands, weiToPrice} from '@/util/help'
+import web3                        from "web3";
 
 const API_URL = 'http://51.158.123.17:8881'
 const API = {
@@ -68,10 +70,10 @@ export default class extends BaseService {
           let haveAmount = parseFloat(record.haveAmount.split(' ')[0])
           let status     = record.wantAmount.split(' ')[1].toLowerCase() === 'newsd' ? 'sell' : 'buy'
           if (status === 'buy') {
-            price  = haveAmount / wantAmount
+            price  =   thousands(weiToPrice(mntyToWei(wantAmount), nusdToWei(haveAmount)))
             amount = wantAmount
           } else {
-            price  = wantAmount / haveAmount
+            price  = thousands(weiToPrice(mntyToWei(haveAmount), nusdToWei(wantAmount)))
             amount = haveAmount
           }
           return {
@@ -227,16 +229,15 @@ export default class extends BaseService {
 
     let status = _wantAmount.split(' ')[1].toLowerCase() === 'newsd' ? 'sell' : 'buy'
     if (status === 'buy') {
-      price  = haveAmount / wantAmount
+      price  = thousands(weiToPrice(mntyToWei(wantAmount), nusdToWei(haveAmount)))
       amount = wantAmount
       volume = haveAmount
     } else {
-      price  = wantAmount / haveAmount
+      price  = thousands(weiToPrice(mntyToWei(haveAmount), nusdToWei(wantAmount)))
       amount = haveAmount
       volume = wantAmount
     }
     filled = (1 - (haveAmountNow / haveAmount)) * 100
-    console.log(haveAmountNow, haveAmount, filled)
 
     return {
       price : price,

@@ -97,11 +97,6 @@ const OrderBook = (props) => {
       }
     },
   ];
-  const [dataSourceHistory, setDataSourceHistory] = useState([])
-
-  // useEffect(() => {
-  //   apiService.loadTradeHistories(setDataSourceHistory)
-  // }, [])
 
   const columnsHistory = [
     {

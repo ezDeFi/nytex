@@ -55,6 +55,7 @@ const Index = (props) => {
       console.log('*** want NTY: ', thousands(wantWei))
       props.buyVolatileToken(haveWei, wantWei)
     } catch (e) {
+      console.log("------------error---------")
       if (typeof e === 'string') {
         Modal.error({
           title: 'New Buy Order',

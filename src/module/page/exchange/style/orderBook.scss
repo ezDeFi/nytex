@@ -39,12 +39,15 @@
   &__column {
     &--price {
       width: 30%;
+      padding: 0 3px 0 0 !important;
     }
     &--amount {
       width: 30%;
+      padding: 0 3px !important;
     }
     &--volume {
       width: 40%;
+      padding: 0 0 0 3px !important;
     }
   }
 

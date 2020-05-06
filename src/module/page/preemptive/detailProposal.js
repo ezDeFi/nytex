@@ -1,4 +1,4 @@
-import React                      from 'react';
+import React, {useState}                      from 'react';
 import {Row, Col, Input}          from 'antd'
 import ButOval                    from '../../Component/ButtonOval'
 import {useSelector, useDispatch} from "react-redux";
@@ -14,6 +14,31 @@ const Detail = (props) => {
     <span>{
       (BigInt(proposal.totalVote) * BigInt(proposal.stake) * BigInt(150) / BigInt(globalParams.rank)).toString()
     }%</span>
+
+  const [enableVoteUp, setEnableVoteUp] = useState(true)
+  const [enableVoteDown, setEnableVoteDown] = useState(true)
+
+  const voteUp = async () => {
+    setEnableVoteUp(false)
+    try {
+      await props.vote(proposal.maker, true)
+      setEnableVoteUp(true)
+    } catch (e) {
+      console.log(e)
+      setEnableVoteUp(true)
+    }
+  }
+
+  const voteDown = async () => {
+    setEnableVoteDown(false)
+    try {
+      await props.vote(proposal.maker, false)
+      setEnableVoteDown(true)
+    } catch (e) {
+      console.log(e)
+      setEnableVoteDown(true)
+    }
+  }
 
   return (
     <div className="absorption">
@@ -51,8 +76,8 @@ const Detail = (props) => {
             <Row>
               <Col lg={5}>{proposal.slashingRate}</Col>
               <Col lg={19}>
-                <button className="absorption-content--vote-up" onClick={() => props.vote(proposal.maker, true)}>Vote up</button>
-                <button className="absorption-content--vote-down" onClick={() => props.vote(proposal.maker, false)}>Vote Down</button>
+                <button className="absorption-content--vote-up" disabled={!enableVoteUp} onClick={voteUp}>Vote up</button>
+                <button className="absorption-content--vote-down" disabled={!enableVoteDown} onClick={voteDown}>Vote Down</button>
               </Col>
             </Row>
           </Col>
@@ -63,7 +88,7 @@ const Detail = (props) => {
             <Row>
               <Col lg={5}>{proposal.lockdownExpiration}</Col>
               <Col lg={19}>
-                <button className="absorption-content--btn-provoke">Provoke</button>
+                <button className="absorption-content--btn-revoke">Revoke</button>
               </Col>
             </Row>
           </Col>
