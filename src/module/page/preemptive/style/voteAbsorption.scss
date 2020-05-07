@@ -1,5 +1,4 @@
 .absorption {
-  border-top: 1px solid $primary_light_color;
   width: 100%;
 
   &-content {
@@ -8,7 +7,7 @@
 
     &--vote-up,
     &--vote-down {
-      width: 120px;
+      width: 100px;
       text-align: center;
       font-size: 12px;
       padding: 3px;

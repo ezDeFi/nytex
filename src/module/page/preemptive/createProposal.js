@@ -34,13 +34,14 @@ const CreateProposal = (props) => {
         throw "absorption amount unspecified"
       }
       let slashingRate       = slashingRate
-      let lockdownExpiration = lockdownExpiration
+      let lockdownExpiration = lockdown
       if (slashingRate && slashingRate * 1000 <= globalParams.slashingRate * 2 / 3) {
         throw "slashing rate too small"
       }
       if (lockdownExpiration && lockdownExpiration <= globalParams.lockdownExpiration * 2 / 3) {
         throw "lockdown expiration too small"
       }
+      console.log(lockdownExpiration)
       props.createProposal(amountValue.toString(), stakeValue.toString(), slashingRate, lockdownExpiration)
     } catch (e) {
       if (typeof e === 'string') {
@@ -63,16 +64,16 @@ const CreateProposal = (props) => {
   return (
     <div className="create-proposal-box ">
       <div className="center hide-on-mobile">
-        <h3 className="preemptive--header-2">Create Proposal</h3>
+        <h4 className="preemptive--header-2">Create Proposal</h4>
       </div>
       <div>
         <Row className="margin-bt-lg hide-on-mobile">
-          <Col lg={4}>Marker:</Col>
+          <Col lg={6}>Marker:</Col>
           <Col lg={9}>{wallet}</Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={4} xs={10}>Stake (MNTY):</Col>
-          <Col lg={9} xs={14}>
+          <Col lg={6} xs={10}>Stake (MNTY):</Col>
+          <Col lg={13} xs={14}>
             <Input
               value={stake}
               onChange={e => setStake(e.target.value)}
@@ -83,8 +84,8 @@ const CreateProposal = (props) => {
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={4} xs={10}>Absorption (NEWSD):</Col>
-          <Col lg={9} xs={14}>
+          <Col lg={6} xs={10}>Absorption (NEWSD):</Col>
+          <Col lg={13} xs={14}>
             <Input
               value={amount}
               onChange={e => setAmount(e.target.value)}
@@ -92,8 +93,8 @@ const CreateProposal = (props) => {
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={4} xs={10}>Slashing Rate:</Col>
-          <Col lg={9} xs={14}>
+          <Col lg={6} xs={10}>Slashing Rate:</Col>
+          <Col lg={13} xs={14}>
             <Input
               value={slashing}
               onChange={e => setSlashing(e.target.value)}
@@ -104,8 +105,8 @@ const CreateProposal = (props) => {
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={4} xs={10}>Lockdown Duration:</Col>
-          <Col lg={9} xs={14}>
+          <Col lg={6} xs={10}>Lockdown Duration:</Col>
+          <Col lg={13} xs={14}>
             <Input
               value={lockdown}
               onChange={e => setLockdown(e.target.value)}
@@ -116,7 +117,7 @@ const CreateProposal = (props) => {
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={{span: 9, offset: 4}} xs={{span: 14, offset: 10}}>
+          <Col lg={{span: 9, offset: 6}} xs={{span: 14, offset: 10}}>
             <button
               className="create-proposal--btn-submit"
               onClick={createProposal}

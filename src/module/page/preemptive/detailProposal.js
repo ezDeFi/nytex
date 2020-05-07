@@ -7,7 +7,7 @@ import { cutString, thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdTo
 
 const Detail = (props) => {
   const proposal = useSelector(state => state.preemptive.showingProposal)
-  const action     = store.getRedux('preemptive').actions;
+  const userProposal = useSelector(state => state.preemptive.userProposal)
   const globalParams      = useSelector(state => state.seigniorage.globalParams)
 
   const rank = proposal.totalVote && globalParams.rank > 0 &&
@@ -43,39 +43,39 @@ const Detail = (props) => {
   return (
     <div className="absorption">
       <div className="center">
-        <h3 className="preemptive--header-2">Detail</h3>
+        <h4 className="preemptive--header-2">Detail</h4>
       </div>
       <div className="absorption-content">
         <Row className="margin-bt-md">
-          <Col lg={4}><b>Maker</b></Col>
-          <Col lg={20}>{proposal.maker}</Col>
+          <Col lg={6}><b>Maker</b></Col>
+          <Col lg={18}>{proposal.maker}</Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={4}><b>Stake:</b></Col>
-          <Col lg={20}>
+          <Col lg={6}><b>Stake:</b></Col>
+          <Col lg={18}>
             <Row>
-              <Col lg={5}>{thousands(weiToMNTY(proposal.stake))} Million NTY</Col>
-              <Col lg={4}><b>Total Vote:</b></Col>
-              <Col lg={15}>{thousands(weiToMNTY(proposal.totalVote))}</Col>
+              <Col lg={8}>{thousands(weiToMNTY(proposal.stake))} Million NTY</Col>
+              <Col lg={6}><b>Total Vote:</b></Col>
+              <Col lg={10}>{thousands(weiToMNTY(proposal.totalVote))}</Col>
             </Row>
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={4}><b>Absorptiona:</b></Col>
-          <Col lg={20}>
+          <Col lg={6}><b>Absorptiona:</b></Col>
+          <Col lg={18}>
             <Row>
-              <Col lg={5}>{proposal.amount} NewSD</Col>
-              <Col lg={4}><b>Rank:</b></Col>
-              <Col lg={15}>{rank}</Col>
+              <Col lg={8}>{proposal.amount} NewSD</Col>
+              <Col lg={6}><b>Rank:</b></Col>
+              <Col lg={10}>{rank}</Col>
             </Row>
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={4}><b>Slashing Rate</b></Col>
-          <Col lg={20}>
+          <Col lg={6}><b>Slashing Rate</b></Col>
+          <Col lg={18}>
             <Row>
-              <Col lg={5}>{proposal.slashingRate}</Col>
-              <Col lg={19}>
+              <Col lg={8}>{proposal.slashingRate}</Col>
+              <Col lg={15}>
                 <button className="absorption-content--vote-up" disabled={!enableVoteUp} onClick={voteUp}>Vote up</button>
                 <button className="absorption-content--vote-down" disabled={!enableVoteDown} onClick={voteDown}>Vote Down</button>
               </Col>
@@ -83,12 +83,15 @@ const Detail = (props) => {
           </Col>
         </Row>
         <Row>
-          <Col lg={4}><b>Lockdown Duration:</b></Col>
-          <Col lg={20}>
+          <Col lg={6}><b>Lockdown Duration:</b></Col>
+          <Col lg={18}>
             <Row>
-              <Col lg={5}>{proposal.lockdownExpiration}</Col>
-              <Col lg={19}>
-                <button className="absorption-content--btn-revoke">Revoke</button>
+              <Col lg={8}>{proposal.lockdownExpiration}</Col>
+              <Col lg={15}>
+                {
+                  userProposal &&
+                  <button className="absorption-content--btn-revoke">Revoke</button>
+                }
               </Col>
             </Row>
           </Col>

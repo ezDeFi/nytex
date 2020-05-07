@@ -1,13 +1,10 @@
-import React, {useState}          from 'react';
+import React          from 'react';
 import {Table, Row, Col}          from 'antd'
-import {
-  UpOutlined,
-  DownOutlined
-}                                 from '@ant-design/icons';
 import {useSelector, useDispatch} from "react-redux";
 import store                      from '../../../store'
 import preemptive                 from "../../../store/redux/preemptive";
-import {thousands, weiToMNTY}     from '@/util/help.js'
+import ProposalOnMobile from './proposalOnMobile'
+
 
 const ListProposal = (props) => {
   const dispatch          = useDispatch()
@@ -47,65 +44,16 @@ const ListProposal = (props) => {
           (BigInt(record.totalVote) * BigInt(record.stake) * BigInt(150) / BigInt(globalParams.rank)).toString() + '%'
         return renderStripedTable(rank, record)
       }
-      // render   : (value, rowValue) => renderStripedTable('', rowValue)
-    },
-    {
-      dataIndex: 'proposal-on-mobile',
-      key      : 'proposal-on-mobile',
-      className: 'right-align hide-on-desktop',
-      render   : (value, object) => {
-        // console.log(object)
-        return (
-          <div className="list-proposal-mb-box">
-            <Row className="list-proposal-mb">
-              <Col xs={5} className="left-align list-proposal-mb__col-1">
-                <p className="text-green">Marker</p>
-                <p>Stake</p>
-                <p>Absorption</p>
-                <p>Total Vote</p>
-              </Col>
-              <Col xs={7} className="right-align list-proposal-mb__col-2">
-                <p className="text-green">{object.maker.slice(0, 16)}</p>
-                <p>{thousands(weiToMNTY(object.stake))}</p>
-                <p>{object.amount}</p>
-                <p>{thousands(weiToMNTY(object.totalVote))}</p>
-              </Col>
-              <Col xs={6} className="left-align list-proposal-mb__col-3">
-                <p>Slashing Rate</p>
-                <p>Rank</p>
-                <p>Lockdown Expiration</p>
-              </Col>
-              <Col xs={3} className="right-align list-proposal-mb__col-4">
-                <p>{object.slashingRate}</p>
-                <p>{object.totalVote && globalParams.rank > 0 &&
-                (BigInt(object.totalVote) * BigInt(object.stake) * BigInt(150) / BigInt(globalParams.rank)).toString()}%</p>
-                <p>{object.lockdownExpiration}</p>
-              </Col>
-              <Col xs={3}>
-                <p>vote</p>
-                <div>
-                  <button
-                    className="list-proposal-mb__btn-up"
-                    onClick={() => props.vote(object.maker, true)}
-                  >
-                    <UpOutlined/>
-                  </button>
-                </div>
-                <div>
-                  <button
-                    className="list-proposal-mb__btn-down"
-                    onClick={() => props.vote(object.maker, false)}
-                  >
-                    <DownOutlined/>
-                  </button>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        )
-      }
     },
   ];
+
+  const listProposalMobile = () => {
+    let rows = []
+    for(var i in proposals) {
+      rows.push(<ProposalOnMobile vote={props.vote} key={i} proposal={proposals[i]}/>)
+    }
+    return rows
+  }
 
   const renderStripedTable = (value, rowValue) => {
     let bgColor = rowValue.key % 2 === 1 ? '#1F2538' : 'transparent'
@@ -115,24 +63,31 @@ const ListProposal = (props) => {
 
   return (
     <div className="list-proposals">
-      <Table
-        dataSource={Object.values(proposals)}
-        columns={sellColumns}
-        pagination={false}
-        scroll={{y: 270}}
-        onRow={(record, rowIndex) => {
-          return {
-            onClick: (event) => {
-              if(showingProposal) {
-                dispatch(seigniorageAction.proposals_update({[showingProposal.maker]: {...showingProposal, choosing: false}}))
+      <Row>
+        <Col lg={24} sm={0}>
+          <Table
+            dataSource={Object.values(proposals)}
+            columns={sellColumns}
+            pagination={false}
+            scroll={{y: 270}}
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: (event) => {
+                  if(showingProposal) {
+                    dispatch(seigniorageAction.proposals_update({[showingProposal.maker]: {...showingProposal, choosing: false}}))
+                  }
+                  dispatch(action.showingProposal_update(record))
+                  record.choosing = true
+                  dispatch(seigniorageAction.proposals_update({[record.maker]: record}))
+                }
               }
-              dispatch(action.showingProposal_update(record))
-              record.choosing = true
-              dispatch(seigniorageAction.proposals_update({[record.maker]: record}))
-            }
-          }
-        }}
-      />
+            }}
+          />
+        </Col>
+        <Col lg={0} sm={24}>
+          {listProposalMobile()}
+        </Col>
+      </Row>
     </div>
   )
 }

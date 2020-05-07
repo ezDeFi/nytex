@@ -63,7 +63,6 @@ export default class extends BaseService {
     this.dispatch(seigniorageRedux.actions.proposals_reset());
     for (let i = 0; i < count; ++i) {
       methods.getProposal(i).call().then(res => {
-        // console.log(res);
         let proposal = {
           key               : i,
           maker             : res.maker.toString(),
@@ -73,20 +72,19 @@ export default class extends BaseService {
           lockdownExpiration: res.lockdownExpiration,
           choosing          : res.maker === store.user.wallet ? true : false
         }
-        if(res.maker === store.user.wallet) {
+        if(res.maker.toLocaleLowerCase() === store.user.wallet.toLocaleLowerCase()) {
           this.dispatch(preemptiveRedux.actions.userProposal_update(proposal))
         }
         this.dispatch(seigniorageRedux.actions.proposals_update({
           [res.maker]: proposal
         }));
         methods.totalVote(res.maker).call().then(totalVote => {
-          // console.log(totalVote);
           this.dispatch(seigniorageRedux.actions.proposals_update({
             [res.maker]: {
               totalVote: totalVote,
             }
           }));
-          if(res.maker === store.user.wallet) {
+          if(res.maker.toLocaleLowerCase() === store.user.wallet.toLocaleLowerCase()) {
             this.dispatch(preemptiveRedux.actions.userProposal_update({ totalVote: totalVote}))
           }
         });

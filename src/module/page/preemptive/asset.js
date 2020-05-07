@@ -142,10 +142,12 @@ const Allowance = (props) => {
         </Row>
       </Modal>
       {userProposal &&
-        <button
-          className="btn-my-proposal" onClick={showUserProposal}>
-          My proposal
-        </button>
+        <Row><Col lg={24} xs={0}>
+          <button
+            className="btn-my-proposal" onClick={showUserProposal}>
+            My proposal
+          </button>
+        </Col></Row>
       }
     </div>
   )
@@ -161,7 +163,6 @@ const asset = (props) => {
   const stableTokenBalance = useSelector(state => state.user.stableTokenBalance)
   const wallet = useSelector(state => state.user.wallet)
   const showingProposal = useSelector(state => state.preemptive.showingProposal)
-  const proposals = useSelector(state => state.seigniorage.proposals)
   const userProposal = useSelector(state => state.preemptive.userProposal)
 
   useEffect(() => {

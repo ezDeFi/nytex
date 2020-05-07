@@ -11,12 +11,14 @@ import {useSelector}                from "react-redux";
 import Asset                        from './asset'
 import StableTokenService           from "../../../service/contracts/StableTokenService";
 import VolatileTokenService         from "../../../service/contracts/VolatileTokenService";
-import {setupWeb3}                  from "../../../util/auth";
+import {setupWeb3}      from "../../../util/auth";
+import ProposalOnMobile from "./proposalOnMobile";
 
 const Preemptive = () => {
   const {TabPane} = Tabs;
   const wallet = useSelector(state => state.user.wallet)
   const showingProposal = useSelector(state => state.preemptive.showingProposal)
+  const userProposal = useSelector(state => state.preemptive.userProposal)
   const volatileTokenBalance = useSelector(state => state.user.volatileTokenBalance)
   const balance = useSelector(state => state.user.balance)
   const seigniorageService = new SeigniorageService()
@@ -76,29 +78,32 @@ const Preemptive = () => {
     <BasePage>
       <Row className="preemptive">
         <Col lg={24} sm={24} xs={0}>
-          <div className="proposal">
-            <div className="center">
-              <h3 className="preemptive--header-2">Proposals</h3>
-            </div>
-            <Row>
-              <Col lg={12}>
-                <ListProposal/>
-              </Col>
-              <Col lg={12}>
-                <Asset approve={approve}/>
-              </Col>
-            </Row>
-          </div>
-          {
-            showingProposal ?
-              <div>
-                <DetailProposal vote={vote}/>
-              </div>
-              :
-              <div>
-                <CreateProposal createProposal={createProposal}/>
-              </div>
-          }
+          <Row>
+            <Col lg={12}>
+              <h4 className="preemptive--header-2 center">Proposals</h4>
+            </Col>
+            <Col lg={12}>
+              <h4 className="preemptive--header-2 padding-left-lg left-align">My Wallet</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col lg={12} className="preemptive--left-site">
+              <ListProposal/>
+              {
+                showingProposal ?
+                  <div>
+                    <DetailProposal vote={vote}/>
+                  </div>
+                  :
+                  <div>
+                    <CreateProposal createProposal={createProposal}/>
+                  </div>
+              }
+            </Col>
+            <Col lg={12} className="preemptive--right-site">
+              <Asset approve={approve}/>
+            </Col>
+          </Row>
         </Col>
         <Col lg={0} sm={0} xs={24}>
           <Asset approve={approve}/>
@@ -106,9 +111,16 @@ const Preemptive = () => {
             <TabPane tab="Proposals" key="1">
               <ListProposal vote={vote}/>
             </TabPane>
-            <TabPane tab="New Proposal" key="2">
-              <CreateProposal/>
-            </TabPane>
+            {
+              userProposal ?
+              <TabPane tab="My Proposal" key="2">
+                <ProposalOnMobile proposal={userProposal} />
+              </TabPane>
+                :
+              <TabPane tab="New Proposal" key="2">
+                <CreateProposal createProposal={createProposal}/>
+              </TabPane>
+            }
           </Tabs>
         </Col>
       </Row>
