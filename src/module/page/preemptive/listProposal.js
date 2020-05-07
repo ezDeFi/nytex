@@ -5,7 +5,6 @@ import store                      from '../../../store'
 import preemptive                 from "../../../store/redux/preemptive";
 import ProposalOnMobile from './proposalOnMobile'
 
-
 const ListProposal = (props) => {
   const dispatch          = useDispatch()
   const action            = store.getRedux('preemptive').actions;

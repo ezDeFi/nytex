@@ -26,29 +26,25 @@ export default class extends BaseService {
   }
 
   loadHistoricalData(callback) {
+    var that = this
     var stateTime = new Date('2019-01-01').getTime()
     var curTime   = new Date().getTime()
-    axios.get('https://web-api.coinmarketcap.com/v1/cryptocurrency/ohlcv/historical',
+    axios.get('http://51.158.123.17:8881/getcandle',
       {
-        params : {
-          convert   : 'USD',
-          slug      : 'nexty',
-          time_end  : curTime,
-          time_start: stateTime
-        },
         headers: {'Accept': 'application/json'}
       })
       .then(function (response) {
-        let data   = response.data.data.quotes
+        let data   = response.data
         let result = []
         for (let i in data) {
+
           let historical = {
-            time  : data[i].time_open,
-            open  : data[i].quote.USD.open,
-            high  : data[i].quote.USD.high,
-            low   : data[i].quote.USD.low,
-            close : data[i].quote.USD.close,
-            volume: data[i].quote.USD.volume
+            time  : data[i].time,
+            open  : data[i].open * Math.random() * 5,
+            high  : data[i].top  * Math.random() * 5,
+            low   : data[i].bot * Math.random() * 5,
+            close : data[i].close * Math.random() * 5,
+            volume: data[i].volume
           }
           result.push(historical)
         }
@@ -166,21 +162,17 @@ export default class extends BaseService {
 
   timestampToTime(timestamp) {
     let date = new Date(timestamp * 1000)
-    let hourResult = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-    let minuteResult = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-    let secondResult = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
-    return hourResult + ':' + minuteResult + ':' + secondResult;
+    return this.pad(date.getHours()) + ':' + this.pad(date.getMinutes()) + ':' + this.pad(date.getSeconds());
   }
 
   timestampToDateTime(timestamp) {
     let date = new Date(timestamp * 1000)
-    let monthResult = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth()
-    let dateResult = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
-    let hourResult = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-    let minuteResult = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-    let secondResult = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
+    let month =   this.pad(date.getMonth() + 1)
+    return month +'-'+ this.pad(date.getDate()) + ' ' + this.pad(date.getHours()) + ':' + this.pad(date.getMinutes()) + ':' + this.pad(date.getSeconds());
+  }
 
-    return monthResult +'-'+ dateResult + ' ' + hourResult + ':' + minuteResult + ':' + secondResult;
+  pad(num) {
+    return ('0' + num).slice(-2)
   }
 
   upperCaseFirstLetter(string) {

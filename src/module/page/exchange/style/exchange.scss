@@ -2,6 +2,10 @@
     border: 1px solid $primary_light_color;
 }
 
+.chart-container {
+    height: 100%;
+}
+
 .tab {
     display: none;
     background-color: $primary_color;
