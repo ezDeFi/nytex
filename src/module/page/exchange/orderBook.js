@@ -10,12 +10,14 @@ const OrderBook = (props) => {
   let ntyQuote         = useSelector(state => state.common.ntyQuote);
   let listBuys         = useSelector(state => state.seigniorage.bids);
   let listSell         = useSelector(state => state.seigniorage.asks);
+  const [maxVolume, setMaxVolume]    = useState(0);
   let listBuySource    = []
   let listSellSource   = []
   const exchangeAction = store.getRedux('exchange').actions;
   const dispatch       = useDispatch()
 
   for (let i in listBuys) {
+    let volume = parseFloat(cutFloat(listBuys[i].volume, 6))
     listBuySource.push({
       key        : i,
       price      : listBuys[i].price,
@@ -23,23 +25,28 @@ const OrderBook = (props) => {
       volume     : cutFloat(listBuys[i].volume, 6),
       priceToSort: listBuys[i].priceToSort
     })
+    if(volume > maxVolume) setMaxVolume(volume)
   }
   listBuySource.sort(function (a, b) {
     return b.priceToSort - a.priceToSort;
   });
 
   for (let i in listSell) {
+    let volume = parseFloat(cutFloat(listSell[i].volume, 6))
     listSellSource.push({
       key        : i,
       price      : listSell[i].price,
       amount     : cutFloat(listSell[i].amount, 6),
-      volume     : cutFloat(listSell[i].volume, 6),
+      volume     : volume,
       priceToSort: listSell[i].priceToSort
     })
+
+    if(volume > maxVolume) setMaxVolume(volume)
   }
   listSellSource.sort(function (a, b) {
     return parseFloat(b.priceToSort) - parseFloat(a.priceToSort);
   });
+
 
   const sellcolumns = [
     {
@@ -61,7 +68,6 @@ const OrderBook = (props) => {
       key      : 'volume',
       className: 'right-align order-book__column--volume',
       render   : (value, object) => {
-        const maxVolume    = 1;
         const widthPercent = 250 * parseFloat(value) / maxVolume > maxVolume ? 250 : 250 * parseFloat(value) / maxVolume
         return (<div>
           <p className="order-book__volume-mask order-book__volume-mask-sell" style={{width: widthPercent + '%'}}></p>
@@ -88,7 +94,6 @@ const OrderBook = (props) => {
       key      : 'volume',
       className: 'right-align order-book__column--volume',
       render   : (value) => {
-        const maxVolume    = 1;
         const widthPercent = 250 * parseFloat(value) / maxVolume > maxVolume ? 250 : 250 * parseFloat(value) / maxVolume
         return (<div>
           <p className="order-book__volume-mask order-book__volume-mask-buy" style={{width: widthPercent + '%'}}></p>
@@ -137,8 +142,7 @@ const OrderBook = (props) => {
       <Col lg={12} xs={24} className="order-book__buy-and-sell">
         <p className="order-book__title hide-on-mobile">Orderbook</p>
         <div className="order-book__sell">
-          <Table dataSource={listSellSource} columns={sellcolumns} pagination={false} onRow={onRowTable}
-          />
+          <Table dataSource={listSellSource} columns={sellcolumns} pagination={false} onRow={onRowTable} scroll={{y: 182}}/>
         </div>
         <Row className="order-book__current-price">
           <Col span={6} className="left-align">${cutFloat(ntyQuote.price * Math.pow(10, 6), 2)}</Col>
@@ -146,11 +150,11 @@ const OrderBook = (props) => {
           <Col span={10} className="right-align">{cutFloat(ntyQuote.percent_change_24h, 2)}%</Col>
         </Row>
         <div className="order-book__buy-table">
-          <Table dataSource={listBuySource} columns={buyColumns} pagination={false} onRow={onRowTable}/>
+          <Table dataSource={listBuySource} columns={buyColumns} pagination={false} onRow={onRowTable} scroll={{y: 182}}/>
         </div>
       </Col>
       <Col lg={12} xs={0} className="order-book__history-table">
-        <Table dataSource={props.dataSourceHistory} columns={columnsHistory} pagination={false} onRow={onRowTable}/>
+        <Table dataSource={props.dataSourceHistory} columns={columnsHistory} pagination={false} onRow={onRowTable} scroll={{y: 440}}/>
       </Col>
     </Row>
   )

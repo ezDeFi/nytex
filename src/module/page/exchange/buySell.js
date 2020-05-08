@@ -13,9 +13,9 @@ const Index = (props) => {
   let dispatch                      = useDispatch()
   const exchangeAction              = store.getRedux('exchange').actions;
   const [amountBuy, setAmountBuy]   = useState(0)
-  const [amountSell, setAmountSell] = useState(0)
   const [totalBuy, setTotalBuy] = useState(0)
-
+  const [amountSell, setAmountSell] = useState(0)
+  const [totalSell, setTotalSell] = useState(0)
 
   const setAmountToBuy = (persent) => {
     let newTotal = weiToNUSD(stableTokenBalance) * persent / 100;
@@ -26,7 +26,9 @@ const Index = (props) => {
   }
 
   const setAmountToSell = (persent) => {
-    setAmountSell(weiToMNTY(balance) * persent / 100)
+    let newAmount = weiToMNTY(balance) * persent / 100
+    setAmountSell(newAmount)
+    setTotalSell(mul(newAmount, priceToSell))
   }
 
   const buyVolatileToken = () => {
@@ -188,7 +190,10 @@ const Index = (props) => {
               <Input
                 suffix="NUSD"
                 value={priceToSell}
-                onChange={e => dispatch(exchangeAction.priceToSell_update(e.target.value))}
+                onChange={e => {
+                  dispatch(exchangeAction.priceToSell_update(e.target.value))
+                  setTotalSell(mul(e.target.value, amountSell))
+                }}
               />
             </Col>
           </Row>
@@ -199,10 +204,9 @@ const Index = (props) => {
                 suffix="MNTY"
                 value={amountSell}
                 onChange={e => {
-                  // if (e.target.value < weiToMNTY(balance) && !isNaN(e.target.value))
                     setAmountSell(e.target.value)
-                }
-                }
+                    setTotalSell(mul(e.target.value, priceToSell))
+                }}
               />
             </Col>
           </Row>
@@ -220,9 +224,12 @@ const Index = (props) => {
               <div>
                 <Input
                   suffix="NUSD"
-                  value={parseFloat(priceToSell) * parseFloat(amountSell)}
+                  value={totalSell}
                   onChange={e => {
-                    setAmountSell(e.target.value / priceToSell)
+                    setTotalSell(e.target.value)
+                    if(priceToSell) {
+                      setAmountSell(e.target.value / priceToSell)
+                    }
                   }}
                 />
               </div>

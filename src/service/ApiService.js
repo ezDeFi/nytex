@@ -40,10 +40,10 @@ export default class extends BaseService {
 
           let historical = {
             time  : data[i].time,
-            open  : data[i].open * Math.random() * 5,
-            high  : data[i].top  * Math.random() * 5,
-            low   : data[i].bot * Math.random() * 5,
-            close : data[i].close * Math.random() * 5,
+            open  : data[i].open,
+            high  : data[i].hight,
+            low   : data[i].low,
+            close : data[i].close ,
             volume: data[i].volume
           }
           result.push(historical)

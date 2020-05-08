@@ -50,6 +50,7 @@ const Exchange = () => {
     const mnty = BigInt(volatileTokenBalance)
 
     let value = undefined
+    console.log(have, mnty)
     if (have > mnty) {
       value = (have - mnty)
       if (value > BigInt(balance)) {

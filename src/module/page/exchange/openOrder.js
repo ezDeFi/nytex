@@ -332,7 +332,7 @@ const OpenOrder = (props) => {
 
   return (
     <div className="open-order__content">
-      <Tabs tabBarExtraContent={hideOtherPairs}>
+      <Tabs>
         <TabPane tab="Open Orders" key="1">
           {filterHistory('openOrder')}
           {openOrderTable}

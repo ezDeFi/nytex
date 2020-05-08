@@ -29,6 +29,10 @@ $dark-gray: #1F2538;
   & tbody>tr.ant-table-row:hover > td {
     background: $primary_dark_color;
   }
+
+  &-body::-webkit-scrollbar {
+    width: 5px;
+  }
 }
 
 //-------------------------------tab--------------------------------\
