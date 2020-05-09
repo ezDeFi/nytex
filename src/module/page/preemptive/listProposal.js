@@ -4,6 +4,7 @@ import {useSelector, useDispatch} from "react-redux";
 import store                      from '../../../store'
 import preemptive                 from "../../../store/redux/preemptive";
 import ProposalOnMobile from './proposalOnMobile'
+import I18N from '@/I18N'
 
 const ListProposal = (props) => {
   const dispatch          = useDispatch()
@@ -15,7 +16,7 @@ const ListProposal = (props) => {
 
   const sellColumns = [
     {
-      title    : 'Maker',
+      title    :  I18N.get('maker'),
       dataIndex: 'maker',
       key      : 'maker',
       width    : 300,
@@ -26,14 +27,14 @@ const ListProposal = (props) => {
       }
     },
     {
-      title    : 'Absorption',
+      title    : I18N.get('absorption'),
       dataIndex: 'amount',
       key      : 'amount',
       className: 'right-align hide-on-mobile',
       render   : (value, record) => renderStripedTable(value, record)
     },
     {
-      title    : 'Rank',
+      title    : I18N.get('rank'),
       dataIndex: 'rank',
       key      : 'rank',
       className: 'right-align hide-on-mobile',

@@ -4,6 +4,7 @@ import {useSelector, useDispatch, useStore} from "react-redux";
 import store                                from "../../../store";
 import {cutFloat}                           from '@/util/help.js'
 import ApiService                           from "../../../service/ApiService";
+import I18N from '@/I18N'
 
 const OrderBook = (props) => {
   const apiService     = new ApiService()
@@ -50,20 +51,20 @@ const OrderBook = (props) => {
 
   const sellcolumns = [
     {
-      title    : 'Price',
+      title    : I18N.get('price'),
       dataIndex: 'price',
       key      : 'price',
       className: 'left-align order-book__column--price',
       render   : text => (<p style={{color: 'red', margin: 0}}>{text}</p>)
     },
     {
-      title    : 'Amount',
+      title    : I18N.get('amount'),
       dataIndex: 'amount',
       key      : 'amount',
       className: 'right-align order-book__column--amount',
     },
     {
-      title    : 'Volume',
+      title    : I18N.get('volume'),
       dataIndex: 'volume',
       key      : 'volume',
       className: 'right-align order-book__column--volume',
@@ -105,13 +106,13 @@ const OrderBook = (props) => {
 
   const columnsHistory = [
     {
-      title    : 'Time',
+      title    : I18N.get('time'),
       dataIndex: 'time',
       key      : 'time',
       className: 'left-align'
     },
     {
-      title    : 'Price',
+      title    : I18N.get('price'),
       dataIndex: 'price',
       key      : 'price',
       render   : (price) => {
@@ -121,7 +122,7 @@ const OrderBook = (props) => {
       }
     },
     {
-      title    : 'Amount',
+      title    : I18N.get('amount'),
       dataIndex: 'amount',
       key      : 'amount',
       className: 'right-align'
@@ -140,7 +141,7 @@ const OrderBook = (props) => {
   return (
     <Row className="order-book__content">
       <Col lg={12} xs={24} className="order-book__buy-and-sell">
-        <p className="order-book__title hide-on-mobile">Orderbook</p>
+        <p className="order-book__title hide-on-mobile">{I18N.get('order_book')}</p>
         <div className="order-book__sell">
           <Table dataSource={listSellSource} columns={sellcolumns} pagination={false} onRow={onRowTable} scroll={{y: 182}}/>
         </div>

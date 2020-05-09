@@ -1,6 +1,6 @@
 import BaseService                 from '../model/BaseService'
 import axios                       from 'axios'
-import {div, mntyToWei, nusdToWei, thousands, weiToPrice} from '@/util/help'
+import {mntyToWei, nusdToWei, thousands, weiToPrice} from '@/util/help'
 import web3                        from "web3";
 
 const API_URL = 'http://51.158.123.17:8881'
@@ -9,6 +9,7 @@ const API = {
   GET_OPEN_HISTORY: API_URL + '/get-open-history',
   GET_TRADE_HISTORY: API_URL + '/get-trade-history',
   GET_NEW_TRADE: API_URL + '/gettoptrade',
+  GET_CANDLE: API_URL + '/get-candle',
 }
 
 export default class extends BaseService {
@@ -29,7 +30,7 @@ export default class extends BaseService {
     var that = this
     var stateTime = new Date('2019-01-01').getTime()
     var curTime   = new Date().getTime()
-    axios.get('http://51.158.123.17:8881/getcandle',
+    axios.get(API.GET_CANDLE,
       {
         headers: {'Accept': 'application/json'}
       })
@@ -217,7 +218,7 @@ export default class extends BaseService {
 
     let wantAmount    = parseFloat(_wantAmount.split(' ')[0])
     let haveAmount    = parseFloat(_haveAmount.split(' ')[0])
-    let haveAmountNow = parseFloat(_haveAmountNow.split(' ')[0])
+    let haveAmountNow = _haveAmountNow && parseFloat(_haveAmountNow.split(' ')[0])
 
     let status = _wantAmount.split(' ')[1].toLowerCase() === 'newsd' ? 'sell' : 'buy'
     if (status === 'buy') {

@@ -1,9 +1,8 @@
-import React, {useState}                      from 'react';
-import {Row, Col, Input}          from 'antd'
-import ButOval                    from '../../Component/ButtonOval'
-import {useSelector, useDispatch} from "react-redux";
-import store                      from "../../../store";
-import { cutString, thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, decShift } from '@/util/help.js'
+import React, {useState}       from 'react';
+import {Row, Col}              from 'antd'
+import {useSelector}           from "react-redux";
+import {thousands, weiToMNTY } from '@/util/help.js'
+import I18N                    from '@/I18N'
 
 const Detail = (props) => {
   const proposal = useSelector(state => state.preemptive.showingProposal)
@@ -43,54 +42,54 @@ const Detail = (props) => {
   return (
     <div className="absorption">
       <div className="center">
-        <h4 className="preemptive--header-2">Detail</h4>
+        <h4 className="preemptive--header-2">{I18N.get('detail')}</h4>
       </div>
       <div className="absorption-content">
         <Row className="margin-bt-md">
-          <Col lg={6}><b>Maker</b></Col>
+          <Col lg={6}><b>{I18N.get('maker')}</b></Col>
           <Col lg={18}>{proposal.maker}</Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={6}><b>Stake:</b></Col>
+          <Col lg={6}><b>{I18N.get('stake_label')}</b></Col>
           <Col lg={18}>
             <Row>
-              <Col lg={8}>{thousands(weiToMNTY(proposal.stake))} Million NTY</Col>
-              <Col lg={6}><b>Total Vote:</b></Col>
+              <Col lg={8}>{thousands(weiToMNTY(proposal.stake))} {I18N.get('million_nty')}</Col>
+              <Col lg={6}><b>{I18N.get('total_vote')}</b></Col>
               <Col lg={10}>{thousands(weiToMNTY(proposal.totalVote))}</Col>
             </Row>
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={6}><b>Absorptiona:</b></Col>
+          <Col lg={6}><b>{I18N.get('absorption_label')}</b></Col>
           <Col lg={18}>
             <Row>
-              <Col lg={8}>{proposal.amount} NewSD</Col>
-              <Col lg={6}><b>Rank:</b></Col>
+              <Col lg={8}>{proposal.amount} {I18N.get('newsd')}</Col>
+              <Col lg={6}><b>{I18N.get('rank')}</b></Col>
               <Col lg={10}>{rank}</Col>
             </Row>
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={6}><b>Slashing Rate</b></Col>
+          <Col lg={6}><b>{I18N.get('slashing_rate_label')}</b></Col>
           <Col lg={18}>
             <Row>
               <Col lg={8}>{proposal.slashingRate}</Col>
               <Col lg={15}>
-                <button className="absorption-content--vote-up" disabled={!enableVoteUp} onClick={voteUp}>Vote up</button>
-                <button className="absorption-content--vote-down" disabled={!enableVoteDown} onClick={voteDown}>Vote Down</button>
+                <button className="absorption-content--vote-up" disabled={!enableVoteUp} onClick={voteUp}>{I18N.get('vote_up')}</button>
+                <button className="absorption-content--vote-down" disabled={!enableVoteDown} onClick={voteDown}>{I18N.get('vote_down')}</button>
               </Col>
             </Row>
           </Col>
         </Row>
         <Row>
-          <Col lg={6}><b>Lockdown Duration:</b></Col>
+          <Col lg={6}><b>{I18N.get('lockdown_duration_label')}</b></Col>
           <Col lg={18}>
             <Row>
               <Col lg={8}>{proposal.lockdownExpiration}</Col>
               <Col lg={15}>
                 {
                   userProposal &&
-                  <button className="absorption-content--btn-revoke">Revoke</button>
+                  <button className="absorption-content--btn-revoke">{I18N.get('revoke')}</button>
                 }
               </Col>
             </Row>

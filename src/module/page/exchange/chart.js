@@ -19,7 +19,7 @@ const Index = (props) => {
       width     : chartContainerRef.current.clientWidth,
       height    : chartContainerRef.current.clientHeight,
       layout    : {
-        backgroundColor: '#253248',
+        backgroundColor: '#252C3F',
         textColor      : 'rgba(255, 255, 255, 0.9)',
       },
       grid      : {

@@ -16,7 +16,7 @@
     "pretest": "eslint --ignore-path .gitignore .",
     "test": "scripts/test.sh",
     "start": "rimraf dev_dist && webpack-dev-server --mode development --config ./webpack/webpack.dev.js --host 0.0.0.0",
-    "build": "rimraf dist && NODE_ENV=production webpack --mode production --config ./webpack/webpack.prod.js --colors --progress",
+    "build": "rimraf dist && webpack --mode production --config ./webpack/webpack.prod.js --colors --progress",
     "lint": "eslint ./**.js **.js",
     "travislint": "eslint --ignore-path .gitignore .",
     "lint:fix": "eslint . --fix",

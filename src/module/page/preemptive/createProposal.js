@@ -3,6 +3,7 @@ import {Row, Col, Input, Modal}                                                 
 import ButOval                                                                from '../../Component/ButtonOval'
 import {useSelector, useDispatch}                                             from "react-redux";
 import {thousands, weiToNTY, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul} from '@/util/help.js'
+import I18N from '@/I18N'
 
 const CreateProposal = (props) => {
   const wallet                  = useSelector(state => state.user.wallet)
@@ -64,15 +65,15 @@ const CreateProposal = (props) => {
   return (
     <div className="create-proposal-box ">
       <div className="center hide-on-mobile">
-        <h4 className="preemptive--header-2">Create Proposal</h4>
+        <h4 className="preemptive--header-2">{I18N.get('create_proposal')}</h4>
       </div>
       <div>
         <Row className="margin-bt-lg hide-on-mobile">
-          <Col lg={6}>Marker:</Col>
+          <Col lg={6}>{I18N.get('maker')}</Col>
           <Col lg={9}>{wallet}</Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={6} xs={10}>Stake (MNTY):</Col>
+          <Col lg={6} xs={10}>{I18N.get('stake_label')}:</Col>
           <Col lg={13} xs={14}>
             <Input
               value={stake}
@@ -84,7 +85,7 @@ const CreateProposal = (props) => {
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={6} xs={10}>Absorption (NEWSD):</Col>
+          <Col lg={6} xs={10}>{I18N.get('absorption_label')}:</Col>
           <Col lg={13} xs={14}>
             <Input
               value={amount}
@@ -93,7 +94,7 @@ const CreateProposal = (props) => {
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={6} xs={10}>Slashing Rate:</Col>
+          <Col lg={6} xs={10}>{I18N.get('slashing_rate_label')}:</Col>
           <Col lg={13} xs={14}>
             <Input
               value={slashing}
@@ -105,7 +106,7 @@ const CreateProposal = (props) => {
           </Col>
         </Row>
         <Row className="margin-bt-sm">
-          <Col lg={6} xs={10}>Lockdown Duration:</Col>
+          <Col lg={6} xs={10}>{I18N.get('lockdown_duration_label')}:</Col>
           <Col lg={13} xs={14}>
             <Input
               value={lockdown}
@@ -122,7 +123,7 @@ const CreateProposal = (props) => {
               className="create-proposal--btn-submit"
               onClick={createProposal}
             >
-              Submit
+              {I18N.get('submit')}
             </button>
           </Col>
         </Row>

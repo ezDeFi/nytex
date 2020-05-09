@@ -173,8 +173,7 @@ module.exports = merge(common, {
         extractCSS_LIB,
         extractCSS_APP,
         new webpack.DefinePlugin({
-            'process.env':
-        process.env.NODE_ENV === 'production' ? prodEnv : stagingEnv
+            'process.env': prodEnv
         }),
         new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.NoEmitOnErrorsPlugin()

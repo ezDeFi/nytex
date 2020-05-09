@@ -4,6 +4,7 @@ import BtnOval                                                                fr
 import {useSelector, useDispatch}                                   from "react-redux";
 import store                                                                  from "../../../store";
 import {thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei, mul} from '@/util/help.js'
+import I18N from '@/I18N'
 
 const Index = (props) => {
   let stableTokenBalance            = useSelector(state => state.user.stableTokenBalance)
@@ -122,12 +123,12 @@ const Index = (props) => {
     <div className="trade-box__content">
       <Row key={'buy-sell' + 0}>
         <Col lg={12} xs={24} className='trade__sub-box trade__buy-box'>
-          <p className="trade__sub-box--title"> Buy MNTY</p>
+          <p className="trade__sub-box--title"> {I18N.get('buy_mnty')}</p>
           <Row className="trade__sub-box--field-buy">
-            <Col span={6}><label htmlFor="">Price</label></Col>
+            <Col span={6}><label htmlFor="">{I18N.get('price')}</label></Col>
             <Col span={16} offset={2}>
               <Input
-                suffix="NUSD"
+                suffix={I18N.get('nusd')}
                 value={priceToBuy}
                 onChange={e => {
                   dispatch(exchangeAction.priceToBuy_update(e.target.value))
@@ -137,10 +138,10 @@ const Index = (props) => {
             </Col>
           </Row>
           <Row className="trade__sub-box--field-amount">
-            <Col span={6}><label htmlFor="">Amount</label></Col>
+            <Col span={6}><label htmlFor="">{I18N.get('amount')}</label></Col>
             <Col span={16} offset={2}>
               <Input
-                suffix="MNTY"
+                suffix={I18N.get('mnty')}
                 value={amountBuy}
                 onChange={e => {
                   setAmountBuy(e.target.value)
@@ -152,7 +153,7 @@ const Index = (props) => {
           <Row>
           </Row>
           <Row className="trade__sub-box--field-total">
-            <Col span={6}><label htmlFor="">Total</label></Col>
+            <Col span={6}><label htmlFor="">{I18N.get('total')}</label></Col>
             <Col span={16} offset={2}>
               <div className='list-btn-choose-amount'>
                 <BtnOval onClick={() => setAmountToBuy(25)}>25%</BtnOval>
@@ -162,7 +163,7 @@ const Index = (props) => {
               </div>
               <div>
                 <Input
-                  suffix="NUSD"
+                  suffix={I18N.get('nusd')}
                   value={totalBuy}
                   onChange={e => {
                     setTotalBuy(e.target.value)
@@ -178,17 +179,17 @@ const Index = (props) => {
               className="btn-buy-currency"
               onClick={buyVolatileToken}
             >
-              Buy
+              {I18N.get('buy')}
             </button>
           </Row>
         </Col>
         <Col lg={12} xs={24} className='trade__sub-box trade__sell-box'>
-          <p className="trade__sub-box--title"> SELL MNTY</p>
+          <p className="trade__sub-box--title"> {I18N.get('sell_mnty')}</p>
           <Row className="trade__sub-box--field-buy">
-            <Col span={6}><label htmlFor="">Price</label></Col>
+            <Col span={6}><label htmlFor="">{I18N.get('price')}</label></Col>
             <Col span={16} offset={2}>
               <Input
-                suffix="NUSD"
+                suffix={I18N.get('nusd')}
                 value={priceToSell}
                 onChange={e => {
                   dispatch(exchangeAction.priceToSell_update(e.target.value))
@@ -198,10 +199,10 @@ const Index = (props) => {
             </Col>
           </Row>
           <Row className="trade__sub-box--field-amount">
-            <Col span={6}><label htmlFor="">Amount</label></Col>
+            <Col span={6}><label htmlFor="">{I18N.get('amount')}</label></Col>
             <Col span={16} offset={2}>
               <Input
-                suffix="MNTY"
+                suffix={I18N.get('mnty')}
                 value={amountSell}
                 onChange={e => {
                     setAmountSell(e.target.value)
@@ -213,7 +214,7 @@ const Index = (props) => {
           <Row>
           </Row>
           <Row className="trade__sub-box--field-total">
-            <Col span={6}><label htmlFor="">Total</label></Col>
+            <Col span={6}><label htmlFor="">{I18N.get('total')}</label></Col>
             <Col span={16} offset={2}>
               <div className='list-btn-choose-amount'>
                 <BtnOval onClick={() => setAmountToSell(25)}>25%</BtnOval>
@@ -223,7 +224,7 @@ const Index = (props) => {
               </div>
               <div>
                 <Input
-                  suffix="NUSD"
+                  suffix={I18N.get('nusd')}
                   value={totalSell}
                   onChange={e => {
                     setTotalSell(e.target.value)
@@ -240,7 +241,7 @@ const Index = (props) => {
               className="btn-sell-currency"
               onClick={sellVolatileToken}
             >
-              Sell
+              {I18N.get('sell')}
             </button>
           </Row>
         </Col>

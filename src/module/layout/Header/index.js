@@ -11,43 +11,53 @@ import ApiService                   from "../../../service/ApiService";
 import I18N from '@/I18N'
 
 const Header = () => {
-  let currentLanguage           = localStorage.getItem('language')
   const apiService              = new ApiService()
-  const [language, setLanguage] = useState(currentLanguage ? currentLanguage : 'vietnamese')
+  const [language, setLanguage] = useState('en')
   const ntyQuote                = useSelector(state => state.common.ntyQuote)
   const balance                 = useSelector(state => state.user.balance)
   let pathname                  = useLocation().pathname;
   const {SubMenu}               = Menu
 
-  const changeLanguage = (language) => {
-    localStorage.setItem('language', language);
-    setLanguage(language)
+  const changeLanguage = (langCode) => {
+    detectLanguage(langCode)
+    I18N.setLang(langCode)
   }
 
   useEffect(() => {
+    detectLanguage(I18N.getLang())
     apiService.loadNtyQuote()
   }, [])
 
+  const detectLanguage = (code) => {
+      switch(code) {
+        case 'vn':
+        setLanguage(I18N.get('vietnamese'));
+        break;
+        case 'en':
+          setLanguage(I18N.get('english'));
+          break;
+        case 'kr':
+          setLanguage(I18N.get('korean'));
+          break;
+        case 'cn':
+          setLanguage(I18N.get('chinese'));
+          break;
+      }
+  }
 
   const languageItem = [
-    <Menu.Item key="0" onClick={() => changeLanguage('Vietnamese')}>
-      <a href='#' className="text-white"> {I18N.get('0200')}</a>
+    <Menu.Item key="0" onClick={() => changeLanguage('vn')}>
+      <a href='#' className="text-white"> {I18N.get('vietnamese')}</a>
     </Menu.Item>,
-    <Menu.Item key="0" onClick={() => changeLanguage('English')}>
-      <a href='#' className="text-white">English</a>
+    <Menu.Item key="1" onClick={() => changeLanguage('en')}>
+      <a href='#' className="text-white">{I18N.get('english')}</a>
     </Menu.Item>,
-    <Menu.Item key="1" onClick={() => changeLanguage('Korean')}>
-      <a href='#'>Korean</a>
+    <Menu.Item key="2" onClick={() => changeLanguage('kr')}>
+      <a href='#'>{I18N.get('korean')}</a>
     </Menu.Item>,
-    <Menu.Item key="2" onClick={() => changeLanguage('Chinese')}>
-      <a href='#'>Chinese</a>
+    <Menu.Item key="3" onClick={() => changeLanguage('cn')}>
+      <a href='#'>{I18N.get('Chinese')}</a>
     </Menu.Item>,
-    <Menu.Item key="3" onClick={() => changeLanguage('Deutsch')}>
-      <a href='#'>Deutsch</a>
-    </Menu.Item>,
-    <Menu.Item key="4" onClick={() => changeLanguage('Espanol')}>
-      <a href='#'>Espanol</a>
-    </Menu.Item>
   ]
 
   const LanguageSetting = <Menu>
@@ -69,7 +79,7 @@ const Header = () => {
         <svg className="nav__icon">
           <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
         </svg>
-        <span className="text-light-grey">Exchange</span>
+        <span className="text-light-grey">{I18N.get('exchange')}</span>
       </Link>
     </Menu.Item>
     <Menu.Item key="11" onClick={() => changeLanguage('korean')}>
@@ -78,7 +88,7 @@ const Header = () => {
         <svg className="nav__icon">
           <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
         </svg>
-        <span className="text-light-grey">Preemptive</span>
+        <span className="text-light-grey">{I18N.get('preemptive')}</span>
       </Link>
     </Menu.Item>
     <SubMenu title={CurrentLanguage} placement="bottomRight">
@@ -92,7 +102,9 @@ const Header = () => {
            xs={{span: 12}}
            className="header-logo">
         <span>
-          <img src="../../../assets/images/nextyplat.svg" className="header-logo--image" alt=""/>
+          <Link to="/exchange">
+            <img src="../../../assets/images/nextyplat.svg" className="header-logo--image" alt=""/>
+          </Link>
         </span>
       </Col>
       <Col lg={{span: 12, order: 2}}
@@ -100,35 +112,35 @@ const Header = () => {
            xs={{span: 24, order: 3}}>
         <Row className="header-info">
           <Col lg={4} xs={6}>
-            <p className="hide-on-mobile">Last price</p>
+            <p className="hide-on-mobile">{I18N.get('last_price')}</p>
             <p>${cutFloat(ntyQuote.price * Math.pow(10, 6), 5)}</p>
           </Col>
           <Col lg={4} xs={18}>
             <p className="balance text-green">${cutFloat(weiToNTY(balance * ntyQuote.price), 7)}</p>
           </Col>
           <Col lg={4} xs={12}>
-            <p className="hide-on-mobile text-white">24h Change</p>
+            <p className="hide-on-mobile text-white">{I18N.get('24h_change')}</p>
             <Row>
               <Col xs={12}>{cutFloat(ntyQuote.percent_change_24h, 4)}</Col>
               <Col xs={12}>-1.69</Col>
             </Row>
           </Col>
           <Col lg={4} xs={{span: 12, order: 4}}>
-            <p className="hide-on-mobile">24h High</p>
+            <p className="hide-on-mobile">{I18N.get('24h_high')}</p>
             <Row>
-              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">High</Col>
+              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">{I18N.get('high')}</Col>
               <Col>0.024844</Col>
             </Row>
           </Col>
           <Col lg={4} xs={{span: 12, order: 2}}>
-            <p className="hide-on-mobile">24h Low</p>
+            <p className="hide-on-mobile">{I18N.get('24h_low')}</p>
             <Row>
-              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">Low</Col>
+              <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">{I18N.get('low')}</Col>
               <Col span={12}>0.0226174</Col>
             </Row>
           </Col>
           <Col lg={4} xs={{span: 12, order: 3}}>
-            <p className="hide-on-mobile">24h Volume</p>
+            <p className="hide-on-mobile">{I18N.get('24h_volume')}</p>
             <p>Vol {cutFloat(ntyQuote.volume_24h, 2)}</p>
           </Col>
         </Row>
@@ -145,14 +157,14 @@ const Header = () => {
                   <svg className="nav__icon nav__dropdown-current-icon">
                     <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
                   </svg>
-                  <span className="nav__dropdown-current-text">Exchange</span>
+                  <span className="nav__dropdown-current-text">{I18N.get('exchange')}</span>
                 </React.Fragment>
                 :
                 <React.Fragment>
                   <svg className="nav__icon nav__dropdown-current-icon">
                     <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
                   </svg>
-                  <span className="nav__dropdown-current-text">Preemptive</span>
+                  <span className="nav__dropdown-current-text">{I18N.get('preemptive')}</span>
                 </React.Fragment>
               }
               <svg className="nav__icon nav__dropdown-icon">
@@ -174,7 +186,7 @@ const Header = () => {
               <svg className="nav__icon">
                 <use xlinkHref="../../../assets/images/sprite.svg#icon-exchange"></use>
               </svg>
-              Exchange
+              {I18N.get('exchange')}
             </Link>
           </span>
           <span
@@ -183,7 +195,7 @@ const Header = () => {
               <svg className="nav__icon">
                 <use xlinkHref="../../../assets/images/sprite.svg#icon-preemptive"></use>
               </svg>
-              Preemptive
+              {I18N.get('preemptive')}
             </Link>
           </span>
           <span className="nav__menu nav__item nav__item-language">

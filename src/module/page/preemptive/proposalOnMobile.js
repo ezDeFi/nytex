@@ -6,6 +6,7 @@ import {
 }                             from '@ant-design/icons';
 import {thousands, weiToMNTY} from '@/util/help.js'
 import {useSelector}          from "react-redux";
+import I18N                    from '@/I18N'
 
 const ProposalOnMobile = (props) => {
   let object = props.proposal
@@ -15,10 +16,10 @@ const ProposalOnMobile = (props) => {
     <div className="list-proposal-mb-box">
     <Row className="list-proposal-mb">
       <Col xs={5} className="left-align list-proposal-mb__col-1">
-        <p className="text-green">Marker</p>
-        <p>Stake</p>
-        <p>Absorption</p>
-        <p>Total Vote</p>
+        <p className="text-green">{I18N.get('maker')}</p>
+        <p>{I18N.get('stake')}</p>
+        <p>{I18N.get('absorption')}</p>
+        <p>{I18N.get('total_vote')}</p>
       </Col>
       <Col xs={7} className="right-align list-proposal-mb__col-2">
         <p className="text-green">{object.maker.slice(0, 16)}</p>
@@ -27,9 +28,9 @@ const ProposalOnMobile = (props) => {
         <p>{thousands(weiToMNTY(object.totalVote))}</p>
       </Col>
       <Col xs={6} className="left-align list-proposal-mb__col-3">
-        <p>Slashing Rate</p>
-        <p>Rank</p>
-        <p>Lockdown Expiration</p>
+        <p>{I18N.get('slashing_rate_label')}</p>
+        <p>{I18N.get('rank')}</p>
+        <p>{I18N.get('lockdown_duration_label')}</p>
       </Col>
       <Col xs={3} className="right-align list-proposal-mb__col-4">
         <p>{object.slashingRate}</p>
@@ -38,7 +39,7 @@ const ProposalOnMobile = (props) => {
         <p>{object.lockdownExpiration}</p>
       </Col>
       <Col xs={3}>
-        <p className="text-white right-align">vote</p>
+        <p className="text-white right-align">{I18N.get('vote')}</p>
         <div className="right-align">
           <button
             className="list-proposal-mb__btn-up"

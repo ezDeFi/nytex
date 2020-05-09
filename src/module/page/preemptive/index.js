@@ -13,6 +13,7 @@ import StableTokenService           from "../../../service/contracts/StableToken
 import VolatileTokenService         from "../../../service/contracts/VolatileTokenService";
 import {setupWeb3}      from "../../../util/auth";
 import ProposalOnMobile from "./proposalOnMobile";
+import I18N from '@/I18N'
 
 const Preemptive = () => {
   const {TabPane} = Tabs;
@@ -80,10 +81,10 @@ const Preemptive = () => {
         <Col lg={24} sm={24} xs={0}>
           <Row>
             <Col lg={12}>
-              <h4 className="preemptive--header-2 center">Proposals</h4>
+              <h4 className="preemptive--header-2 center">{I18N.get('proposals')}</h4>
             </Col>
             <Col lg={12}>
-              <h4 className="preemptive--header-2 padding-left-lg left-align">My Wallet</h4>
+              <h4 className="preemptive--header-2 padding-left-lg left-align">{I18N.get('my_wallet')}</h4>
             </Col>
           </Row>
           <Row>
@@ -113,11 +114,11 @@ const Preemptive = () => {
             </TabPane>
             {
               userProposal ?
-              <TabPane tab="My Proposal" key="2">
+              <TabPane tab={I18N.get('my_proposal')} key="2">
                 <ProposalOnMobile proposal={userProposal} />
               </TabPane>
                 :
-              <TabPane tab="New Proposal" key="2">
+              <TabPane tab={I18N.get('new_proposal')} key="2">
                 <CreateProposal createProposal={createProposal}/>
               </TabPane>
             }

@@ -7,7 +7,7 @@ import Preemptive from '@/module/page/preemptive'
 export default [
   {
     path: '/',
-    page: TxCodePage
+    page: ExchangePage
   },
   {
     path: '/home',

@@ -3,6 +3,7 @@ import {Row, Col, Tabs, Table, DatePicker, Modal} from 'antd'
 import BtnOval                                    from '../../Component/ButtonOval'
 import {useSelector}                              from "react-redux";
 import ApiService                                 from "../../../service/ApiService";
+import I18N from '@/I18N'
 
 const OpenOrder = (props) => {
   let address                   = useSelector(state => state.user.wallet)
@@ -22,12 +23,6 @@ const OpenOrder = (props) => {
     tradeHistory: 'day'
   });
   
-  const hideOtherPairs = <label className='hide-on-mobile'>
-    <input type="checkbox"/>
-    Hide Other Pairs
-  </label>;
-
-
   useEffect(() => {
     if (address) {
       let addressChecksum = web3.utils.toChecksumAddress(address)
@@ -53,18 +48,18 @@ const OpenOrder = (props) => {
   const openOrderColumns = [
     {title: 'Time', dataIndex: 'time', key: 'time', className: 'hide-on-mobile'},
     {
-      title    : 'Side',
+      title    : I18N.get('side'),
       dataIndex: 'side',
       key      : 'side',
       className: 'hide-on-mobile',
       render   : text => <span style={{color: text.toLowerCase() === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
     },
-    {title: 'Price', dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
-    {title: 'Amount', dataIndex: 'amount', key: 'amount', className: 'hide-on-mobile'},
-    {title: 'Filled (%)', dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
-    {title: 'Total', dataIndex: 'total', key: 'total', className: 'hide-on-mobile'},
+    {title: I18N.get('price'), dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
+    {title: I18N.get('amount'), dataIndex: 'amount', key: 'amount', className: 'hide-on-mobile'},
+    {title: I18N.get('filled'), dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
+    {title: I18N.get('total'), dataIndex: 'total', key: 'total', className: 'hide-on-mobile'},
     {
-      title    : 'Action',
+      title    :  I18N.get('action'),
       dataIndex: 'action',
       key      : 'action',
       className: 'hide-on-mobile right-align',
@@ -156,36 +151,36 @@ const OpenOrder = (props) => {
   ]
 
   const openHistoryColumns = [
-    {title: 'Time', dataIndex: 'time', key: 'time', className: 'hide-on-mobile'},
+    {title:  I18N.get('time'), dataIndex: 'time', key: 'time', className: 'hide-on-mobile'},
     {
-      title    : 'Side',
+      title    :  I18N.get('side'),
       dataIndex: 'side',
       key      : 'side',
       className: 'hide-on-mobile',
       render   : text => <span style={{color: text.toLowerCase() === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
     },
-    {title: 'Average', dataIndex: 'average', key: 'average', className: 'hide-on-mobile'},
-    {title: 'Price', dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
-    {title: 'Filled (%)', dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
-    {title: 'Amount', dataIndex: 'amount', key: 'amount', className: 'hide-on-mobile'},
-    {title: 'Total', dataIndex: 'total', key: 'total', className: 'hide-on-mobile'},
-    {title: 'Trigger Conditions', dataIndex: 'trigger', key: 'Trigger', className: 'hide-on-mobile'},
-    {title: 'Status', dataIndex: 'status', key: 'status', className: 'hide-on-mobile  right-align'}
+    {title:  I18N.get('average'), dataIndex: 'average', key: 'average', className: 'hide-on-mobile'},
+    {title: I18N.get('price'), dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
+    {title: I18N.get('filled'), dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
+    {title: I18N.get('amount'), dataIndex: 'amount', key: 'amount', className: 'hide-on-mobile'},
+    {title: I18N.get('total'), dataIndex: 'total', key: 'total', className: 'hide-on-mobile'},
+    // {title: 'Trigger Conditions', dataIndex: 'trigger', key: 'Trigger', className: 'hide-on-mobile'},
+    {title: I18N.get('status'), dataIndex: 'status', key: 'status', className: 'hide-on-mobile  right-align'}
   ]
 
   const tradeHistoryColumns = [
-    {title: 'Time', dataIndex: 'time', key: 'time', className: 'hide-on-mobile'},
-    {title: 'Market', dataIndex: 'market', key: 'market', className: 'hide-on-mobile'},
+    {title: I18N.get('time'), dataIndex: 'time', key: 'time', className: 'hide-on-mobile'},
+    {title: I18N.get('market'), dataIndex: 'market', key: 'market', className: 'hide-on-mobile'},
     {
-      title    : 'Type',
+      title    : I18N.get('type'),
       dataIndex: 'side',
       key      : 'side',
       className: 'hide-on-mobile',
       render   : text => <span style={{color: text.toLowerCase() === 'buy' ? '#00C28E' : '#FC4D5C'}}>{text}</span>
     },
-    {title: 'Price', dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
-    {title: 'Filled (%)', dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
-    {title: 'Total', dataIndex: 'total', key: 'total', className: 'hide-on-mobile right-align'},
+    {title: I18N.get('price'), dataIndex: 'price', key: 'price', className: 'hide-on-mobile'},
+    {title: I18N.get('filled'), dataIndex: 'filled', key: 'filled', className: 'hide-on-mobile'},
+    {title: I18N.get('total'), dataIndex: 'total', key: 'total', className: 'hide-on-mobile right-align'},
   ]
 
   const tradeHistoryColumnsMobile = [
@@ -215,8 +210,8 @@ const OpenOrder = (props) => {
         return (<div>
           <p className="text-light-grey">{object.time}</p>
           <Row>
-            <Col xs={12} className="text-light-grey">Total</Col>
-            <Col xs={12}><span>{object.total} USDT</span></Col>
+            <Col xs={12} className="text-light-grey">{I18N.get('total')}</Col>
+            <Col xs={12}><span>{object.total} {I18N.get('nusd')}</span></Col>
           </Row>
         </div>)
       }
@@ -247,22 +242,22 @@ const OpenOrder = (props) => {
       <span>
         <BtnOval className={"btn-large " + (filterFlag[type] === 'day' && 'btn-yellow')}
                  onClick={() => filterOpenOrder(type, 'day')}
-        >1 Day</BtnOval>
+        >{I18N.get('1_day')}</BtnOval>
       </span>
       <span>
         <BtnOval className={"btn-large " + (filterFlag[type] === 'week' && 'btn-yellow')}
                  onClick={() => filterOpenOrder(type, 'week')}
-        >1 Week</BtnOval>
+        >{I18N.get('1_week')}</BtnOval>
       </span>
       <span>
         <BtnOval className={"btn-large " + (filterFlag[type] === 'month' && 'btn-yellow')}
                  onClick={() => filterOpenOrder(type, 'month')}
-        >1 Month</BtnOval>
+        >{I18N.get('1_month')}</BtnOval>
       </span>
       <span>
         <BtnOval className={"btn-large " + (filterFlag[type] === 'threeMonth' && 'btn-yellow')}
                  onClick={() => filterOpenOrder(type, 'threeMonth')}
-        >3 Month</BtnOval>
+        >{I18N.get('3_month')}</BtnOval>
       </span>
       <span>
         <label htmlFor="search-from" className="search-label">
@@ -289,7 +284,7 @@ const OpenOrder = (props) => {
                      filterOpenOrder(type, 'search')
                    }
                  }}
-        >Search</BtnOval>
+        >{I18N.get('search')}</BtnOval>
       </span>
     </div>
   )
@@ -333,15 +328,15 @@ const OpenOrder = (props) => {
   return (
     <div className="open-order__content">
       <Tabs>
-        <TabPane tab="Open Orders" key="1">
+        <TabPane tab={I18N.get('open_orders')} key="1">
           {filterHistory('openOrder')}
           {openOrderTable}
         </TabPane>
-        <TabPane tab="Open History" key="2">
+        <TabPane tab={I18N.get('open_history')} key="2">
           {filterHistory('openHistory')}
           {openHistoryTable}
         </TabPane>
-        <TabPane tab="Trade History" key="3">
+        <TabPane tab={I18N.get('trade_history')} key="3">
           {filterHistory('tradeHistory')}
           {tradeHistoryTable}
         </TabPane>

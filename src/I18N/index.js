@@ -1,17 +1,22 @@
 import en from './en'
-import zh from './zh'
+import vn from './vn'
+import kr from './kr'
+import cn from './cn'
 
 import _ from 'lodash'
 
 const all = _.extend({}, {
-  zh,
-  en
+  en,
+  vn,
+  kr,
+  cn
 })
 
 let lang = 'en'
 export default {
   setLang (str) {
-    if (_.includes(['zh', 'en'], str)) {
+    console.log(str)
+    if (_.includes(['en','vn', 'kr', 'cn'], str)) {
       lang = str
     } else {
       throw new Error('invalid lang : ' + str)

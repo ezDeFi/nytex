@@ -6,6 +6,7 @@ import {
 import {useSelector, useDispatch}                              from "react-redux";
 import {thousands, weiToMNTY, weiToNUSD, mntyToWei, nusdToWei} from '@/util/help.js'
 import store                                                   from "../../../store";
+import I18N from '@/I18N'
 
 const Allowance = (props) => {
   const dispatch = useDispatch()
@@ -73,23 +74,23 @@ const Allowance = (props) => {
   return (
     <div className="allowance">
       <p className="allowance__header">
-        <b>Allowance</b>
+        <b>{I18N.get('allowance')}</b>
       </p>
       <Row className="allowance__content">
-        <Col lg={6}><b>MNTY:</b></Col>
+        <Col lg={6}><b>{I18N.get('mnty')}:</b></Col>
         <Col lg={18} className="text-align--right">
           <span onClick={() => setMntyAllowanceVisible(true)}>
             {thousands(weiToMNTY(volAllowance))} <span
-            className="hide-on-mobile">MNTY</span><span><EditOutlined/></span>
+            className="hide-on-mobile">{I18N.get('mnty')}</span><span><EditOutlined/></span>
           </span>
         </Col>
       </Row>
       <Row className="allowance__content">
-        <Col lg={6}><b>NewSD:</b></Col>
+        <Col lg={6}><b>{I18N.get('newsd')}:</b></Col>
         <Col lg={18} className="text-align--right">
           <span onClick={() => setNewsdAllowanceVisible(true)}>
             {thousands(weiToNUSD(stbAllowance))} <span
-            className="hide-on-mobile">NEWSD</span><span><EditOutlined/></span>
+            className="hide-on-mobile">{I18N.get('NewSd')}</span><span><EditOutlined/></span>
           </span>
         </Col>
       </Row>
@@ -100,7 +101,7 @@ const Allowance = (props) => {
         title={null}
         closable={null}
       >
-        <p className="allowance__modal--title"> Set Mnty Allowance </p>
+        <p className="allowance__modal--title"> {I18N.get('set_mnty_allowance')} </p>
         <Row className="allowance__modal--content">
           <Col span={14} offset={2}>
             <Input
@@ -112,7 +113,7 @@ const Allowance = (props) => {
             <button
               onClick={() => approve(true)}
               className="allowance__modal--btn-approve"
-            >Approve
+            >{I18N.get('approve')}
             </button>
           </Col>
         </Row>
@@ -136,7 +137,7 @@ const Allowance = (props) => {
             <button
               onClick={() => approve(false)}
               className="allowance__modal--btn-approve"
-            >Approve
+            >{I18N.get('approve')}
             </button>
           </Col>
         </Row>
@@ -145,7 +146,7 @@ const Allowance = (props) => {
         <Row><Col lg={24} xs={0}>
           <button
             className="btn-my-proposal" onClick={showUserProposal}>
-            My proposal
+            {I18N.get('my_proposal')}
           </button>
         </Col></Row>
       }
@@ -180,37 +181,37 @@ const asset = (props) => {
   return (
     <Row className="user-wallet">
       <Col lg={24} md={24} xs={12} className="user-wallet__assets">
-        <p className="assets--title"><b>Assets</b></p>
+        <p className="assets--title"><b>{I18N.get('assets')}</b></p>
         <div className="assets__info-box">
           <Row className="assets__info hide-on-mobile">
-            <Col lg={5} xs={5}><b>Wallet</b></Col>
+            <Col lg={5} xs={5}><b>{I18N.get('wallet')}</b></Col>
             <Col lg={19}>{wallet}</Col>
           </Row>
           <Row className="assets__info">
             <Col lg={5} xs={5}>
-              <b className="hide-on-mobile">Balance</b>
-              <b className="hide-on-desktop">NTY</b>
+              <b className="hide-on-mobile">{I18N.get('balance')}</b>
+              <b className="hide-on-desktop">{I18N.get('nty')}</b>
             </Col>
             <Col lg={19} xs={19} className="assets__info--content">
-              {thousands(weiToMNTY(balance))} <span className="hide-on-mobile">Milion NTY</span>
+              {thousands(weiToMNTY(balance))} <span className="hide-on-mobile">{I18N.get('million_nty')}</span>
             </Col>
           </Row>
           <Row className="assets__info">
             <Col lg={5} xs={5}>
-              <b className="hide-on-mobile">Token</b>
-              <b className="hide-on-desktop">MNTY</b>
+              <b className="hide-on-mobile">{I18N.get('token')}</b>
+              <b className="hide-on-desktop">{I18N.get('mnty')}</b>
             </Col>
             <Col lg={19} xs={19} className="assets__info--content">
-              {thousands(weiToMNTY(balance))} <span className="hide-on-mobile">MNTY</span>
+              {thousands(weiToMNTY(balance))} <span className="hide-on-mobile">{I18N.get('mnty')}</span>
             </Col>
           </Row>
           <Row className="assets__info">
             <Col lg={5} xs={5}>
-              <b className="hide-on-mobile">StableCoin</b>
-              <b className="hide-on-desktop">NewSD</b>
+              <b className="hide-on-mobile">{I18N.get('stable_coin')}</b>
+              <b className="hide-on-desktop">{I18N.get('newsd')}</b>
             </Col>
             <Col lg={19} xs={19} className="assets__info--content">
-              {thousands(weiToNUSD(stableTokenBalance))} <span className="hide-on-mobile">NewSD</span>
+              {thousands(weiToNUSD(stableTokenBalance))} <span className="hide-on-mobile">{I18N.get('newsd')}</span>
             </Col>
           </Row>
         </div>
@@ -225,7 +226,7 @@ const asset = (props) => {
               <Allowance approve={props.approve}/>
               :
               <button className="btn-create-proposal" onClick={showCreateForm}>
-                Create Proposal
+                {I18N.get('create_proposal')}
               </button>
           }
         </div>
