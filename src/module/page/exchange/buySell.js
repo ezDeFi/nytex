@@ -1,4 +1,4 @@
-import React, {useState}                                                      from 'react';
+import React, {useState, useEffect}                                                      from 'react';
 import {Row, Col, Input, Modal}                                               from 'antd'
 import BtnOval                                                                from '../../Component/ButtonOval'
 import {useSelector, useDispatch}                                   from "react-redux";
@@ -17,6 +17,10 @@ const Index = (props) => {
   const [totalBuy, setTotalBuy] = useState(0)
   const [amountSell, setAmountSell] = useState(0)
   const [totalSell, setTotalSell] = useState(0)
+
+  // useEffect(() => {
+  //   thousands(weiToPrice(mntyToWei(wantAmount), nusdToWei(haveAmount)))
+  // })
 
   const setAmountToBuy = (persent) => {
     let newTotal = weiToNUSD(stableTokenBalance) * persent / 100;

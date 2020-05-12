@@ -205,6 +205,8 @@ function toShift(s) {
 
 // decString * decString => BN
 export function mul(a, b) {
+  a = a ? a : 0
+  b = b ? b: 0
   a = typeof a !== 'string' ? a.toString() : a
   b = typeof b !== 'string' ? b.toString() : b
 

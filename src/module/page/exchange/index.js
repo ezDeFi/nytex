@@ -102,11 +102,8 @@ const Exchange = () => {
       <Row>
         <Col
           lg={{span: 14, order: 0}}
-          xs={24}
-          className="chart">
-          <div className="chart__content" id="chart-content">
+          xs={24}>
             <Chart/>
-          </div>
         </Col>
         <Col lg={{span: 14, order: 4}}
              xs={{span: 24, order: 4}}

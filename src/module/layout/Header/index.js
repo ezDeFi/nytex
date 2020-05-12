@@ -6,9 +6,9 @@ import {cutFloat}                   from '@/util/help.js'
 import {useSelector}                from "react-redux";
 import "antd/dist/antd.css";
 import './style.scss'
-import {weiToNTY}                   from '@/util/help.js'
 import ApiService                   from "../../../service/ApiService";
-import I18N from '@/I18N'
+import I18N                         from '@/I18N'
+import {mul, weiToMNTY}                  from "../../../util/help";
 
 const Header = () => {
   const apiService              = new ApiService()
@@ -17,6 +17,7 @@ const Header = () => {
   const balance                 = useSelector(state => state.user.balance)
   let pathname                  = useLocation().pathname;
   const {SubMenu}               = Menu
+  const [mntyBalance, setMntyBalance] = useState(0);
 
   const changeLanguage = (langCode) => {
     detectLanguage(langCode)
@@ -27,6 +28,10 @@ const Header = () => {
     detectLanguage(I18N.getLang())
     apiService.loadNtyQuote()
   }, [])
+
+  useEffect(() => {
+    setMntyBalance(weiToMNTY(balance))
+  }, [balance])
 
   const detectLanguage = (code) => {
       switch(code) {
@@ -113,15 +118,15 @@ const Header = () => {
         <Row className="header-info">
           <Col lg={4} xs={6}>
             <p className="hide-on-mobile">{I18N.get('last_price')}</p>
-            <p>${cutFloat(ntyQuote.price * Math.pow(10, 6), 5)}</p>
+            <p>${cutFloat(ntyQuote.filled, 4)}</p>
           </Col>
           <Col lg={4} xs={18}>
-            <p className="balance text-green">${cutFloat(weiToNTY(balance * ntyQuote.price), 7)}</p>
+            <p className="balance text-green">${cutFloat(mul(weiToMNTY(balance), ntyQuote.filled), 4)}</p>
           </Col>
           <Col lg={4} xs={12}>
             <p className="hide-on-mobile text-white">{I18N.get('24h_change')}</p>
             <Row>
-              <Col xs={12}>{cutFloat(ntyQuote.percent_change_24h, 4)}</Col>
+              <Col xs={12}>{cutFloat(ntyQuote.change, 4)}</Col>
               <Col xs={12}>-1.69</Col>
             </Row>
           </Col>
@@ -129,19 +134,19 @@ const Header = () => {
             <p className="hide-on-mobile">{I18N.get('24h_high')}</p>
             <Row>
               <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">{I18N.get('high')}</Col>
-              <Col>0.024844</Col>
+              <Col>{cutFloat(ntyQuote.high, 6)}</Col>
             </Row>
           </Col>
           <Col lg={4} xs={{span: 12, order: 2}}>
             <p className="hide-on-mobile">{I18N.get('24h_low')}</p>
             <Row>
               <Col xs={{span: 6, offset: 6}} className="hide-on-desktop">{I18N.get('low')}</Col>
-              <Col span={12}>0.0226174</Col>
+              <Col>{cutFloat(ntyQuote.low, 6)}</Col>
             </Row>
           </Col>
           <Col lg={4} xs={{span: 12, order: 3}}>
             <p className="hide-on-mobile">{I18N.get('24h_volume')}</p>
-            <p>Vol {cutFloat(ntyQuote.volume_24h, 2)}</p>
+            <p>Vol {cutFloat(ntyQuote.volumeNewSD, 2)}</p>
           </Col>
         </Row>
       </Col>

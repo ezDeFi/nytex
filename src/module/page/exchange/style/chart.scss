@@ -1,0 +1,30 @@
+.chart {
+    height: 500px;
+    padding: 5px;
+
+    &__content {
+        border: 1px solid $primary_light_color;
+        height: 100%;
+    }
+
+    &-container{
+        height: 460px;
+    }
+
+    &--header {
+        padding: 5px;
+    }
+
+    &__button-candle {
+        padding: 3px 5px;
+        color: white;
+        background: $primary_dark_color;
+        display: inline-block;
+        margin-left: 5px;
+
+        &--choosing {
+            background: $yellow_color;
+            color: white;
+        }
+    }
+}

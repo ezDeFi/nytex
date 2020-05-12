@@ -10,46 +10,50 @@ const API = {
   GET_TRADE_HISTORY: API_URL + '/get-trade-history',
   GET_NEW_TRADE: API_URL + '/gettoptrade',
   GET_CANDLE: API_URL + '/get-candle',
+  GET_24H_DATA: API_URL + '/get-header',
 }
 
 export default class extends BaseService {
   loadNtyQuote() {
     const that        = this
     const commonRedux = this.store.getRedux('common')
-    axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest',
-      {
-        params : {id: 2714},
-        headers: {'X-CMC_PRO_API_KEY': '64d67fb5-c596-4af9-8a2b-bb60c0dba70d', 'Accept': 'application/json'}
-      })
+    axios.get(API.GET_24H_DATA, {
+        headers: {'Accept': 'application/json'}
+      }
+    )
       .then(function (response) {
-        that.dispatch(commonRedux.actions.ntyQuote_update(response.data.data[2714].quote.USD))
+        that.dispatch(commonRedux.actions.ntyQuote_update(response.data))
       })
   }
 
-  loadHistoricalData(callback) {
-    var that = this
-    var stateTime = new Date('2019-01-01').getTime()
-    var curTime   = new Date().getTime()
+  loadHistoricalData(setCandleData, setVolumeData, type) {
     axios.get(API.GET_CANDLE,
       {
-        headers: {'Accept': 'application/json'}
+        headers: {'Accept': 'application/json'},
+        params: {
+          type: type
+        }
       })
       .then(function (response) {
         let data   = response.data
-        let result = []
+        let candleData = []
+        let volumeData = []
         for (let i in data) {
-
-          let historical = {
+          candleData.push({
             time  : data[i].time,
             open  : data[i].open,
-            high  : data[i].hight,
+            high  : data[i].high,
             low   : data[i].low,
-            close : data[i].close ,
-            volume: data[i].volume
-          }
-          result.push(historical)
+            close : data[i].close,
+          })
+          volumeData.push({
+            time  : data[i].time,
+            value : data[i].volumeMNTY,
+            color : data[i].open > data[i].close ? '#ff4976' : '#4bffb5'
+          })
         }
-        callback(result)
+        setCandleData(candleData)
+        setVolumeData(volumeData)
       })
   }
 

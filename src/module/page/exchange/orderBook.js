@@ -146,9 +146,9 @@ const OrderBook = (props) => {
           <Table dataSource={listSellSource} columns={sellcolumns} pagination={false} onRow={onRowTable} scroll={{y: 182}}/>
         </div>
         <Row className="order-book__current-price">
-          <Col span={6} className="left-align">${cutFloat(ntyQuote.price * Math.pow(10, 6), 2)}</Col>
-          <Col span={8} className="right-align">${cutFloat(ntyQuote.volume_24h, 2)}</Col>
-          <Col span={10} className="right-align">{cutFloat(ntyQuote.percent_change_24h, 2)}%</Col>
+          <Col span={6} className="left-align">${cutFloat(ntyQuote.filled * Math.pow(10, 6), 2)}</Col>
+          <Col span={8} className="right-align">${cutFloat(ntyQuote.volumeMNTY, 2)}</Col>
+          <Col span={10} className="right-align">{cutFloat(ntyQuote.change, 2)}%</Col>
         </Row>
         <div className="order-book__buy-table">
           <Table dataSource={listBuySource} columns={buyColumns} pagination={false} onRow={onRowTable} scroll={{y: 182}}/>

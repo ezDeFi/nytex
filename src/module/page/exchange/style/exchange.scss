@@ -35,16 +35,6 @@
     }
 }
 
-.chart {
-    height: 500px;
-    padding: 5px;
-
-    &__content {
-        border: 1px solid $primary_light_color;
-        height: 100%;
-    }
-}
-
 @media only screen and (max-width: 600px) {
     .tab {
         display: flex;
