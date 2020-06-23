@@ -97,49 +97,17 @@ module.exports = merge(common, {
                         include: resolve('src'),
                         exclude: /node_modules/,
                         loader: extractCSS_APP.extract(
-                            Object.assign({
-                                fallback: require.resolve('style-loader'),
-                                use: [
-                                    {
-                                        loader: require.resolve('css-loader'),
-                                        options: {
-                                            importLoaders: 1,
-                                            minimize: true,
-                                            sourceMap: true,
-                                            publicPath: resolve('dist')
-                                        }
-                                    },
-                                    {
-                                        loader: require.resolve('postcss-loader')
-                                        // options: {
-                                        //     ident: 'postcss',
-                                        //     plugins: () => [
-                                        //         require('postcss-flexbugs-fixes'),
-                                        //         autoprefixer({
-                                        //             browsers: [
-                                        //                 '>1%',
-                                        //                 'last 4 versions',
-                                        //                 'Firefox ESR',
-                                        //                 'not ie < 9', // React doesn't support IE8 anyway
-                                        //             ],
-                                        //             flexbox: 'no-2009',
-                                        //         }),
-                                        //     ],
-                                        // },
-                                    },
-                                    {
-                                        loader: require.resolve('sass-loader')
-                                    }
-                                ],
-                                publicPath: resolve('dist')
-                            })
+                          Object.assign({
+                              fallback: require.resolve('style-loader'),
+                              use: [{loader: 'css-loader'}, {loader: 'postcss-loader'}, {loader: 'sass-loader'}],
+                          })
                         )
                     },
                     {
                         loader: require.resolve('file-loader'),
                         exclude: [/\.js$/, /\.html$/, /\.json$/],
                         options: {
-                            name: 'static/media/[name].[hash:8].[ext]'
+                            name: '/static/media/[name].[hash:8].[ext]'
                         }
                     }
                 ]
