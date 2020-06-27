@@ -100,6 +100,7 @@ const Index = (props) => {
       <div className="chart__content" id="chart-content">
         <div className="chart-header">
           <button className={"chart__button-candle " + (candleType === '15m'? "chart__button-candle--choosing": '')} onClick={() => selectCandleType('15m')}>15M</button>
+          <button className={"chart__button-candle " + (candleType === '30m'? "chart__button-candle--choosing": '')} onClick={() => selectCandleType('30m')}>30M</button>
           <button className={"chart__button-candle " + (candleType === '1h'? "chart__button-candle--choosing": '')} onClick={() => selectCandleType('1h')}>1H</button>
           <button className={"chart__button-candle " + (candleType === '1d'? "chart__button-candle--choosing": '')} onClick={() => selectCandleType('1d')}>1D</button>
         </div>

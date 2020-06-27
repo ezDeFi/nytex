@@ -105,14 +105,16 @@ const Exchange = () => {
           xs={24}>
             <Chart/>
         </Col>
-        <Col lg={{span: 14, order: 4}}
-             xs={{span: 24, order: 4}}
-             className="open-order">
+        <Col 
+          lg={{span: 14, order: 4}}
+          xs={{span: 24, order: 4}}
+          className="open-order">
           <OpenOrder updateOrderStatus={updateOrderStatus} cancelTrade={cancelTrade}/>
         </Col>
-        <Col lg={{span: 10, order: 1}}
-             xs={{span: 12, order: 2}}
-             className="order-book"
+        <Col 
+          lg={{span: 10, order: 1}}
+          xs={{span: 12, order: 2}}
+          className="order-book"
         >
           <OrderBook dataSourceHistory={dataSourceHistory} />
         </Col>
