@@ -4,6 +4,7 @@ export default {
   'nty'        : 'NTY',
   'newsd'      : 'NewSd',
   'million_nty': 'Million NTY',
+
   // Header
   'preemptive' : 'Preemptive',
   'exchange'   : 'Exchange',
@@ -76,13 +77,13 @@ export default {
   'token'             : 'token',
   'stable_coin'       : 'Stable Coin',
   'allowance'         : 'Allowance',
-  'set_mnty_allowance': 'Set Mnty Allowance',
+  'set_mnty_allowance': 'Set MNTY Allowance',
   'approve'           : 'Approve',
 
   'detail'    : 'Detail',
   'vote_up'   : 'Vote Up',
   'vote_down' : 'Vote Down',
-  'cote'      : 'Vote',
+  'vote'      : 'Vote',
   'total_vote': 'Total Vote',
 
 }
