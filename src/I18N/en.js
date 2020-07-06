@@ -82,7 +82,7 @@ export default {
   'detail'    : 'Detail',
   'vote_up'   : 'Vote Up',
   'vote_down' : 'Vote Down',
-  'cote'      : 'Vote',
+  'vote'      : 'Vote',
   'total_vote': 'Total Vote',
 
 }
