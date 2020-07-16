@@ -36,7 +36,7 @@
     "glamor": "^2.20.40",
     "history": "^4.7.2",
     "install": "^0.12.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "moment": "^2.19.1",
     "npm": "^6.9.0",
     "openzeppelin-eth": "^2.1.3",
