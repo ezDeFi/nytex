@@ -23,10 +23,9 @@ export default class extends LoggedInPage {
   }
 
   ord_renderContent() { // eslint-disable-line
-    const mnty = BigInt(this.props.volatileTokenBalance)
-    const nty = BigInt(this.props.balance)
-    const total = (mnty + nty) / BigInt(1000000)
-    const totalString = weiToNTY(total.toString())
+    const mnty = Number(weiToMNTY(this.props.volatileTokenBalance))
+    const nty = Number(weiToNTY(this.props.balance))
+    const total = mnty + nty
     return (
       <div className="">
         <div className="ebp-header-divider">
@@ -50,7 +49,7 @@ export default class extends LoggedInPage {
                 Native:
               </Col>
               <Col span={18}>
-                {thousands(weiToMNTY(this.props.balance))} Million NTY
+                {thousands(nty)} NTY
               </Col>
             </Row>
 
@@ -59,7 +58,7 @@ export default class extends LoggedInPage {
                 Total:
               </Col>
               <Col span={18}>
-                {thousands(totalString)} Million NTY
+                {thousands(total)} NTY
               </Col>
             </Row>
 

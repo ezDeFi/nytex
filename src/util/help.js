@@ -112,12 +112,12 @@ export function ntyToWei(coin) {
 
 // Number => wei string
 export function mntyToWei(coin) {
-    return truncateShift(coin, 24);
+    return truncateShift(coin, 18);
 }
 
 // Number => wei string
 export function nusdToWei(coin) {
-    return truncateShift(coin, 6);
+    return truncateShift(coin, 18);
 }
 
 export function weiToNTY(wei) {
@@ -125,11 +125,11 @@ export function weiToNTY(wei) {
 }
 
 export function weiToMNTY(wei) {
-    return decShift(wei, -24);
+    return decShift(wei, -18);
 }
 
 export function weiToNUSD(wei) {
-    return decShift(wei, -6);
+    return decShift(wei, -18);
 }
 
 // n must be positive
@@ -143,7 +143,7 @@ export function truncateShift(a, n) {
 }
 
 export function weiToPrice(mnty, nusd) {
-    const price = div(web3.utils.toBN(decShift(nusd, 18)), web3.utils.toBN(mnty))
+    const price = div(web3.utils.toBN(nusd), web3.utils.toBN(mnty))
     return price.toString()
 }
 

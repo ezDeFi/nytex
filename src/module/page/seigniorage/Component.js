@@ -6,6 +6,7 @@ import { CONTRACTS } from '@/constant'
 import './style.scss'
 import BigInt from 'big-integer';
 import { Col, Row, Icon, Button, Breadcrumb, Table, Input, Modal } from 'antd' // eslint-disable-line
+import { weiToEthS } from '../../../util/help'
 
 export default class extends LoggedInPage {
   state = {
@@ -18,11 +19,10 @@ export default class extends LoggedInPage {
     // this.reload()
   }
 
-  ord_renderContent() { // eslint-disable-line
-    const mnty = BigInt(this.props.volatileTokenBalance)
-    const nty = BigInt(this.props.balance)
-    const total = (mnty + nty) / BigInt(1000000)
-    const totalString = weiToNTY(total.toString())
+  ord_renderContent() { // eslint-disable-line\
+    const mnty = Number(weiToMNTY(this.props.volatileTokenBalance))
+    const nty = Number(weiToNTY(this.props.balance))
+    const total = mnty + nty
     return (
       <div className="">
         <div className="ebp-header-divider">
@@ -47,7 +47,7 @@ export default class extends LoggedInPage {
               </Col>
 
               <Col span={16}>
-                {thousands(weiToMNTY(this.props.balance))} Million NTY
+                {thousands(weiToMNTY(this.props.balance))} NTY
               </Col>
 
               <Col span={4}>
@@ -65,7 +65,7 @@ export default class extends LoggedInPage {
               </Col>
 
               <Col span={8}>
-                {thousands(totalString)} Million NTY
+                {thousands(total)} NTY
               </Col>
 
               <Col span={8}>
