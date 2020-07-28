@@ -32,7 +32,7 @@ export default class extends BaseService {
     }
 
     async propose(amount, stake, slashingRate, lockdownExpiration, value) {
-        slashingRate = truncateShift(slashingRate, 3);
+        slashingRate = truncateShift(slashingRate, 18);
         console.log('propose', thousands(weiToNUSD(amount)), thousands(weiToMNTY(stake)), slashingRate, lockdownExpiration);
         const store = this.store.getState()
         const contract = store.contracts.volatileToken;

@@ -67,7 +67,7 @@ export default class extends BaseService {
                         'maker': res.maker,
                         'stake': res.stake,
                         'amount': thousands(weiToNUSD(res.amount)),
-                        'slashingRate': decShift(res.slashingRate, -3),
+                        'slashingRate': decShift(res.slashingRate, -18),
                         'lockdownExpiration': res.lockdownExpiration,
                     }
                 }));

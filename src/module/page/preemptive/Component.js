@@ -87,7 +87,7 @@ export default class extends LoggedInPage {
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                <code>> {thousands(weiToMNTY(this.props.globalParams.stake) * 2 / 3)}</code>
+                <code>&gt; {thousands(weiToMNTY(this.props.globalParams.stake) * 2 / 3)}</code>
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
@@ -106,13 +106,13 @@ export default class extends LoggedInPage {
               <Col span={10}>
                 <Input className="maxWidth"
                   defaultValue={0}
-                  placeholder={this.props.globalParams.slashingRate / 1000}
+                  placeholder={decShift(this.props.globalParams.slashingRate, -18)}
                   value={this.state.slashingRate}
                   onChange={this.slashingRateChange.bind(this)}
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                <code>> {Math.floor(this.props.globalParams.slashingRate * 2 / 3) / 1000}</code>
+                <code>&gt; {(decShift(this.props.globalParams.slashingRate, -18) * 2 / 3).toFixed(4)}</code>
               </Col>
             </Row>
             <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
@@ -126,7 +126,7 @@ export default class extends LoggedInPage {
                 />
               </Col>
               <Col span={6} style={{ textAlign: 'right' }}>
-                <code>> {Math.floor(this.props.globalParams.lockdownExpiration * 2 / 3)}</code>
+                <code>&gt; {Math.floor(this.props.globalParams.lockdownExpiration * 2 / 3)}</code>
               </Col>
             </Row>
             <Row style={{ 'marginTop': '8px' }}>
@@ -348,9 +348,9 @@ export default class extends LoggedInPage {
       }
       let slashingRate = this.state.slashingRate
       let lockdownExpiration = this.state.lockdownExpiration
-      if (slashingRate && slashingRate * 1000 <= this.props.globalParams.slashingRate * 2 / 3) {
-        throw "slashing rate too small"
-      }
+      // if (slashingRate && (BigInt(slashingRate) * BigInt('1e18')) <= BigInt(this.props.globalParams.slashingRate) * 2 / 3) {
+      //   throw "slashing rate too small"
+      // }
       if (lockdownExpiration && lockdownExpiration <= this.props.globalParams.lockdownExpiration * 2 / 3) {
         throw "lockdown expiration too small"
       }
