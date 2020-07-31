@@ -6,7 +6,7 @@ export default {
   '0004': 'Tx Code',
   '0005': 'Teams',
   '0006': 'Tasks',
-  '0007': 'Nexty Management',
+  '0007': 'Governance',
   '0008': 'About',
   '0009': 'FAQ',
   '0010': 'Interest Management',

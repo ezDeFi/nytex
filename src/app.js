@@ -15,6 +15,7 @@ import Web3 from 'web3'
 
 import './boot'
 import './style/index.scss'
+import Container from './module/layout/Header/Container'
 
 console.log(CONTRACTS)
 
@@ -79,12 +80,14 @@ function setupWeb3 () {
             VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
             StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
             Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
+            Governance: new web3.eth.Contract(CONTRACTS.Governance.abi, CONTRACTS.Governance.address)
           }
 
           store.dispatch(userRedux.actions.loginMetamask_update(true))
           store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
           store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
           store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
+          store.dispatch(contractsRedux.actions.governance_update(contracts.Governance))
           store.dispatch(userRedux.actions.web3_update(web3))
 
           userService.metaMaskLogin(accounts[0])

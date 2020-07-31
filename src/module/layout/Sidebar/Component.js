@@ -92,13 +92,16 @@ export default class extends BaseComponent {
 
         <Menu onClick={this.clickItem.bind(this)} theme="dark" mode="inline" className="menu-sidebar" defaultSelectedKeys={this.detectUrl()}>
           <Menu.Item key="exchange">
-            <Icon type="credit-card" /> {I18N.get('0002')}
+            <Icon type="swap" /> {I18N.get('0002')}
           </Menu.Item>
           <Menu.Item key="preemptive">
-            <Icon type="credit-card" /> {I18N.get('0003')}
+            <Icon type="stock" /> {I18N.get('0003')}
           </Menu.Item>
           <Menu.Item key="txcode">
             <Icon type="code" /> {I18N.get('0004')}
+          </Menu.Item>
+          <Menu.Item key="gov">
+            <Icon type="setting" /> {I18N.get('0007')}
           </Menu.Item>
         </Menu>
       </Sider>
@@ -110,7 +113,8 @@ export default class extends BaseComponent {
     if (_.includes([
       'exchange',
       'preemptive',
-      'txcode'
+      'txcode',
+      'gov',
     ], key)) {
       this.props.history.push('/' + e.key)
     } else if (key === 'logout') {
@@ -135,7 +139,8 @@ export default class extends BaseComponent {
     let sidebar = [
       'exchange',
       'preemptive',
-      'txcode'
+      'txcode',
+      'gov',
     ]
 
     if (!url) {

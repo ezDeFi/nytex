@@ -3,6 +3,7 @@ import { routerReducer } from 'react-router-redux'
 
 import task from './redux/task'
 import user from './redux/user'
+import governance from './redux/governance'
 import seigniorage from './redux/seigniorage'
 import volatileToken from './redux/volatileToken'
 import stableToken from './redux/stableToken'
@@ -27,6 +28,7 @@ export default combineReducers({
   task: task.getReducer(),
   contracts: contracts.getReducer(),
   user: user.getReducer(),
+  governance: governance.getReducer(),
   seigniorage: seigniorage.getReducer(),
   volatileToken: volatileToken.getReducer(),
   stableToken: stableToken.getReducer(),

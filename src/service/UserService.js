@@ -71,6 +71,7 @@ export default class extends BaseService {
     let web3 = new Web3(window.ethereum)
 
     const contracts = {
+      Governance: new web3.eth.Contract(CONTRACTS.Governance.abi, CONTRACTS.Governance.address),
       VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
       StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
       Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address)
@@ -80,6 +81,7 @@ export default class extends BaseService {
     this.dispatch(userRedux.actions.is_login_update(true))
     this.dispatch(userRedux.actions.wallet_update(address))
     this.dispatch(userRedux.actions.web3_update(web3))
+    this.dispatch(contractsRedux.actions.governance_update(contracts.Governance))
     this.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
     this.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
     this.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))

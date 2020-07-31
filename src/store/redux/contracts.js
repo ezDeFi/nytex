@@ -10,7 +10,8 @@ class ContractRedux extends BaseRedux {
       web3: null,
       volatileToken: null,
       stableToken: null,
-      seigniorage: null
+      seigniorage: null,
+      governance: null,
     }
   }
 }

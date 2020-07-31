@@ -1,8 +1,10 @@
+import Governance from './../abi/NextyGovernance.json'
 import VolatileToken from './../build/contracts/VolatileToken.json'
 import StableToken from './../build/contracts/StableToken.json'
 import Seigniorage from './../build/contracts/Seigniorage.json'
 
 const NetId = '111111'
+const GovernanceAddress     = '0x0000000000000000000000000000000000012345'
 const SeigniorageAddress    = '0x0000000000000000000000000000000000023456'
 const VolatileTokenAddress  = '0x0000000000000000000000000000000000034567'
 const StableTokenAddress    = '0x0000000000000000000000000000000000045678'
@@ -17,6 +19,11 @@ export const USER_ROLE = {
 
 export const CONTRACTS =
   {
+    'Governance':
+      {
+        'abi': Governance.abi,
+        'address': ConsensusDeploy ? GovernanceAddress : Governance.networks[NetId].address,
+      },
     'VolatileToken':
       {
         'abi': VolatileToken.abi,
