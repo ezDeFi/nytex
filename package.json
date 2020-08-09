@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Dapp Nexty Management",
   "scripts": {
-    "compile": "truffle compile",
+    "compile": "truffle compile --all",
     "deploy:local": "truffle migrate --reset --network localhost",
     "deploy:dev": "truffle migrate --reset --network development",
     "load:local": "node tools/load.js localhost",
@@ -24,6 +24,7 @@
   },
   "author": "nexty.io",
   "dependencies": {
+    "@openzeppelin/contracts": "^3.1.0",
     "antd": "^3.5.0",
     "babel-preset-stage-0": "^6.24.1",
     "big-integer": "^1.6.48",
@@ -58,7 +59,7 @@
     "redux": "4.0.0",
     "redux-thunk": "^2.2.0",
     "seedrandom": "^3.0.1",
-    "truffle": "^5.0.12",
+    "truffle": "^5.1.39",
     "truffle-hdwallet-provider": "^1.0.6",
     "tslint": "^5.11.0",
     "web3": "1.0.0-beta.36",
