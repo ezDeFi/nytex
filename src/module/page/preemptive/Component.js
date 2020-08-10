@@ -153,6 +153,7 @@ export default class extends LoggedInPage {
 
             {this.lockdownRender()}
 
+            {/* // Allowance are not nessesary anymore
             <h4 className="text-center">Allowance</h4>
 
             <Row type="flex" align="middle">
@@ -196,6 +197,7 @@ export default class extends LoggedInPage {
                   className="btn-margin-top submit-button maxWidth">Approve</Button>
               </Col>
             </Row>
+            */}
           </div>
         </div>
       </div>
