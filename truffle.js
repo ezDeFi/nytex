@@ -14,11 +14,13 @@ module.exports = {
     networks: {
         localhost: {
             provider: () => new HDWalletProvider(localPKey, localEndPoint),
-            network_id: 111111
+            network_id: 111111,
+            gasPrice: 5e15, // minimum gas for heavy tx
         },
         development: {
             provider: () => new HDWalletProvider(devPKey, devEndPoint),
-            network_id: 111111
+            network_id: 111111,
+            gasPrice: 5e15, // minimum gas for heavy tx
         },
         production: {
             provider: () => new HDWalletProvider(mainPKey, mainEndPoint),
