@@ -17,8 +17,12 @@ switch (network) {
     networkId = 66666
     break;
   case 'dev':
-  default:
     var endPoint = 'http://rpc.testnet.nexty.io:8545'
+    networkId = 111111
+    break;
+  case 'reg':
+  default:
+    var endPoint = 'http://62.171.189.27:8545'
     networkId = 111111
 }
 
