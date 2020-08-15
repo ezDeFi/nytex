@@ -143,6 +143,31 @@ const actions =  {
     })
   },
 
+  async callfee() {
+    const acc1 = await newSTBAcc(big.decShift(6, 18));
+    const acc2 = await newSTBAcc(0);
+    const acc3 = await newSTBAcc(0);
+    let tx
+
+    const params = {
+      from: acc1,
+      gasPrice: 123456789,
+    }
+    tx = stb.methods.transfer(acc3, big.decShift(1, 18))
+    params.gas = await tx.estimateGas(_.clone(params))
+    console.log('estimate price', params.gasPrice, '=', params.gas)
+    // params.gas = 40000
+    // params.gas--
+
+    params.to = tx._parent._address
+    params.data = tx.encodeABI()
+
+    params.tokenFee = true
+    web3.eth.call(params)
+      .then(console.log)
+      .catch(console.error)
+  },
+
   async tokenfee() {
     const acc1 = await newSTBAcc(big.decShift(6, 18));
     const acc2 = await newSTBAcc(0);
