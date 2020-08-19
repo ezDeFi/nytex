@@ -90,7 +90,7 @@ export default class extends LoggedInPage {
 
         <div className="ebp-page">
           <h3 className="text-center">Account Configuration</h3>
-          <div className="ant-col-md-18 ant-col-md-offset-3 text-alert" style={{ 'textAlign': 'left' }}>
+          <div className="ant-col-md-24 text-alert" style={{ 'textAlign': 'left' }}>
 
             <Row>
               <Col span={6}>
