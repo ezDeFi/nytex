@@ -28,6 +28,6 @@ export default class extends BaseService {
         const store = this.store.getState()
         const web3 = store.user.web3
         const token = new web3.eth.Contract(ERC20abi, address)
-        return token.methods.symbol().call()
+        return token.methods.symbol().call().catch(error => console.warn('Not an ERC20:', error))
     }
 }
