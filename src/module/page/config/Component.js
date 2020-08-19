@@ -20,11 +20,12 @@ export default class extends LoggedInPage {
   }
 
   renderField(field, name) {
+    const address = this.state[`address-${field}`] 
     return (
       <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
         <Col span={4}>{name || field}:</Col>
         <Col span={3}>{
-          this.state[`symbol-${field}`] ||
+          this.state[`symbol-${address}`] ||
           <Button onClick={() => this.queryField(field)}
             className="btn-margin-top submit-button maxWidth">Get</Button>
         }</Col>
@@ -53,13 +54,14 @@ export default class extends LoggedInPage {
   setFieldAddress(field, address) {
     this.setState({
       [`address-${field}`]: address,
-      [`symbol-${field}`]: undefined,
     })
+    if (!this.state[`symbol-${address}`]) {
     if (address.startsWith('0x') && address.length == 42) {
       this.props.erc20Symbol(address).then(symbol =>
-        this.setState({[`symbol-${field}`]: symbol}
+          this.setState({[`symbol-${address}`]: symbol}
       ))
     }
+  }
   }
 
   queryField(field) {
