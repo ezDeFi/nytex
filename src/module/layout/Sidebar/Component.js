@@ -100,6 +100,9 @@ export default class extends BaseComponent {
           <Menu.Item key="txcode">
             <Icon type="code" /> {I18N.get('0004')}
           </Menu.Item>
+          <Menu.Item key="config">
+            <Icon type="user" /> {I18N.get('0017')}
+          </Menu.Item>
           <Menu.Item key="gov">
             <Icon type="setting" /> {I18N.get('0007')}
           </Menu.Item>
@@ -114,6 +117,7 @@ export default class extends BaseComponent {
       'exchange',
       'preemptive',
       'txcode',
+      'config',
       'gov',
     ], key)) {
       this.props.history.push('/' + e.key)
@@ -140,6 +144,7 @@ export default class extends BaseComponent {
       'exchange',
       'preemptive',
       'txcode',
+      'config',
       'gov',
     ]
 

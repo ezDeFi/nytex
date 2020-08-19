@@ -26,6 +26,8 @@ switch (network) {
     networkId = 111111
 }
 
+const AccountConfigAddress = '0x2222222222222222222222222222222222222222'
+
 const STBAddress = '0x0000000000000000000000000000000000045678'
 
 const CONTRACTS =
