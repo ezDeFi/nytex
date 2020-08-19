@@ -11,6 +11,7 @@ const FieldKeys = {
   FeeToken:         '0x466565546f6b656e000000000000000000000000000000000000000000000000',
   FeeTokenFallback: '0x466565546f6b656e46616c6c6261636b00000000000000000000000000000000',
 }
+
 export default class extends LoggedInPage {
   state = {
   }
@@ -22,7 +23,7 @@ export default class extends LoggedInPage {
   renderField(field, name) {
     const address = this.state[`address-${field}`] 
     return (
-      <Row type="flex" align="middle" style={{ 'marginTop': '10px' }}>
+      <Row type="flex" align="middle" style={{ 'marginTop': '20px' }}>
         <Col span={4}>{name || field}:</Col>
         <Col span={3}>{
           this.state[`symbol-${address}`] ||
