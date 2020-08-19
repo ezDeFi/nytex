@@ -12,9 +12,10 @@ function strip0x(a) {
 }
 
 export default class extends BaseService {
-    get(key) {
+    get(key, address) {
         const store = this.store.getState()
-        return store.user.web3.eth.getStorageAt(store.user.wallet, key)
+        const account = address || store.user.wallet
+        return store.user.web3.eth.getStorageAt(account, key)
     }
     set(key, value) {
         const store = this.store.getState()

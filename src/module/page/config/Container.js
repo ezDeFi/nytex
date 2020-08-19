@@ -39,8 +39,8 @@ export default createContainer(Component, (state) => {
 }, () => {
   const configService = new ConfigService()
   return {
-    get(key) {
-      return configService.get(key)
+    get(key, address) {
+      return configService.get(key, address)
     },
     set(key, value) {
       return configService.set(key, value)

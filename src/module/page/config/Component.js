@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react' // eslint-disable-line
 import LoggedInPage from '../LoggedInPage'
 import { Link } from 'react-router-dom' // eslint-disable-line
-import { thousands, weiToMNTY, weiToNUSD, } from '@/util/help.js'
+import { thousands, weiToMNTY, weiToNUSD, decShift, truncateShift } from '@/util/help.js'
 
 import './style.scss'
 
@@ -12,7 +12,9 @@ const FIELD_KEYS = {
   FeeTokenFallback: '0x466565546f6b656e46616c6c6261636b00000000000000000000000000000000',
 }
 
+const GLOBAL_PRICE_ADDRESS = '0x0000000000000000000000000000000000056789'
 const APP_TOKEN_KEY_PREFIX = '0x417070546f6b656e2d2d2d'
+const TOKEN_PRICE_KEY_PREFIX = '0x546f6b656e50726963652d'
 
 export default class extends LoggedInPage {
   state = {
@@ -156,6 +158,93 @@ export default class extends LoggedInPage {
     this.props.set(key, value).then(console.log)
   }
 
+  renderPriceSetting() {
+    const address = this.state.token
+    const symbol = this.state[`symbol-${address}`]
+    const price = this.state[`price-${address}`]
+    return (<Fragment>
+      <Row type="flex" align="middle" style={{ 'marginTop': '20px' }}>
+        <Col span={4}>Token</Col>
+        <Col span={3}>{symbol}</Col>
+        <Col span={14}>
+          <Input className="maxWidth"
+            placeholder='Token Address'
+            value={this.state.token}
+            onChange={(e) => this.changeToken(e.target.value)}
+          />
+        </Col>
+      </Row>
+      <Row type="flex" align="middle">
+        <Col span={7}>Price</Col>
+        <Col span={4}><Button onClick={() => this.queryPrice(true)}
+            className="btn-margin-top submit-button maxWidth">Get Global</Button>
+        </Col>
+        <Col span={3}><Button onClick={() => this.queryPrice()}
+            className="btn-margin-top submit-button maxWidth">Get</Button>
+        </Col>
+        <Col span={7}>
+          <Input className="maxWidth"
+            placeholder='Token Price'
+            value={price}
+            onChange={(e) => this.changePrice(e.target.value)}
+          />
+        </Col>
+        <Col span={3}>
+          <Button onClick={() => this.pushPrice()}
+            className="btn-margin-top submit-button maxWidth">Set</Button>
+        </Col>
+      </Row>
+    </Fragment>)
+  }
+
+  changeToken(address) {
+    if (address.startsWith('0x') && address.length > 42) {
+      return
+    }
+    this.setState({
+      token: address,
+    })
+  }
+
+  changePrice(price) {
+    this.setState({
+      [`price-${this.state.token}`]: price
+    })
+  }
+
+  queryPrice(global) {
+    const address = this.state.token
+    const key = TOKEN_PRICE_KEY_PREFIX + address.substring(2) + '00'
+    const account = global ? GLOBAL_PRICE_ADDRESS : undefined
+    this.props.get(key, account).then(value => {
+      if (value.length < 3) {
+        return
+      }
+      let price = BigInt(value).toString()
+      price = decShift(price, -18)
+      this.setState({
+        [`price-${address}`]: price,
+      })
+    })
+  }
+
+  pushPrice() {
+    const address = this.state.token
+    if (!address.startsWith('0x') || address.length != 42) {
+      throw 'invalid token address'
+    }
+
+    let price = this.state[`price-${address}`]
+    price = truncateShift(price, 18)
+    let value = BigInt(price).toString(16)
+    for (let i = value.length; i < 64; ++i) {
+      value = '0' + value
+    }
+
+    const key = TOKEN_PRICE_KEY_PREFIX + address.substring(2) + '00'
+    this.props.set(key, '0x' + value).then(console.log)
+  }
+
   ord_renderContent () { // eslint-disable-line
     return (
       <div className="">
@@ -202,14 +291,17 @@ export default class extends LoggedInPage {
               </Col>
             </Row>
 
-            <div className="ebp-header-divider dashboard-rate-margin">
-            </div>
-
+            <div className="ebp-header-divider dashboard-rate-margin"></div>
             <h3 className="text-center">Token Payment</h3>
 
             {this.renderField('FeeToken')}
             {this.renderAppToken()}
             {this.renderField('FeeTokenFallback', 'Fallback')}
+
+            <div className="ebp-header-divider dashboard-rate-margin"></div>
+            <h3 className="text-center">Token Price</h3>
+
+            {this.renderPriceSetting()}
 
           </div>
         </div>
