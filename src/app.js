@@ -16,7 +16,7 @@ import Web3 from 'web3'
 import './boot'
 import './style/index.scss'
 
-console.log(CONTRACTS)
+import detectEthereumProvider from '@metamask/detect-provider';
 
 const middleware = (render, props) => {
   return render
@@ -52,70 +52,125 @@ const render = () => {
   )
 }
 
-const userRedux = store.getRedux('user')
-const contractsRedux = store.getRedux('contracts')
-const userService = new UserService()
-let isRequest = false
-let isLoggedIn = false
+// this returns the provider, or null if it wasn't detected
+detectEthereumProvider().then(setupWeb3)
 
-function setupWeb3 () {
-  window.web3.eth.getAccounts(async (err, accounts) => {
-    if (err) return
-    if (accounts.length > 0) {
-      window.web3.version.getNetwork((err, networkId) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
+function setupWeb3(provider) {
+  if (!provider) {
+    console.log('Please install MetaMask or EzDeFi!');
+    doLogout()
+    return;
+  }
 
-        // detect account switch
-        const wallet = store.getState().user.wallet;
-        isLoggedIn = isLoggedIn && wallet === accounts[0];
+  // If the provider returned by detectEthereumProvider is not the same as
+  // window.ethereum, something is overwriting it, perhaps another wallet.
+  if (provider !== window.ethereum) {
+    console.error('Do you have multiple wallets installed?');
+  }
+  // Access the decentralized web!
 
-        if (!isLoggedIn) {
-          const web3 = new Web3(window.ethereum)
+  /**********************************************************/
+  /* Handle chain (network) and chainChanged (per EIP-1193) */
+  /**********************************************************/
 
-          const contracts = {
-            VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
-            StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
-            Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
-          }
+  // Normally, we would recommend the 'eth_chainId' RPC method, but it currently
+  // returns incorrectly formatted chain ID values.
+  // let currentChainId = ethereum.chainId;
 
-          store.dispatch(userRedux.actions.loginMetamask_update(true))
-          store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
-          store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
-          store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
-          store.dispatch(userRedux.actions.web3_update(web3))
+  ethereum.on('chainChanged', handleChainChanged);
 
-          userService.metaMaskLogin(accounts[0])
-          isLoggedIn = true
+  function handleChainChanged(_chainId) {
+    // We recommend reloading the page, unless you must do otherwise
+    console.log('Chain ID:', _chainId)
+    // window.location.reload();
+  }
 
-          // simple trick: not work for entering .../login directly to the browser
-          if (userService.path.location.pathname === '/login') {
-            userService.path.goBack();
-          }
-        }
-      })
-    } else {
-        if (!isRequest) {
-            isRequest = true
-            await window.ethereum.enable()
-        }
-        store.dispatch(userRedux.actions.loginMetamask_update(false))
-        isLoggedIn = false
+  /***********************************************************/
+  /* Handle user accounts and accountsChanged (per EIP-1193) */
+  /***********************************************************/
+
+  ethereum
+    .request({ method: 'eth_accounts' })
+    .then(handleAccountsChanged)
+    .catch((err) => {
+      // Some unexpected error.
+      // For backwards compatibility reasons, if no accounts are available,
+      // eth_accounts will return an empty array.
+      console.error(err);
+    });
+
+  // Note that this event is emitted on page load.
+  // If the array of accounts is non-empty, you're already
+  // connected.
+  ethereum.on('accountsChanged', handleAccountsChanged);
+
+  // For now, 'eth_accounts' will continue to always return an array
+  function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+      // MetaMask is locked or the user has not connected any accounts
+      console.log('Please connect to MetaMask.');
+      doLogout()
+    } else if (accounts[0] !== store.getState().user.wallet) {
+      doLogin(accounts[0])
     }
+  }
+
+  /*********************************************/
+  /* Access the user's accounts (per EIP-1102) */
+  /*********************************************/
+
+  // You should only attempt to request the user's accounts in response to user
+  // interaction, such as a button click.
+  // Otherwise, you popup-spam the user like it's 1999.
+  // If you fail to retrieve the user's account(s), you should encourage the user
+  // to initiate the attempt.
+  document.getElementById('connectButton', () => {
+    ethereum
+      .request({ method: 'eth_requestAccounts' })
+      .then(handleAccountsChanged)
+      .catch((err) => {
+        if (err.code === 4001) {
+          // EIP-1193 userRejectedRequest error
+          // If this happens, the user rejected the connection request.
+          console.log('Please connect to MetaMask.');
+        } else {
+          console.error(err);
+        }
+      });
   })
 }
 
-if (window.ethereum) {
-  setupWeb3()
-  if (window.web3.currentProvider.publicConfigStore) {
-    window.web3.currentProvider.publicConfigStore.on('update', async () => {
-      setupWeb3()
-    })
-  }
-} else {
+function doLogout() {
+  const userRedux = store.getRedux('user')
   store.dispatch(userRedux.actions.loginMetamask_update(false))
+}
+
+function doLogin(account) {
+  console.log('Account: ', account);
+  const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+
+  const contracts = {
+    VolatileToken: new web3.eth.Contract(CONTRACTS.VolatileToken.abi, CONTRACTS.VolatileToken.address),
+    StableToken: new web3.eth.Contract(CONTRACTS.StableToken.abi, CONTRACTS.StableToken.address),
+    Seigniorage: new web3.eth.Contract(CONTRACTS.Seigniorage.abi, CONTRACTS.Seigniorage.address),
+  }
+
+  const userRedux = store.getRedux('user')
+  const contractsRedux = store.getRedux('contracts')
+  const userService = new UserService()
+
+  store.dispatch(userRedux.actions.loginMetamask_update(true))
+  store.dispatch(contractsRedux.actions.volatileToken_update(contracts.VolatileToken))
+  store.dispatch(contractsRedux.actions.stableToken_update(contracts.StableToken))
+  store.dispatch(contractsRedux.actions.seigniorage_update(contracts.Seigniorage))
+  store.dispatch(userRedux.actions.web3_update(web3))
+
+  userService.metaMaskLogin(account)
+
+  // simple trick: not work for entering .../login directly to the browser
+  if (userService.path.location.pathname === '/login') {
+    userService.path.goBack();
+  }
 }
 
 if (sessionStorage.getItem('api-token')) { // eslint-disable-line
