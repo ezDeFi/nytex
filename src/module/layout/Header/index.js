@@ -121,7 +121,7 @@ const Header = () => {
             <p>${cutFloat(ntyQuote.filled, 4)}</p>
           </Col>
           <Col lg={4} xs={18}>
-            <p className="balance text-green">${cutFloat(mul(weiToMNTY(balance), ntyQuote.filled), 4)}</p>
+            {/* <p className="balance text-green">${cutFloat(mul(weiToMNTY(balance), ntyQuote.filled), 4)}</p> */}
           </Col>
           <Col lg={4} xs={12}>
             <p className="hide-on-mobile text-white">{I18N.get('24h_change')}</p>
